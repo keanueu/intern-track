@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
+import '../theme/app_theme.dart';
 
 class ManualPunchScreen extends StatefulWidget {
   const ManualPunchScreen({super.key});
@@ -18,7 +19,8 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
   void initState() {
     super.initState();
     _now = DateTime.now();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() => _now = DateTime.now()));
+    _timer = Timer.periodic(
+        const Duration(seconds: 1), (_) => setState(() => _now = DateTime.now()));
   }
 
   @override
@@ -33,18 +35,20 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
-          const Icon(Icons.check_circle_rounded, color: Colors.white),
+          const Icon(Icons.check_circle_rounded, color: kGreen),
           const SizedBox(width: 10),
-          Expanded(child: Text(msg)),
+          Expanded(child: Text(msg, style: const TextStyle(color: kWhite))),
         ]),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: const Color(0xFF1C1C1E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: kSurface,
+        shape: RoundedRectangleBorder(
+            borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
       ));
     }
   }
 
-  String get _hms => '${_p(_now.hour)}:${_p(_now.minute)}:${_p(_now.second)}';
+  String get _hms =>
+      '${_p(_now.hour)}:${_p(_now.minute)}:${_p(_now.second)}';
 
   String get _dateLabel {
     const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -69,157 +73,214 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
         final openLog = state.openLog;
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF5F4F0),
+          backgroundColor: kBg,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 20),
 
-                  // Header
-                  Row(
-                    children: [
-                      Container(
-                        width: 44, height: 44,
-                        decoration: BoxDecoration(color: const Color(0xFFFFD6A5), borderRadius: BorderRadius.circular(14)),
-                        child: const Icon(Icons.edit_note_rounded, color: Color(0xFFFF9F1C), size: 24),
-                      ),
-                      const SizedBox(width: 12),
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Manual Entry', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1C1C1E))),
-                          Text('Traditional DTR Log', style: TextStyle(fontSize: 12, color: Color(0xFF9E9E9E))),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Live clock card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
-                    decoration: BoxDecoration(color: const Color(0xFF1C1C1E), borderRadius: BorderRadius.circular(28)),
-                    child: Column(
-                      children: [
-                        Text(_hms,
-                            style: const TextStyle(
-                              color: Colors.white, fontSize: 48, fontWeight: FontWeight.w300,
-                              letterSpacing: 3, fontFeatures: [FontFeature.tabularFigures()],
-                            )),
-                        const SizedBox(height: 6),
-                        Text(_dateLabel, style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 13, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16),
-                        // Session status pill
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: isPunchedIn
-                                ? const Color(0xFF2DBF8A).withValues(alpha: 0.2)
-                                : const Color(0xFF6C63FF).withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 7, height: 7,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isPunchedIn ? const Color(0xFF2DBF8A) : const Color(0xFF6C63FF),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                isPunchedIn && openLog != null
-                                    ? 'Active since ${_fmt(openLog.timeIn)}'
-                                    : 'Not punched in',
-                                style: TextStyle(
-                                  color: isPunchedIn ? const Color(0xFF2DBF8A) : const Color(0xFF6C63FF),
-                                  fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 26),
-                  const Text('Punch Attendance',
-                      style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, color: Color(0xFF1C1C1E))),
-                  const SizedBox(height: 14),
-
-                  // Time In — disabled if already punched in
-                  _PunchCard(
-                    icon: Icons.login_rounded,
-                    label: 'Time In',
-                    sublabel: isPunchedIn ? 'Already logged in' : 'Record your arrival time',
-                    bgColor: const Color(0xFFD4CFFF),
-                    iconColor: const Color(0xFF6C63FF),
-                    enabled: !isPunchedIn,
-                    onTap: () => _punch(context),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Time Out — disabled if not punched in
-                  _PunchCard(
-                    icon: Icons.logout_rounded,
-                    label: 'Time Out',
-                    sublabel: !isPunchedIn ? 'No active session' : 'Record your departure time',
-                    bgColor: const Color(0xFFFFD6A5),
-                    iconColor: const Color(0xFFFF9F1C),
-                    enabled: isPunchedIn,
-                    onTap: () => _punch(context),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Break — only when punched in
-                  _PunchCard(
-                    icon: Icons.free_breakfast_rounded,
-                    label: 'Break',
-                    sublabel: !isPunchedIn ? 'Must be timed in first' : 'Log lunch or rest break',
-                    bgColor: const Color(0xFFB5EAD7),
-                    iconColor: const Color(0xFF2DBF8A),
-                    enabled: isPunchedIn,
-                    onTap: () => _punch(context),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Today's hours summary
-                  if (state.logs.isNotEmpty) _TodaySummary(state: state),
-
-                  const SizedBox(height: 12),
-
-                  // Info banner
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+                  // 1. Header
+                  FadeSlideIn(
+                    index: 0,
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: const Color(0xFFD4CFFF), borderRadius: BorderRadius.circular(10)),
-                          child: const Icon(Icons.wifi_off_rounded, size: 16, color: Color(0xFF6C63FF)),
+                          width: 44, height: 44,
+                          decoration: BoxDecoration(
+                            gradient: kGreenGradient,
+                            borderRadius: kRadiusAvatar,
+                            boxShadow: kGreenGlow,
+                          ),
+                          child: const Icon(Icons.edit_note_rounded, color: kWhite, size: 24),
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
-                          child: Text(
-                            'Entries are saved offline and will sync automatically.',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF555555), height: 1.4),
-                          ),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Manual Entry',
+                                style: TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
+                            Text('Traditional DTR Log',
+                                style: TextStyle(fontSize: 12, color: kGrey)),
+                          ],
                         ),
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 20),
+
+                  // 2. Offline notice — context BEFORE user acts
+                  FadeSlideIn(
+                    index: 1,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: kGreen.withValues(alpha: 0.07),
+                        borderRadius: kRadiusBtn,
+                        border: Border.all(color: kGreen.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.wifi_off_rounded, size: 14, color: kGreen),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Entries are saved offline and sync automatically.',
+                              style: const TextStyle(fontSize: 11, color: kGrey, height: 1.4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 3. Live clock — the centrepiece of this screen
+                  FadeSlideIn(
+                    index: 2,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: kSurface,
+                        borderRadius: kRadiusCard,
+                        border: Border.all(color: kBorder),
+                        boxShadow: kCardShadow,
+                      ),
+                      child: Column(
+                        children: [
+                          ShaderMask(
+                            shaderCallback: (bounds) =>
+                                kGreenGradient.createShader(bounds),
+                            child: Text(
+                              _hms,
+                              style: const TextStyle(
+                                color: kWhite,
+                                fontSize: 48,
+                                fontWeight: FontWeight.w300,
+                                letterSpacing: 3,
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(_dateLabel,
+                              style: const TextStyle(
+                                  color: kGrey, fontSize: 13, fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 14),
+                          // Session status pill
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: isPunchedIn
+                                  ? kGreen.withValues(alpha: 0.15)
+                                  : kGreyDark.withValues(alpha: 0.4),
+                              borderRadius: kRadiusNav,
+                              border: Border.all(
+                                color: isPunchedIn
+                                    ? kGreen.withValues(alpha: 0.4)
+                                    : kBorder,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 7, height: 7,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isPunchedIn ? kGreen : kGrey,
+                                    boxShadow: isPunchedIn ? kGreenGlow : null,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  isPunchedIn && openLog != null
+                                      ? 'Active since ${_fmt(openLog.timeIn)}'
+                                      : 'Not punched in',
+                                  style: TextStyle(
+                                    color: isPunchedIn ? kGreen : kGrey,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // 4. Today's summary — shows WHAT was logged BEFORE showing action buttons
+                  //    Only visible when there are logs — acts as a status line
+                  if (state.logs.isNotEmpty) ...[
+                    FadeSlideIn(index: 3, child: _TodaySummary(state: state)),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // 5. Punch actions — the primary interactive zone
+                  FadeSlideIn(
+                    index: 4,
+                    child: const Text('Punch Attendance',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                  ),
+                  const SizedBox(height: 10),
+
+                  FadeSlideIn(
+                    index: 5,
+                    child: _PunchCard(
+                      icon: Icons.login_rounded,
+                      label: 'Time In',
+                      sublabel: isPunchedIn
+                          ? 'Already logged in'
+                          : 'Record your arrival time',
+                      accentColor: kGreen,
+                      enabled: !isPunchedIn,
+                      onTap: () => _punch(context),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  FadeSlideIn(
+                    index: 6,
+                    child: _PunchCard(
+                      icon: Icons.logout_rounded,
+                      label: 'Time Out',
+                      sublabel: !isPunchedIn
+                          ? 'No active session'
+                          : 'Record your departure time',
+                      accentColor: kAmber,
+                      enabled: isPunchedIn,
+                      onTap: () => _punch(context),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  FadeSlideIn(
+                    index: 7,
+                    child: _PunchCard(
+                      icon: Icons.free_breakfast_rounded,
+                      label: 'Break',
+                      sublabel: !isPunchedIn
+                          ? 'Must be timed in first'
+                          : 'Log lunch or rest break',
+                      accentColor: kGreenLight,
+                      enabled: isPunchedIn,
+                      onTap: () => _punch(context),
+                    ),
+                  ),
+
                   const SizedBox(height: 24),
                 ],
               ),
@@ -238,38 +299,47 @@ class _TodaySummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final today = DateTime.now();
-    final todayLogs = state.logs.where((l) =>
-        l.timeIn.year == today.year &&
-        l.timeIn.month == today.month &&
-        l.timeIn.day == today.day).toList();
+    final todayLogs = state.logs
+        .where((l) =>
+            l.timeIn.year == today.year &&
+            l.timeIn.month == today.month &&
+            l.timeIn.day == today.day)
+        .toList();
 
     if (todayLogs.isEmpty) return const SizedBox.shrink();
 
-    final double todayHours = todayLogs.fold(0, (sum, l) => sum + l.calculatedHours);
+    final double todayHours =
+        todayLogs.fold(0, (sum, l) => sum + l.calculatedHours);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(18)),
+    return DarkCard(
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: const Color(0xFFB5EAD7), borderRadius: BorderRadius.circular(10)),
-            child: const Icon(Icons.today_rounded, size: 16, color: Color(0xFF2DBF8A)),
+            decoration: BoxDecoration(
+              color: kGreen.withValues(alpha: 0.12),
+              borderRadius: kRadiusTag,
+            ),
+            child: const Icon(Icons.today_rounded, size: 16, color: kGreen),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Today's Hours", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1C1C1E))),
+                const Text("Today's Hours",
+                    style: TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.w700, color: kWhite)),
                 Text('${todayHours.toStringAsFixed(2)} hours logged today',
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF9E9E9E))),
+                    style: const TextStyle(fontSize: 11, color: kGrey)),
               ],
             ),
           ),
-          Text('${todayLogs.length} log${todayLogs.length > 1 ? 's' : ''}',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2DBF8A))),
+          Text(
+            '${todayLogs.length} log${todayLogs.length > 1 ? 's' : ''}',
+            style: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w700, color: kGreen),
+          ),
         ],
       ),
     );
@@ -279,57 +349,83 @@ class _TodaySummary extends StatelessWidget {
 class _PunchCard extends StatelessWidget {
   final IconData icon;
   final String label, sublabel;
-  final Color bgColor, iconColor;
+  final Color accentColor;
   final bool enabled;
   final VoidCallback onTap;
 
   const _PunchCard({
-    required this.icon, required this.label, required this.sublabel,
-    required this.bgColor, required this.iconColor,
-    required this.enabled, required this.onTap,
+    required this.icon,
+    required this.label,
+    required this.sublabel,
+    required this.accentColor,
+    required this.enabled,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = enabled ? iconColor : const Color(0xFFB0AFAF);
-    final effectiveBg = enabled ? bgColor : const Color(0xFFF0F0F0);
+    final color = enabled ? accentColor : kGrey;
 
-    return GestureDetector(
+    return TapScale(
       onTap: enabled ? onTap : null,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: kDurNormal,
+        curve: kCurve,
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        decoration: BoxDecoration(color: effectiveBg, borderRadius: BorderRadius.circular(22)),
+        decoration: BoxDecoration(
+          color: kSurface,
+          borderRadius: kRadiusCard,
+          border: Border.all(
+              color: enabled ? accentColor.withValues(alpha: 0.35) : kBorder),
+          boxShadow: enabled
+              ? [
+                  BoxShadow(
+                      color: accentColor.withValues(alpha: 0.12),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4)),
+                ]
+              : kCardShadow,
+        ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(11),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(14),
+                color: color.withValues(alpha: 0.12),
+                borderRadius: kRadiusAvatar,
               ),
-              child: Icon(icon, color: effectiveColor, size: 22),
+              child: Icon(icon, color: color, size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: effectiveColor)),
+                  Text(label,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: enabled ? kWhite : kGrey)),
                   const SizedBox(height: 2),
-                  Text(sublabel, style: TextStyle(fontSize: 11, color: effectiveColor.withValues(alpha: 0.65))),
+                  Text(sublabel,
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: enabled ? kGrey : kGreyDark)),
                 ],
               ),
             ),
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(10),
+                color: color.withValues(alpha: 0.12),
+                borderRadius: kRadiusTag,
               ),
               child: Icon(
-                enabled ? Icons.arrow_forward_rounded : Icons.lock_outline_rounded,
-                size: 16, color: effectiveColor,
+                enabled
+                    ? Icons.arrow_forward_rounded
+                    : Icons.lock_outline_rounded,
+                size: 16,
+                color: color,
               ),
             ),
           ],

@@ -50,27 +50,51 @@ List<BoxShadow> kCardShadow = [
 
 // ── ThemeData ─────────────────────────────────────────────────────────────────
 ThemeData buildAppTheme() {
-  return ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark,
+  const exter = 'Exter';
+
+  final base = ThemeData(brightness: Brightness.dark, useMaterial3: true, fontFamily: exter);
+
+  TextTheme applyExter(TextTheme t) => t.copyWith(
+    displayLarge:   t.displayLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w800, fontSize: 32),
+    displayMedium:  t.displayMedium!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
+    displaySmall:   t.displaySmall!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
+    headlineLarge:  t.headlineLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
+    headlineMedium: t.headlineMedium!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
+    headlineSmall:  t.headlineSmall!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
+    titleLarge:     t.titleLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700, fontSize: 18),
+    titleMedium:    t.titleMedium!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
+    titleSmall:     t.titleSmall!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
+    bodyLarge:      t.bodyLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w500),
+    bodyMedium:     t.bodyMedium!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w500, fontSize: 13),
+    bodySmall:      t.bodySmall!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w400),
+    labelLarge:     t.labelLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
+    labelMedium:    t.labelMedium!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w500),
+    labelSmall:     t.labelSmall!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w400, fontSize: 11),
+  );
+
+  return base.copyWith(
     scaffoldBackgroundColor: kBg,
     colorScheme: const ColorScheme.dark(
       primary: kGreen,
       surface: kSurface,
       onSurface: kWhite,
     ),
-    textTheme: const TextTheme(
-      displayLarge: TextStyle(color: kWhite, fontWeight: FontWeight.w800, fontSize: 32),
-      titleLarge:   TextStyle(color: kWhite, fontWeight: FontWeight.w700, fontSize: 18),
-      bodyMedium:   TextStyle(color: kGrey,  fontWeight: FontWeight.w500, fontSize: 13),
-      labelSmall:   TextStyle(color: kGrey,  fontWeight: FontWeight.w400, fontSize: 11),
+    textTheme: applyExter(base.textTheme),
+    primaryTextTheme: applyExter(base.primaryTextTheme),
+    typography: Typography.material2021().copyWith(
+      black: applyExter(Typography.material2021().black),
+      white: applyExter(Typography.material2021().white),
+      englishLike: applyExter(Typography.material2021().englishLike),
+      dense: applyExter(Typography.material2021().dense),
+      tall: applyExter(Typography.material2021().tall),
     ),
     dividerColor: kBorder,
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: kSurface2,
       border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-      labelStyle: const TextStyle(color: kGrey),
+      labelStyle: const TextStyle(fontFamily: exter, color: kGrey),
+      hintStyle: const TextStyle(fontFamily: exter, color: kGrey),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -78,7 +102,7 @@ ThemeData buildAppTheme() {
         foregroundColor: kBg,
         shape: const RoundedRectangleBorder(borderRadius: kRadiusBtn),
         padding: const EdgeInsets.symmetric(vertical: 16),
-        textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+        textStyle: const TextStyle(fontFamily: exter, fontWeight: FontWeight.w700, fontSize: 15),
       ),
     ),
   );

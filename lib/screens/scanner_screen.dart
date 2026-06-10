@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
+import '../theme/app_theme.dart';
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -23,13 +24,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: [
-            const Icon(Icons.check_circle_rounded, color: Colors.white),
+            const Icon(Icons.check_circle_rounded, color: kGreen),
             const SizedBox(width: 10),
-            Expanded(child: Text(result)),
+            Expanded(child: Text(result, style: const TextStyle(color: kWhite))),
           ]),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: const Color(0xFF1C1C1E),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: kSurface,
+          shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
           duration: const Duration(seconds: 2),
         ));
       }
@@ -43,8 +44,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return Consumer<AppState>(
       builder: (context, state, _) {
         final activeColor = _canScan
-            ? (state.isPunchedIn ? const Color(0xFF2DBF8A) : const Color(0xFF6C63FF))
-            : const Color(0xFFFFD166);
+            ? (state.isPunchedIn ? kGreen : kGreenLight)
+            : kAmber;
 
         return Scaffold(
           backgroundColor: Colors.black,
@@ -106,14 +107,14 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
                               color: state.isPunchedIn
-                                  ? const Color(0xFF2DBF8A).withValues(alpha: 0.2)
+                                  ? kGreen.withValues(alpha: 0.2)
                                   : Colors.white.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               state.isPunchedIn ? 'IN' : 'OUT',
                               style: TextStyle(
-                                color: state.isPunchedIn ? const Color(0xFF2DBF8A) : Colors.white60,
+                                color: state.isPunchedIn ? kGreen : Colors.white60,
                                 fontSize: 11, fontWeight: FontWeight.w800,
                               ),
                             ),
