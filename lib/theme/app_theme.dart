@@ -27,12 +27,12 @@ const kGreenGradientDeep = LinearGradient(
 );
 
 // ── Border Radii ──────────────────────────────────────────────────────────────
-const kRadiusCard   = BorderRadius.all(Radius.circular(24));
-const kRadiusBtn    = BorderRadius.all(Radius.circular(16));
-const kRadiusNav    = BorderRadius.all(Radius.circular(32));
-const kRadiusAvatar = BorderRadius.all(Radius.circular(14));
-const kRadiusTag    = BorderRadius.all(Radius.circular(8));
-const kRadiusInput  = BorderRadius.all(Radius.circular(14));
+const kRadiusCard   = BorderRadius.all(Radius.circular(16));
+const kRadiusBtn    = BorderRadius.all(Radius.circular(10));
+const kRadiusNav    = BorderRadius.all(Radius.circular(20));
+const kRadiusAvatar = BorderRadius.all(Radius.circular(10));
+const kRadiusTag    = BorderRadius.all(Radius.circular(6));
+const kRadiusInput  = BorderRadius.all(Radius.circular(10));
 
 // ── Durations ─────────────────────────────────────────────────────────────────
 const kDurFast   = Duration(milliseconds: 150);
