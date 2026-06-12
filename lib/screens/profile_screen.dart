@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform, File;
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
 import '../models/profile_model.dart';
 import '../theme/app_theme.dart';
+
+// image_picker + dart:io File only work on Android/iOS
+bool get _isMobile {
+  if (kIsWeb) return false;
+  try { return Platform.isAndroid || Platform.isIOS; } catch (_) { return false; }
+}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -55,8 +64,7 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  // 2. Identity card — avatar + name + stats all in one block
-                  //    No duplicate edit button here; the top bar handles it
+                  // 2. Identity card
                   FadeSlideIn(
                     index: 1,
                     child: DarkCard(
@@ -65,16 +73,7 @@ class ProfileScreen extends StatelessWidget {
                           // Avatar row
                           Row(
                             children: [
-                              Container(
-                                width: 60, height: 60,
-                                decoration: BoxDecoration(
-                                  gradient: kGreenGradientDeep,
-                                  borderRadius: kRadiusCard,
-                                  boxShadow: kGreenGlow,
-                                ),
-                                child: const Icon(Icons.person_rounded,
-                                    color: kWhite, size: 30),
-                              ),
+                              _AvatarPicker(profile: profile, state: state),
                               const SizedBox(width: 14),
                               Expanded(
                                 child: Column(
@@ -733,4 +732,165 @@ class _CardDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const Divider(height: 1, indent: 60, endIndent: 20, color: kBorder);
+}
+
+class _AvatarPicker extends StatelessWidget {
+  final ProfileModel profile;
+  final AppState state;
+  const _AvatarPicker({required this.profile, required this.state});
+
+  Future<void> _pick(BuildContext context) async {
+    // image_picker not supported on Windows/web — show info instead
+    if (!_isMobile) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Image picker is only available on mobile devices.',
+              style: TextStyle(color: kWhite)),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: kSurface,
+          shape: RoundedRectangleBorder(
+              borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+        ),
+      );
+      return;
+    }
+    final picker = ImagePicker();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: kSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: kBorder),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 36, height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(color: kBorder, borderRadius: BorderRadius.circular(2))),
+              _PickOption(
+                icon: Icons.camera_alt_rounded,
+                label: 'Take Photo',
+                color: kGreen,
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final img = await picker.pickImage(
+                      source: ImageSource.camera, imageQuality: 85);
+                  if (img != null) {
+                    state.saveProfile(profile.copyWith(avatarPath: img.path));
+                  }
+                },
+              ),
+              _PickOption(
+                icon: Icons.photo_library_rounded,
+                label: 'Choose from Gallery',
+                color: kGreenLight,
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final img = await picker.pickImage(
+                      source: ImageSource.gallery, imageQuality: 85);
+                  if (img != null) {
+                    state.saveProfile(profile.copyWith(avatarPath: img.path));
+                  }
+                },
+              ),
+              if (profile.avatarPath != null)
+                _PickOption(
+                  icon: Icons.delete_outline_rounded,
+                  label: 'Remove Photo',
+                  color: kRed,
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    state.saveProfile(profile.copyWith(clearAvatar: true));
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool hasImage = _isMobile &&
+        profile.avatarPath != null &&
+        File(profile.avatarPath!).existsSync();
+
+    return TapScale(
+      onTap: () => _pick(context),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Avatar
+          Container(
+            width: 64, height: 64,
+            decoration: BoxDecoration(
+              gradient: hasImage ? null : kGreenGradientDeep,
+              borderRadius: kRadiusCard,
+              boxShadow: kGreenGlow,
+              image: hasImage
+                  ? DecorationImage(
+                      image: FileImage(File(profile.avatarPath!)),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
+            ),
+            child: hasImage
+                ? null
+                : const Icon(Icons.person_rounded, color: kWhite, size: 30),
+          ),
+          // Camera badge
+          Positioned(
+            bottom: -4, right: -4,
+            child: Container(
+              width: 22, height: 22,
+              decoration: BoxDecoration(
+                color: kGreen,
+                shape: BoxShape.circle,
+                border: Border.all(color: kSurface, width: 2),
+              ),
+              child: const Icon(Icons.camera_alt_rounded, size: 11, color: kBg),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PickOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _PickOption({required this.icon, required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => TapScale(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: kRadiusTag,
+                  border: Border.all(color: color.withValues(alpha: 0.25)),
+                ),
+                child: Icon(icon, size: 18, color: color),
+              ),
+              const SizedBox(width: 14),
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600, color: kWhite)),
+            ],
+          ),
+        ),
+      );
 }

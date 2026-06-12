@@ -8,6 +8,7 @@ class ProfileModel {
   final String qrCodeToken;
   final double requiredHours;
   final String startDate;
+  final String? avatarPath;
 
   ProfileModel({
     required this.id,
@@ -19,6 +20,7 @@ class ProfileModel {
     required this.qrCodeToken,
     required this.requiredHours,
     required this.startDate,
+    this.avatarPath,
   });
 
   factory ProfileModel.empty() => ProfileModel(
@@ -42,6 +44,7 @@ class ProfileModel {
         'supervisor': supervisor,
         'required_hours': requiredHours,
         'start_date': startDate,
+        'avatar_path': avatarPath,
       };
 
   factory ProfileModel.fromMap(Map<String, dynamic> m) {
@@ -57,6 +60,7 @@ class ProfileModel {
       qrCodeToken: m['qr_code_token'],
       requiredHours: (m['required_hours'] as num?)?.toDouble() ?? 486,
       startDate: m['start_date'] ?? DateTime.now().toIso8601String(),
+      avatarPath: m['avatar_path'] as String?,
     );
   }
 
@@ -67,6 +71,8 @@ class ProfileModel {
     String? company,
     String? supervisor,
     double? requiredHours,
+    String? avatarPath,
+    bool clearAvatar = false,
   }) =>
       ProfileModel(
         id: id,
@@ -78,5 +84,6 @@ class ProfileModel {
         qrCodeToken: qrCodeToken,
         requiredHours: requiredHours ?? this.requiredHours,
         startDate: startDate,
+        avatarPath: clearAvatar ? null : (avatarPath ?? this.avatarPath),
       );
 }
