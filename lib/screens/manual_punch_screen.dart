@@ -82,36 +82,15 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                 children: [
                   const SizedBox(height: 20),
 
-                  // 1. Header
+                  // 1. Header (Large Title)
                   FadeSlideIn(
                     index: 0,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44, height: 44,
-                          decoration: BoxDecoration(
-                            gradient: kGreenGradient,
-                            borderRadius: kRadiusAvatar,
-                            boxShadow: kGreenGlow,
-                          ),
-                          child: const Icon(Icons.edit_note_rounded, color: kWhite, size: 24),
-                        ),
-                        const SizedBox(width: 12),
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Manual Entry',
-                                style: TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
-                            Text('Traditional DTR Log',
-                                style: TextStyle(fontSize: 12, color: kGrey)),
-                          ],
-                        ),
-                      ],
-                    ),
+                    child: const Text('Manual Entry',
+                        style: TextStyle(
+                            fontSize: 34, fontWeight: FontWeight.w800, color: kWhite)),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
 
                   // 2. Offline notice — context BEFORE user acts
                   FadeSlideIn(
@@ -121,16 +100,15 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                       decoration: BoxDecoration(
                         color: kGreen.withValues(alpha: 0.07),
                         borderRadius: kRadiusBtn,
-                        border: Border.all(color: kGreen.withValues(alpha: 0.2)),
                       ),
                       child: Row(
                         children: [
                           const Icon(Icons.wifi_off_rounded, size: 14, color: kGreen),
                           const SizedBox(width: 8),
-                          Expanded(
+                          const Expanded(
                             child: Text(
                               'Entries are saved offline and sync automatically.',
-                              style: const TextStyle(fontSize: 11, color: kGrey, height: 1.4),
+                              style: TextStyle(fontSize: 11, color: kGrey, height: 1.4),
                             ),
                           ),
                         ],
@@ -138,19 +116,17 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
-                  // 3. Live clock — the centrepiece of this screen
+                  // 3. Live clock — Flat Inset Grouped style
                   FadeSlideIn(
                     index: 2,
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
                       decoration: BoxDecoration(
-                        color: kSurface,
+                        color: kSurface2,
                         borderRadius: kRadiusCard,
-                        border: Border.all(color: kBorder),
-                        boxShadow: kCardShadow,
                       ),
                       child: Column(
                         children: [
@@ -182,11 +158,6 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                   ? kGreen.withValues(alpha: 0.15)
                                   : kGreyDark.withValues(alpha: 0.4),
                               borderRadius: kRadiusNav,
-                              border: Border.all(
-                                color: isPunchedIn
-                                    ? kGreen.withValues(alpha: 0.4)
-                                    : kBorder,
-                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -219,69 +190,70 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
 
-                  // 4. Today's summary — shows WHAT was logged BEFORE showing action buttons
-                  //    Only visible when there are logs — acts as a status line
+                  // 4. Today's summary — grouped flat
                   if (state.logs.isNotEmpty) ...[
                     FadeSlideIn(index: 3, child: _TodaySummary(state: state)),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                   ],
 
-                  // 5. Punch actions — the primary interactive zone
+                  // 5. Punch actions — Inset Grouped List
                   FadeSlideIn(
                     index: 4,
-                    child: const Text('Punch Attendance',
+                    child: const Text('ACTIONS',
                         style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                            fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
                   FadeSlideIn(
                     index: 5,
-                    child: _PunchCard(
-                      icon: Icons.login_rounded,
-                      label: 'Time In',
-                      sublabel: isPunchedIn
-                          ? 'Already logged in'
-                          : 'Record your arrival time',
-                      accentColor: kGreen,
-                      enabled: !isPunchedIn,
-                      onTap: () => _punch(context),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: kSurface2,
+                        borderRadius: kRadiusCard,
+                      ),
+                      child: Column(
+                        children: [
+                          _GroupedPunchAction(
+                            icon: Icons.login_rounded,
+                            label: 'Time In',
+                            sublabel: isPunchedIn
+                                ? 'Already logged in'
+                                : 'Record your arrival time',
+                            accentColor: kGreen,
+                            enabled: !isPunchedIn,
+                            onTap: () => _punch(context),
+                          ),
+                          const Divider(height: 1, indent: 56, endIndent: 0, color: kBorder),
+                          _GroupedPunchAction(
+                            icon: Icons.logout_rounded,
+                            label: 'Time Out',
+                            sublabel: !isPunchedIn
+                                ? 'No active session'
+                                : 'Record your departure time',
+                            accentColor: kAmber,
+                            enabled: isPunchedIn,
+                            onTap: () => _punch(context),
+                          ),
+                          const Divider(height: 1, indent: 56, endIndent: 0, color: kBorder),
+                          _GroupedPunchAction(
+                            icon: Icons.free_breakfast_rounded,
+                            label: 'Break',
+                            sublabel: !isPunchedIn
+                                ? 'Must be timed in first'
+                                : 'Log lunch or rest break',
+                            accentColor: kGreenLight,
+                            enabled: isPunchedIn,
+                            onTap: () => _punch(context),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 10),
 
-                  FadeSlideIn(
-                    index: 6,
-                    child: _PunchCard(
-                      icon: Icons.logout_rounded,
-                      label: 'Time Out',
-                      sublabel: !isPunchedIn
-                          ? 'No active session'
-                          : 'Record your departure time',
-                      accentColor: kAmber,
-                      enabled: isPunchedIn,
-                      onTap: () => _punch(context),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  FadeSlideIn(
-                    index: 7,
-                    child: _PunchCard(
-                      icon: Icons.free_breakfast_rounded,
-                      label: 'Break',
-                      sublabel: !isPunchedIn
-                          ? 'Must be timed in first'
-                          : 'Log lunch or rest break',
-                      accentColor: kGreenLight,
-                      enabled: isPunchedIn,
-                      onTap: () => _punch(context),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -311,7 +283,12 @@ class _TodaySummary extends StatelessWidget {
     final double todayHours =
         todayLogs.fold(0, (sum, l) => sum + l.calculatedHours);
 
-    return DarkCard(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: kSurface2,
+        borderRadius: kRadiusCard,
+      ),
       child: Row(
         children: [
           Container(
@@ -346,14 +323,14 @@ class _TodaySummary extends StatelessWidget {
   }
 }
 
-class _PunchCard extends StatelessWidget {
+class _GroupedPunchAction extends StatelessWidget {
   final IconData icon;
   final String label, sublabel;
   final Color accentColor;
   final bool enabled;
   final VoidCallback onTap;
 
-  const _PunchCard({
+  const _GroupedPunchAction({
     required this.icon,
     required this.label,
     required this.sublabel,
@@ -368,35 +345,20 @@ class _PunchCard extends StatelessWidget {
 
     return TapScale(
       onTap: enabled ? onTap : null,
-      child: AnimatedContainer(
-        duration: kDurNormal,
-        curve: kCurve,
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        decoration: BoxDecoration(
-          color: kSurface,
-          borderRadius: kRadiusCard,
-          border: Border.all(
-              color: enabled ? accentColor.withValues(alpha: 0.35) : kBorder),
-          boxShadow: enabled
-              ? [
-                  BoxShadow(
-                      color: accentColor.withValues(alpha: 0.12),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4)),
-                ]
-              : kCardShadow,
-        ),
+      child: Container(
+        color: Colors.transparent,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(11),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.12),
-                borderRadius: kRadiusAvatar,
+                borderRadius: kRadiusTag,
               ),
-              child: Icon(icon, color: color, size: 22),
+              child: Icon(icon, color: color, size: 20),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,29 +366,20 @@ class _PunchCard extends StatelessWidget {
                   Text(label,
                       style: TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w700,
                           color: enabled ? kWhite : kGrey)),
                   const SizedBox(height: 2),
                   Text(sublabel,
                       style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 12,
                           color: enabled ? kGrey : kGreyDark)),
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: kRadiusTag,
-              ),
-              child: Icon(
-                enabled
-                    ? Icons.arrow_forward_rounded
-                    : Icons.lock_outline_rounded,
-                size: 16,
-                color: color,
-              ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: kGreyDark,
+              size: 20,
             ),
           ],
         ),

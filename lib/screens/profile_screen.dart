@@ -14,8 +14,15 @@ bool get _isMobile {
   try { return Platform.isAndroid || Platform.isIOS; } catch (_) { return false; }
 }
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  int _selectedTab = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -28,149 +35,126 @@ class ProfileScreen extends StatelessWidget {
           backgroundColor: kBg,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 20),
-
-                  // 1. Top bar — title + single settings action
+                  // 1. Header Section
                   FadeSlideIn(
                     index: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        const Text('Profile',
-                            style: TextStyle(
-                                fontSize: 17,
+                        _AvatarPicker(profile: profile, state: state),
+                        const SizedBox(height: 16),
+                        Text(profile.fullName,
+                            style: const TextStyle(
+                                fontSize: 24,
                                 fontWeight: FontWeight.w800,
                                 color: kWhite)),
-                        TapScale(
-                          onTap: () => _showEditProfile(context, state),
-                          child: Container(
-                            width: 40, height: 40,
-                            decoration: BoxDecoration(
-                              color: kSurface,
-                              borderRadius: kRadiusAvatar,
-                              border: Border.all(color: kBorder),
+                        const SizedBox(height: 4),
+                        Text('${profile.course} • ${profile.batch}',
+                            style: const TextStyle(
+                                fontSize: 14, color: kGrey)),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // 2. Metrics / Action Row
+                  FadeSlideIn(
+                    index: 1,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _InlineStat(label: 'OJT Hours', value: state.totalHours.toStringAsFixed(1), color: kGreen),
+                            _InlineDivider(),
+                            _InlineStat(label: 'Required', value: '${profile.requiredHours.toInt()}', color: kAmber),
+                            _InlineDivider(),
+                            _InlineStat(label: 'Days', value: '${state.daysPresent}', color: kGreenLight),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: TapScale(
+                            onTap: () => _showEditProfile(context, state),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              decoration: BoxDecoration(
+                                color: kSurface2,
+                                borderRadius: kRadiusBtn,
+                                border: Border.all(color: kBorder),
+                              ),
+                              child: const Center(
+                                child: Text('Edit Profile',
+                                    style: TextStyle(
+                                        color: kWhite,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15)),
+                              ),
                             ),
-                            child: const Icon(Icons.edit_rounded,
-                                color: kGrey, size: 18),
                           ),
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 32),
 
-                  // 2. Identity card
-                  FadeSlideIn(
-                    index: 1,
-                    child: DarkCard(
-                      child: Column(
-                        children: [
-                          // Avatar row
-                          Row(
-                            children: [
-                              _AvatarPicker(profile: profile, state: state),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(profile.fullName,
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w800,
-                                            color: kWhite)),
-                                    const SizedBox(height: 3),
-                                    Text(profile.course,
-                                        style: const TextStyle(
-                                            fontSize: 12, color: kGrey)),
-                                    Text(profile.batch,
-                                        style: const TextStyle(
-                                            fontSize: 11, color: kGreyDark)),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 16),
-                          const Divider(height: 1, color: kBorder),
-                          const SizedBox(height: 16),
-
-                          // Stats inline under identity — same card, same context
-                          Row(
-                            children: [
-                              _InlineStat(
-                                  label: 'OJT Hours',
-                                  value: state.totalHours.toStringAsFixed(1),
-                                  color: kGreen),
-                              _InlineDivider(),
-                              _InlineStat(
-                                  label: 'Required',
-                                  value: '${profile.requiredHours.toInt()}',
-                                  color: kAmber),
-                              _InlineDivider(),
-                              _InlineStat(
-                                  label: 'Days',
-                                  value: '${state.daysPresent}',
-                                  color: kGreenLight),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // 3. Progress — natural next step after identity
+                  // 3. Tabbed Section (Segmented Control)
                   FadeSlideIn(
                     index: 2,
-                    child: DarkCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: kSurface2,
+                        borderRadius: kRadiusBtn,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: Row(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('OJT Completion',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: kWhite)),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 4),
+                          Expanded(
+                            child: TapScale(
+                              onTap: () => setState(() => _selectedTab = 0),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: kGreen.withValues(alpha: 0.12),
+                                  color: _selectedTab == 0 ? kSurface : Colors.transparent,
                                   borderRadius: kRadiusTag,
-                                  border: Border.all(
-                                      color: kGreen.withValues(alpha: 0.3)),
+                                  boxShadow: _selectedTab == 0 ? const [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
                                 ),
-                                child: Text(
-                                  '${pct.toStringAsFixed(1)}%',
-                                  style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                      color: kGreen),
+                                child: Center(
+                                  child: Text('Progress',
+                                      style: TextStyle(
+                                          color: _selectedTab == 0 ? kWhite : kGrey,
+                                          fontWeight: _selectedTab == 0 ? FontWeight.w700 : FontWeight.w600,
+                                          fontSize: 14)),
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                          const SizedBox(height: 12),
-                          AnimatedGradientBar(
-                            value: state.completionPercent.clamp(0.0, 1.0),
-                            height: 10,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${state.totalHours.toStringAsFixed(1)} of ${profile.requiredHours.toInt()} hours rendered',
-                            style:
-                                const TextStyle(fontSize: 11, color: kGrey),
+                          Expanded(
+                            child: TapScale(
+                              onTap: () => setState(() => _selectedTab = 1),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _selectedTab == 1 ? kSurface : Colors.transparent,
+                                  borderRadius: kRadiusTag,
+                                  boxShadow: _selectedTab == 1 ? const [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
+                                ),
+                                child: Center(
+                                  child: Text('Statistics',
+                                      style: TextStyle(
+                                          color: _selectedTab == 1 ? kWhite : kGrey,
+                                          fontWeight: _selectedTab == 1 ? FontWeight.w700 : FontWeight.w600,
+                                          fontSize: 14)),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -179,57 +163,168 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // 4. Actions menu
+                  // Tab Content
                   FadeSlideIn(
                     index: 3,
                     child: DarkCard(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          _MenuItem(
-                            icon: Icons.work_history_rounded,
-                            label: 'OJT Details',
-                            sub: '${profile.company} • ${profile.supervisor}',
-                            color: kGreen,
-                            onTap: () => _showOjtDetails(context, state),
+                      child: _selectedTab == 0
+                          ? _buildProgressTab(state, profile, pct)
+                          : _buildStatisticsTab(state, profile),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // 4. Settings & Preferences
+                  FadeSlideIn(
+                    index: 4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('ACCOUNT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        ),
+                        DarkCard(
+                          padding: EdgeInsets.zero,
+                          child: Column(
+                            children: [
+                              _MenuItem(
+                                icon: Icons.work_history_rounded,
+                                label: 'OJT Details',
+                                sub: '${profile.company} • ${profile.supervisor}',
+                                color: kGreen,
+                                onTap: () => _showOjtDetails(context, state),
+                              ),
+                            ],
                           ),
-                          const _CardDivider(),
-                          _MenuItem(
-                            icon: Icons.insert_chart_rounded,
-                            label: 'Statistics',
-                            sub:
-                                '${state.daysPresent} days • ${state.totalHours.toStringAsFixed(1)} hrs total',
-                            color: kGreenLight,
-                            onTap: () => _showStats(context, state),
+                        ),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('DATA & ACTIONS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        ),
+                        DarkCard(
+                          padding: EdgeInsets.zero,
+                          child: Column(
+                            children: [
+                              _MenuItem(
+                                icon: Icons.qr_code_rounded,
+                                label: 'My QR Token',
+                                sub: 'View to pair scanner',
+                                color: kAmber,
+                                onTap: () => _showQrToken(context, profile),
+                              ),
+                              const _CardDivider(),
+                              _MenuItem(
+                                icon: Icons.download_rounded,
+                                label: 'Export DTR',
+                                sub: 'Copy summary to clipboard',
+                                color: kGreenLight,
+                                onTap: () => _exportDtr(context, state),
+                              ),
+                            ],
                           ),
-                          const _CardDivider(),
-                          _MenuItem(
-                            icon: Icons.qr_code_rounded,
-                            label: 'My QR Token',
-                            sub: profile.qrCodeToken,
-                            color: kAmber,
-                            onTap: () => _showQrToken(context, profile),
-                          ),
-                          const _CardDivider(),
-                          _MenuItem(
-                            icon: Icons.download_rounded,
-                            label: 'Export DTR',
-                            sub: 'Copy summary to clipboard',
-                            color: kRed,
-                            onTap: () => _exportDtr(context, state),
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // 5. Footer Area
+                  FadeSlideIn(
+                    index: 5,
+                    child: TapScale(
+                      onTap: () {
+                        if (Platform.isAndroid || Platform.isIOS) {
+                          SystemNavigator.pop();
+                        }
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: kRed.withValues(alpha: 0.1),
+                          borderRadius: kRadiusBtn,
+                          border: Border.all(color: kRed.withValues(alpha: 0.3)),
+                        ),
+                        child: const Center(
+                          child: Text('Log Out',
+                              style: TextStyle(
+                                  color: kRed,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15)),
+                        ),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildProgressTab(AppState state, ProfileModel profile, double pct) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('OJT Completion',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: kWhite)),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: kGreen.withValues(alpha: 0.12),
+                borderRadius: kRadiusTag,
+                border: Border.all(
+                    color: kGreen.withValues(alpha: 0.3)),
+              ),
+              child: Text(
+                '${pct.toStringAsFixed(1)}%',
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: kGreen),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        AnimatedGradientBar(
+          value: state.completionPercent.clamp(0.0, 1.0),
+          height: 10,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${state.totalHours.toStringAsFixed(1)} of ${profile.requiredHours.toInt()} hours rendered',
+          style:
+              const TextStyle(fontSize: 11, color: kGrey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatisticsTab(AppState state, ProfileModel profile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StatRow('Remaining Hours', '${state.remainingHours.toStringAsFixed(2)} hrs'),
+        _StatRow('This Week Logs', '${state.weekLogs.length} sessions'),
+        _StatRow('Total Days Present', '${state.daysPresent} days'),
+        _StatRow('Total Hours Rendered', '${state.totalHours.toStringAsFixed(2)} hrs'),
+      ],
     );
   }
 
@@ -412,41 +507,6 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showStats(BuildContext context, AppState state) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: kSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Statistics',
-                style: TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
-            const SizedBox(height: 20),
-            _StatRow('Total Days Present', '${state.daysPresent} days'),
-            _StatRow('Total Hours Rendered',
-                '${state.totalHours.toStringAsFixed(2)} hrs'),
-            _StatRow('Required Hours',
-                '${state.profile.requiredHours.toInt()} hrs'),
-            _StatRow('Remaining Hours',
-                '${state.remainingHours.toStringAsFixed(2)} hrs'),
-            _StatRow('Completion',
-                '${(state.completionPercent * 100).toStringAsFixed(1)}%'),
-            _StatRow('This Week Logs', '${state.weekLogs.length} sessions'),
-            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -827,10 +887,10 @@ class _AvatarPicker extends StatelessWidget {
         children: [
           // Avatar
           Container(
-            width: 64, height: 64,
+            width: 80, height: 80,
             decoration: BoxDecoration(
               gradient: hasImage ? null : kGreenGradientDeep,
-              borderRadius: kRadiusCard,
+              borderRadius: BorderRadius.circular(40),
               boxShadow: kGreenGlow,
               image: hasImage
                   ? DecorationImage(
@@ -841,19 +901,19 @@ class _AvatarPicker extends StatelessWidget {
             ),
             child: hasImage
                 ? null
-                : const Icon(Icons.person_rounded, color: kWhite, size: 30),
+                : const Icon(Icons.person_rounded, color: kWhite, size: 36),
           ),
           // Camera badge
           Positioned(
             bottom: -4, right: -4,
             child: Container(
-              width: 22, height: 22,
+              width: 26, height: 26,
               decoration: BoxDecoration(
                 color: kGreen,
                 shape: BoxShape.circle,
                 border: Border.all(color: kSurface, width: 2),
               ),
-              child: const Icon(Icons.camera_alt_rounded, size: 11, color: kBg),
+              child: const Icon(Icons.camera_alt_rounded, size: 14, color: kBg),
             ),
           ),
         ],

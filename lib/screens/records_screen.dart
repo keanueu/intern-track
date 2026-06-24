@@ -32,35 +32,22 @@ class RecordsScreen extends StatelessWidget {
                       delegate: SliverChildListDelegate([
                         const SizedBox(height: 20),
 
-                        // Header
+                        // Header (Large Title)
                         FadeSlideIn(
                           index: 0,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 44, height: 44,
-                                decoration: BoxDecoration(
-                                  gradient: kGreenGradient,
-                                  borderRadius: kRadiusAvatar,
-                                  boxShadow: kGreenGlow,
-                                ),
-                                child: const Icon(Icons.bar_chart_rounded, color: kWhite, size: 24),
-                              ),
-                              const SizedBox(width: 12),
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('DTR Records',
-                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
-                                  Text('Your attendance history',
-                                      style: TextStyle(fontSize: 12, color: kGrey)),
-                                ],
-                              ),
-                            ],
-                          ),
+                          child: const Text('Records',
+                              style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: kWhite)),
+                        ),
+                        
+                        const SizedBox(height: 8),
+                        
+                        FadeSlideIn(
+                          index: 0,
+                          child: const Text('Your attendance history',
+                              style: TextStyle(fontSize: 14, color: kGrey)),
                         ),
 
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 24),
 
                         // Summary chips
                         FadeSlideIn(
@@ -76,23 +63,9 @@ class RecordsScreen extends StatelessWidget {
                           ),
                         ),
 
-                        const SizedBox(height: 26),
+                        const SizedBox(height: 32),
 
-                        FadeSlideIn(
-                          index: 2,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('All Records',
-                                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
-                              Text('${logs.length} entries',
-                                  style: const TextStyle(fontSize: 12, color: kGrey)),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        if (logs.isEmpty) FadeSlideIn(index: 3, child: const _EmptyState()),
+                        if (logs.isEmpty) FadeSlideIn(index: 2, child: const _EmptyState()),
                       ]),
                     ),
                   ),
@@ -104,15 +77,18 @@ class RecordsScreen extends StatelessWidget {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, i) {
-                            if (i == logs.length) return const SizedBox(height: 24);
+                            if (i == logs.length) return const SizedBox(height: 32);
+                            
+                            final isFirst = i == 0;
+                            final isLast = i == logs.length - 1;
+                            
                             return FadeSlideIn(
                               index: i + 3,
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: _SwipeableRecord(
-                                  log: logs[i],
-                                  onDelete: () => _confirmDelete(context, state, logs[i].id),
-                                ),
+                              child: _SwipeableRecord(
+                                log: logs[i],
+                                isFirst: isFirst,
+                                isLast: isLast,
+                                onDelete: () => _confirmDelete(context, state, logs[i].id),
                               ),
                             );
                           },
@@ -193,8 +169,16 @@ class _EmptyState extends StatelessWidget {
 
 class _SwipeableRecord extends StatelessWidget {
   final DtrLog log;
+  final bool isFirst;
+  final bool isLast;
   final VoidCallback onDelete;
-  const _SwipeableRecord({required this.log, required this.onDelete});
+  
+  const _SwipeableRecord({
+    required this.log, 
+    required this.isFirst,
+    required this.isLast,
+    required this.onDelete
+  });
 
   String _fmt(DateTime? dt) {
     if (dt == null) return '--:--';
@@ -213,6 +197,11 @@ class _SwipeableRecord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.vertical(
+      top: isFirst ? const Radius.circular(16) : Radius.zero,
+      bottom: isLast ? const Radius.circular(16) : Radius.zero,
+    );
+
     return Dismissible(
       key: Key(log.id),
       direction: DismissDirection.endToStart,
@@ -220,85 +209,87 @@ class _SwipeableRecord extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color: kRed.withValues(alpha: 0.15),
-          borderRadius: kRadiusCard,
-          border: Border.all(color: kRed.withValues(alpha: 0.4)),
+          color: kRed.withValues(alpha: 0.9),
+          borderRadius: borderRadius,
         ),
-        child: const Icon(Icons.delete_rounded, color: kRed),
+        child: const Icon(Icons.delete_rounded, color: kWhite),
       ),
       confirmDismiss: (_) async {
         onDelete();
         return false;
       },
-      child: DarkCard(
-        child: Row(
+      child: Container(
+        decoration: BoxDecoration(
+          color: kSurface2,
+          borderRadius: borderRadius,
+        ),
+        child: Column(
           children: [
-            // Date box
-            Container(
-              width: 44, height: 44,
-              decoration: BoxDecoration(
-                color: kGreen.withValues(alpha: 0.1),
-                borderRadius: kRadiusAvatar,
-                border: Border.all(color: kGreen.withValues(alpha: 0.25)),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            if (!isFirst) const Divider(height: 1, indent: 76, endIndent: 0, color: kBorder),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
                 children: [
-                  Text(_dayLabel,
-                      style: const TextStyle(fontSize: 10, color: kGrey, fontWeight: FontWeight.w600)),
-                  Text('${log.timeIn.day}',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: kWhite)),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('${_fmt(log.timeIn)} → ${_fmt(log.timeOut)}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: kWhite)),
-                  const SizedBox(height: 3),
-                  Text(
-                    log.timeOut != null
-                        ? '${log.calculatedHours.toStringAsFixed(2)} hrs'
-                        : 'Session in progress',
-                    style: const TextStyle(fontSize: 11, color: kGrey),
+                  // Date box
+                  Container(
+                    width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      color: kGreen.withValues(alpha: 0.1),
+                      borderRadius: kRadiusAvatar,
+                      border: Border.all(color: kGreen.withValues(alpha: 0.25)),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(_dayLabel,
+                            style: const TextStyle(fontSize: 10, color: kGrey, fontWeight: FontWeight.w600)),
+                        Text('${log.timeIn.day}',
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: kWhite)),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: _isComplete
-                        ? kGreen.withValues(alpha: 0.12)
-                        : kAmber.withValues(alpha: 0.12),
-                    borderRadius: kRadiusTag,
-                    border: Border.all(
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${_fmt(log.timeIn)} → ${_fmt(log.timeOut)}',
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: kWhite)),
+                        const SizedBox(height: 4),
+                        Text(
+                          log.timeOut != null
+                              ? '${log.calculatedHours.toStringAsFixed(2)} hrs • $_dayLabel, ${log.timeIn.month}/${log.timeIn.day}'
+                              : 'Session in progress',
+                          style: const TextStyle(fontSize: 13, color: kGrey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Trailing status
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
                       color: _isComplete
-                          ? kGreen.withValues(alpha: 0.3)
-                          : kAmber.withValues(alpha: 0.3),
+                          ? kGreen.withValues(alpha: 0.12)
+                          : kAmber.withValues(alpha: 0.12),
+                      borderRadius: kRadiusTag,
+                      border: Border.all(
+                        color: _isComplete
+                            ? kGreen.withValues(alpha: 0.3)
+                            : kAmber.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Text(
+                      _isComplete ? 'Complete' : 'Active',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: _isComplete ? kGreen : kAmber,
+                      ),
                     ),
                   ),
-                  child: Text(
-                    _isComplete ? 'Complete' : 'Active',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: _isComplete ? kGreen : kAmber,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${log.timeIn.month}/${log.timeIn.day}/${log.timeIn.year}',
-                  style: const TextStyle(fontSize: 9, color: kGreyDark),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -319,20 +310,20 @@ class _SummaryChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
-          color: kSurface,
+          color: kSurface2,
           borderRadius: kRadiusCard,
           border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 16),
-            const SizedBox(height: 6),
+            Icon(icon, color: color, size: 18),
+            const SizedBox(height: 8),
             Text(value,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: color)),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: color)),
             const SizedBox(height: 2),
             Text(label,
-                style: const TextStyle(fontSize: 9, color: kGrey, fontWeight: FontWeight.w500)),
+                style: const TextStyle(fontSize: 11, color: kGrey, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
