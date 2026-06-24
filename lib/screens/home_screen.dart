@@ -100,6 +100,8 @@ class _TopBar extends StatelessWidget {
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     final n = DateTime.now();
 
+    final initial = firstName.isNotEmpty ? firstName[0].toUpperCase() : '?';
+
     return Row(
       children: [
         Container(
@@ -109,7 +111,15 @@ class _TopBar extends StatelessWidget {
             borderRadius: kRadiusAvatar,
             boxShadow: kGreenGlow,
           ),
-          child: const Icon(Icons.person_rounded, color: kWhite, size: 22),
+          alignment: Alignment.center,
+          child: Text(
+            initial,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: kWhite,
+            ),
+          ),
         ),
         const SizedBox(width: 12),
         Column(
@@ -127,7 +137,7 @@ class _TopBar extends StatelessWidget {
             width: 40, height: 40,
             decoration: BoxDecoration(
                 color: kSurface, borderRadius: kRadiusAvatar, border: Border.all(color: kBorder)),
-            child: const Icon(Icons.notifications_none_rounded, color: kGrey, size: 20),
+            child: const Icon(Icons.notifications_none_rounded, color: kWhite, size: 20),
           ),
         ),
       ],

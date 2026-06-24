@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
@@ -69,13 +70,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   alignment: Alignment.topCenter,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                    child: Container(
+                    child: _FrostedGlassPill(
+                      borderRadius: 22,
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(22),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-                      ),
                       child: Row(
                         children: [
                           Container(
@@ -151,13 +148,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                    child: Container(
+                    child: _FrostedGlassPill(
+                      borderRadius: 24,
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
-                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -212,5 +205,36 @@ class _ScannerScreenState extends State<ScannerScreen> {
       corner(Alignment.bottomLeft, const BorderRadius.only(bottomLeft: Radius.circular(r))),
       corner(Alignment.bottomRight, const BorderRadius.only(bottomRight: Radius.circular(r))),
     ];
+  }
+}
+
+class _FrostedGlassPill extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final double borderRadius;
+
+  const _FrostedGlassPill({
+    required this.child,
+    this.padding = const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+    this.borderRadius = 22,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+        child: Container(
+          padding: padding,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+          ),
+          child: child,
+        ),
+      ),
+    );
   }
 }
