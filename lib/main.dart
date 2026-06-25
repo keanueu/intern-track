@@ -9,6 +9,8 @@ import 'screens/records_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'services/app_state.dart';
+import 'services/admin_state.dart';
+import 'screens/role_screen.dart';
 import 'theme/app_theme.dart';
 
 
@@ -19,8 +21,11 @@ void main() {
     statusBarIconBrightness: Brightness.dark,
   ));
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppState()..load(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState()..load()),
+        ChangeNotifierProvider(create: (_) => AdminState()),
+      ],
       child: DevicePreview(
         enabled: !kReleaseMode,
         builder: (context) => const MyApp(),
@@ -39,7 +44,7 @@ class MyApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
-      home: const MainContainer(),
+      home: const RoleScreen(),
     );
   }
 }

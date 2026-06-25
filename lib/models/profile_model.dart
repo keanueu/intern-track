@@ -9,6 +9,9 @@ class ProfileModel {
   final double requiredHours;
   final String startDate;
   final String? avatarPath;
+  final String role;       // 'intern' or 'admin'
+  final String email;
+  final String department;
 
   ProfileModel({
     required this.id,
@@ -21,7 +24,13 @@ class ProfileModel {
     required this.requiredHours,
     required this.startDate,
     this.avatarPath,
+    this.role = 'intern',
+    this.email = '',
+    this.department = '',
   });
+
+  bool get isAdmin => role == 'admin';
+  bool get isIntern => role == 'intern';
 
   factory ProfileModel.empty() => ProfileModel(
         id: 'default_user',
@@ -35,6 +44,19 @@ class ProfileModel {
         startDate: DateTime.now().toIso8601String(),
       );
 
+  factory ProfileModel.admin() => ProfileModel(
+        id: 'admin_user',
+        fullName: 'Admin',
+        course: '',
+        batch: '',
+        company: 'Not set',
+        supervisor: '',
+        qrCodeToken: '',
+        requiredHours: 0,
+        startDate: DateTime.now().toIso8601String(),
+        role: 'admin',
+      );
+
   Map<String, dynamic> toMap() => {
         'id': id,
         'full_name': fullName,
@@ -45,6 +67,9 @@ class ProfileModel {
         'required_hours': requiredHours,
         'start_date': startDate,
         'avatar_path': avatarPath,
+        'account_role': role,
+        'email': email,
+        'department': department,
       };
 
   factory ProfileModel.fromMap(Map<String, dynamic> m) {
@@ -61,6 +86,9 @@ class ProfileModel {
       requiredHours: (m['required_hours'] as num?)?.toDouble() ?? 486,
       startDate: m['start_date'] ?? DateTime.now().toIso8601String(),
       avatarPath: m['avatar_path'] as String?,
+      role: m['account_role'] ?? 'intern',
+      email: m['email'] ?? '',
+      department: m['department'] ?? '',
     );
   }
 
@@ -73,6 +101,9 @@ class ProfileModel {
     double? requiredHours,
     String? avatarPath,
     bool clearAvatar = false,
+    String? role,
+    String? email,
+    String? department,
   }) =>
       ProfileModel(
         id: id,
@@ -85,5 +116,8 @@ class ProfileModel {
         requiredHours: requiredHours ?? this.requiredHours,
         startDate: startDate,
         avatarPath: clearAvatar ? null : (avatarPath ?? this.avatarPath),
+        role: role ?? this.role,
+        email: email ?? this.email,
+        department: department ?? this.department,
       );
 }

@@ -33,6 +33,7 @@ class AppState extends ChangeNotifier {
   double get requiredHours => _profile.requiredHours;
   double get remainingHours => (_profile.requiredHours - _totalHours).clamp(0, _profile.requiredHours);
   double get completionPercent => _totalHours / _profile.requiredHours;
+  String get currentRole => _profile.role;
 
   Future<void> load() async {
     if (!_dbSupported) return;

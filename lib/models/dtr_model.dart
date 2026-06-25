@@ -5,6 +5,7 @@ class DtrLog {
   final DateTime? timeOut;
   final double calculatedHours;
   final String syncStatus; // 'pending' or 'synced'
+  final String? internName; // transient — populated for admin views, not stored
 
   DtrLog({
     required this.id,
@@ -13,6 +14,7 @@ class DtrLog {
     this.timeOut,
     this.calculatedHours = 0.0,
     this.syncStatus = 'pending',
+    this.internName,
   });
 
   // Convert a DtrLog object into a Map for SQLite insertion
@@ -34,8 +36,19 @@ class DtrLog {
       userId: map['user_id'],
       timeIn: DateTime.parse(map['time_in']),
       timeOut: map['time_out'] != null ? DateTime.parse(map['time_out']) : null,
-      calculatedHours: map['calculated_hours'],
-      syncStatus: map['sync_status'],
+      calculatedHours: (map['calculated_hours'] as num?)?.toDouble() ?? 0.0,
+      syncStatus: map['sync_status'] ?? 'pending',
+      internName: map['intern_name'] as String?,
     );
+  }
+
+  /// Whether this log looks anomalous (orphaned session > 12h or impossibly long)
+  bool get isAnomaly {
+    if (timeOut == null) {
+      // Open session older than 12 hours
+      return DateTime.now().difference(timeIn).inHours >= 12;
+    }
+    // Completed session longer than 12 hours
+    return calculatedHours > 12.0;
   }
 }
