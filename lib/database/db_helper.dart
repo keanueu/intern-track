@@ -19,7 +19,7 @@ class DBHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 3, onCreate: _createDB, onUpgrade: _upgradeDB);
+    return await openDatabase(path, version: 4, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -36,6 +36,7 @@ class DBHelper {
         avatar_path TEXT,
         account_role TEXT DEFAULT 'intern',
         email TEXT DEFAULT '',
+        password TEXT DEFAULT '123456',
         department TEXT DEFAULT ''
       )
     ''');
@@ -73,6 +74,28 @@ class DBHelper {
       await db.execute("ALTER TABLE profiles ADD COLUMN email TEXT DEFAULT ''");
       await db.execute("ALTER TABLE profiles ADD COLUMN department TEXT DEFAULT ''");
     }
+    if (oldVersion < 4) {
+      await db.execute("ALTER TABLE profiles ADD COLUMN password TEXT DEFAULT '123456'");
+      // Add default admin if not exists
+      final admins = await db.query('profiles', where: 'account_role = ?', whereArgs: ['admin']);
+      if (admins.isEmpty) {
+        await db.insert('profiles', ProfileModel.admin().toMap());
+      }
+    }
+  }
+
+  // ── Authentication ────────────────────────────────────────────────────────
+  
+  Future<ProfileModel?> authenticate(String email, String password) async {
+    final db = await database;
+    final rows = await db.query(
+      'profiles',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return ProfileModel.fromMap(rows.first);
   }
 
   // ── Profile (Intern self-service) ─────────────────────────────────────────
@@ -351,6 +374,12 @@ class DBHelper {
   /// Admin: close an orphaned session with a specified time-out
   Future<void> closeOrphanedLog(String logId, DateTime timeOut) async {
     await updateLog(logId, timeOut: timeOut);
+  }
+
+  /// Admin: Update sync_status (e.g. approve/reject manual logs)
+  Future<void> updateLogStatus(String logId, String status) async {
+    final db = await database;
+    await db.update('dtr_logs', {'sync_status': status}, where: 'id = ?', whereArgs: [logId]);
   }
 
   /// Get interns currently clocked in right now

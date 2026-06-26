@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/admin_state.dart';
-import '../role_screen.dart';
+import '../../services/app_state.dart';
 import 'admin_directory_screen.dart';
 import 'admin_overview_screen.dart';
 import 'admin_timesheet_screen.dart';
 import 'admin_reports_screen.dart';
+import 'admin_approvals_screen.dart';
+import '../login_screen.dart';
 
 class AdminShell extends StatefulWidget {
-  const AdminShell({Key? key}) : super(key: key);
+  const AdminShell({super.key});
 
   @override
   State<AdminShell> createState() => _AdminShellState();
 }
 
 class _AdminShellState extends State<AdminShell> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const AdminDirectoryScreen(),
-    const AdminOverviewScreen(),
-    const AdminTimesheetScreen(),
-    const AdminReportsScreen(),
+    const AdminOverviewScreen(),       // Live Master Overview
+    const AdminApprovalsScreen(),      // Approvals Queue
+    const AdminTimesheetScreen(),      // Master Ledger
+    const AdminDirectoryScreen(),      // Onboarding & Kiosk
+    const AdminReportsScreen(),        // Reports / Export
   ];
 
   @override
@@ -33,9 +36,10 @@ class _AdminShellState extends State<AdminShell> {
   }
 
   void _logout() {
+    context.read<AppState>().logout();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const RoleScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
     );
   }
 
@@ -67,7 +71,7 @@ class _AdminShellState extends State<AdminShell> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -76,10 +80,11 @@ class _AdminShellState extends State<AdminShell> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, Icons.people_rounded, 'Directory'),
-              _buildNavItem(1, Icons.dashboard_rounded, 'Overview'),
-              _buildNavItem(2, Icons.table_chart_rounded, 'Timesheet'),
-              _buildNavItem(3, Icons.picture_as_pdf_rounded, 'Reports'),
+              _buildNavItem(0, Icons.dashboard_rounded, 'Overview'),
+              _buildNavItem(1, Icons.fact_check_rounded, 'Approvals'),
+              _buildNavItem(2, Icons.table_chart_rounded, 'Ledger'),
+              _buildNavItem(3, Icons.people_rounded, 'Onboarding'),
+              _buildNavItem(4, Icons.picture_as_pdf_rounded, 'Reports'),
             ],
           ),
         ),
@@ -98,7 +103,7 @@ class _AdminShellState extends State<AdminShell> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF32D74B).withOpacity(0.1) : Colors.transparent,
+          color: isSelected ? const Color(0xFF32D74B).withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(

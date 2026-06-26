@@ -5,7 +5,7 @@ import '../../services/admin_state.dart';
 import '../../models/dtr_model.dart';
 
 class AdminTimesheetScreen extends StatefulWidget {
-  const AdminTimesheetScreen({Key? key}) : super(key: key);
+  const AdminTimesheetScreen({super.key});
 
   @override
   State<AdminTimesheetScreen> createState() => _AdminTimesheetScreenState();
@@ -93,21 +93,21 @@ class _AdminTimesheetScreenState extends State<AdminTimesheetScreen> {
                         FilterChip(
                           label: const Text('All Interns', style: TextStyle(color: Colors.white)),
                           backgroundColor: const Color(0xFF2C2C2E),
-                          selectedColor: const Color(0xFF32D74B).withOpacity(0.2),
+                          selectedColor: const Color(0xFF32D74B).withValues(alpha: 0.2),
                           onSelected: (_) {},
                         ),
                         const SizedBox(width: 8),
                         FilterChip(
                           label: const Text('Any Date', style: TextStyle(color: Colors.white)),
                           backgroundColor: const Color(0xFF2C2C2E),
-                          selectedColor: const Color(0xFF32D74B).withOpacity(0.2),
+                          selectedColor: const Color(0xFF32D74B).withValues(alpha: 0.2),
                           onSelected: (_) {},
                         ),
                         const SizedBox(width: 8),
                         FilterChip(
                           label: const Text('Anomalies Only', style: TextStyle(color: Colors.amber)),
                           backgroundColor: const Color(0xFF2C2C2E),
-                          selectedColor: Colors.amber.withOpacity(0.2),
+                          selectedColor: Colors.amber.withValues(alpha: 0.2),
                           selected: _anomaliesOnly,
                           checkmarkColor: Colors.amber,
                           onSelected: (val) => setState(() => _anomaliesOnly = val),
@@ -123,9 +123,9 @@ class _AdminTimesheetScreenState extends State<AdminTimesheetScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.1),
+                  color: Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.amber.withOpacity(0.5)),
+                  border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   children: [

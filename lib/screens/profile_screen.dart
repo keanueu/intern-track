@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../services/app_state.dart';
 import '../models/profile_model.dart';
 import '../theme/app_theme.dart';
+import 'login_screen.dart';
 
 // image_picker + dart:io File only work on Android/iOS
 bool get _isMobile {
@@ -237,9 +238,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     index: 5,
                     child: TapScale(
                       onTap: () {
-                        if (Platform.isAndroid || Platform.isIOS) {
-                          SystemNavigator.pop();
-                        }
+                        state.logout();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          (route) => false,
+                        );
                       },
                       child: Container(
                         width: double.infinity,

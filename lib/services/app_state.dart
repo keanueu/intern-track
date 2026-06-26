@@ -34,6 +34,31 @@ class AppState extends ChangeNotifier {
   double get remainingHours => (_profile.requiredHours - _totalHours).clamp(0, _profile.requiredHours);
   double get completionPercent => _totalHours / _profile.requiredHours;
   String get currentRole => _profile.role;
+  bool get isLoggedIn => _profile.id != 'default_user' && _profile.id.isNotEmpty;
+
+  Future<void> login(String email, String password) async {
+    if (!_dbSupported) return;
+    _loading = true;
+    notifyListeners();
+
+    final user = await DBHelper.instance.authenticate(email, password);
+    if (user != null) {
+      _profile = user;
+      await _refresh();
+    }
+
+    _loading = false;
+    notifyListeners();
+  }
+
+  void logout() {
+    _profile = ProfileModel.empty();
+    _logs = [];
+    _totalHours = 0;
+    _daysPresent = 0;
+    _openLog = null;
+    notifyListeners();
+  }
 
   Future<void> load() async {
     if (!_dbSupported) return;
@@ -42,8 +67,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _profile = await DBHelper.instance.getProfile();
-      await _refresh();
+      // Keep load() non-destructive. If we are already logged in, just refresh.
+      if (isLoggedIn) {
+        await _refresh();
+      } else {
+        // Fallback for development if no user is logged in
+        _profile = await DBHelper.instance.getProfile();
+        await _refresh();
+      }
     } catch (_) {}
 
     _loading = false;

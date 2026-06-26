@@ -11,6 +11,7 @@ class ProfileModel {
   final String? avatarPath;
   final String role;       // 'intern' or 'admin'
   final String email;
+  final String password;
   final String department;
 
   ProfileModel({
@@ -26,6 +27,7 @@ class ProfileModel {
     this.avatarPath,
     this.role = 'intern',
     this.email = '',
+    this.password = '123456',
     this.department = '',
   });
 
@@ -42,6 +44,8 @@ class ProfileModel {
         qrCodeToken: 'intern_token_abc',
         requiredHours: 486,
         startDate: DateTime.now().toIso8601String(),
+        email: 'intern@example.com',
+        password: 'internpassword',
       );
 
   factory ProfileModel.admin() => ProfileModel(
@@ -55,6 +59,8 @@ class ProfileModel {
         requiredHours: 0,
         startDate: DateTime.now().toIso8601String(),
         role: 'admin',
+        email: 'admin@example.com',
+        password: 'adminpassword',
       );
 
   Map<String, dynamic> toMap() => {
@@ -69,6 +75,7 @@ class ProfileModel {
         'avatar_path': avatarPath,
         'account_role': role,
         'email': email,
+        'password': password,
         'department': department,
       };
 
@@ -88,6 +95,7 @@ class ProfileModel {
       avatarPath: m['avatar_path'] as String?,
       role: m['account_role'] ?? 'intern',
       email: m['email'] ?? '',
+      password: m['password'] ?? '123456',
       department: m['department'] ?? '',
     );
   }
@@ -103,6 +111,7 @@ class ProfileModel {
     bool clearAvatar = false,
     String? role,
     String? email,
+    String? password,
     String? department,
   }) =>
       ProfileModel(
@@ -118,6 +127,7 @@ class ProfileModel {
         avatarPath: clearAvatar ? null : (avatarPath ?? this.avatarPath),
         role: role ?? this.role,
         email: email ?? this.email,
+        password: password ?? this.password,
         department: department ?? this.department,
       );
 }

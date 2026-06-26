@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../services/admin_state.dart';
-import '../../theme/app_theme.dart';
-import '../../models/profile_model.dart';
 
 class AdminOverviewScreen extends StatefulWidget {
-  const AdminOverviewScreen({Key? key}) : super(key: key);
+  const AdminOverviewScreen({super.key});
 
   @override
   State<AdminOverviewScreen> createState() => _AdminOverviewScreenState();
@@ -64,7 +62,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
           DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
         ),
       ],
@@ -245,7 +243,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF2C2C2E),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +263,7 @@ class _StatCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
             ),
           ),
         ],

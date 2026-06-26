@@ -19,6 +19,7 @@ class AdminState extends ChangeNotifier {
   List<ProfileModel> get interns => _interns;
   List<DtrLog> get allLogs => _allLogs;
   List<DtrLog> get anomalies => _anomalies;
+  List<DtrLog> get pendingLogs => _allLogs.where((l) => l.syncStatus == 'pending').toList();
   TeamStats get stats => _stats;
   bool get loading => _loading;
 
@@ -81,6 +82,11 @@ class AdminState extends ChangeNotifier {
 
   Future<void> closeOrphanedLog(String logId, DateTime timeOut) async {
     await DBHelper.instance.closeOrphanedLog(logId, timeOut);
+    await load();
+  }
+
+  Future<void> updateLogStatus(String logId, String status) async {
+    await DBHelper.instance.updateLogStatus(logId, status);
     await load();
   }
 }

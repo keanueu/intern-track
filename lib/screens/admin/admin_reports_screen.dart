@@ -9,7 +9,7 @@ import '../../models/profile_model.dart';
 import '../../models/dtr_model.dart';
 
 class AdminReportsScreen extends StatefulWidget {
-  const AdminReportsScreen({Key? key}) : super(key: key);
+  const AdminReportsScreen({super.key});
 
   @override
   State<AdminReportsScreen> createState() => _AdminReportsScreenState();
@@ -221,7 +221,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                             const SizedBox(height: 8),
                             Text(
                               'Company: ${_selectedIntern!.company}',
-                              style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                             ),
                             const SizedBox(height: 24),
                             SizedBox(
