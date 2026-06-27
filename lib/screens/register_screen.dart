@@ -35,6 +35,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    if (!emailRegex.hasMatch(email)) {
+      setState(() => _errorMessage = 'Please enter a valid email address.');
+      return;
+    }
+
+    final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$');
+    if (!passwordRegex.hasMatch(password)) {
+      setState(() => _errorMessage = 'Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;

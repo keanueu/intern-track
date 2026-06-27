@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../database/db_helper.dart';
 import '../models/profile_model.dart';
 import '../models/dtr_model.dart';
@@ -12,12 +14,34 @@ class AppState extends ChangeNotifier {
   int _daysPresent = 0;
   DtrLog? _openLog;
   bool _loading = false;
+  
+  // In-memory fallback for unsupported platforms (e.g., Web)
+  static final List<ProfileModel> _mockProfiles = [
+    ProfileModel.empty(),
+    ProfileModel.admin(),
+  ];
+
+  Future<void> _loadMockProfiles() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString('mock_profiles');
+    if (data != null) {
+      final List<dynamic> decoded = jsonDecode(data);
+      _mockProfiles.clear();
+      _mockProfiles.addAll(decoded.map((m) => ProfileModel.fromMap(m)));
+    }
+  }
+
+  Future<void> _saveMockProfiles() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = jsonEncode(_mockProfiles.map((p) => p.toMap()).toList());
+    await prefs.setString('mock_profiles', data);
+  }
 
   // sqflite only works on Android/iOS
   static bool get _dbSupported {
     if (kIsWeb) return false;
     try {
-      return Platform.isAndroid || Platform.isIOS;
+      return Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isLinux || Platform.isMacOS;
     } catch (_) {
       return false;
     }
@@ -37,14 +61,22 @@ class AppState extends ChangeNotifier {
   bool get isLoggedIn => _profile.id != 'default_user' && _profile.id.isNotEmpty;
 
   Future<void> login(String email, String password) async {
-    if (!_dbSupported) return;
     _loading = true;
     notifyListeners();
 
-    final user = await DBHelper.instance.authenticate(email, password);
-    if (user != null) {
-      _profile = user;
-      await _refresh();
+    if (!_dbSupported) {
+      await _loadMockProfiles();
+      try {
+        _profile = _mockProfiles.firstWhere((p) => p.email == email && p.password == password);
+      } catch (_) {
+        // Not found
+      }
+    } else {
+      final user = await DBHelper.instance.authenticate(email, password);
+      if (user != null) {
+        _profile = user;
+        await _refresh();
+      }
     }
 
     _loading = false;
@@ -52,7 +84,6 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> register(String fullName, String email, String password) async {
-    if (!_dbSupported) return;
     _loading = true;
     notifyListeners();
 
@@ -72,9 +103,16 @@ class AppState extends ChangeNotifier {
       department: '',
     );
 
-    await DBHelper.instance.registerIntern(newProfile);
-    _profile = newProfile;
-    await _refresh();
+    if (!_dbSupported) {
+      await _loadMockProfiles();
+      _mockProfiles.add(newProfile);
+      await _saveMockProfiles();
+      _profile = newProfile;
+    } else {
+      await DBHelper.instance.registerIntern(newProfile);
+      _profile = newProfile;
+      await _refresh();
+    }
 
     _loading = false;
     notifyListeners();
