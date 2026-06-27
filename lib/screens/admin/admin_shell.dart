@@ -123,38 +123,41 @@ class _AdminNavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool selected = current == index;
 
-    return TapScale(
-      onTap: () => onTap(index),
-      child: AnimatedContainer(
-        duration: kDurNormal,
-        curve: kCurve,
-        width: 64,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-        decoration: BoxDecoration(
-          color: selected ? kSurface2 : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              selected ? icon : outlinedIcon,
-              color: selected ? kGreen : kGrey,
-              size: 22,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: selected ? kWhite : kGrey,
-                fontSize: 9,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+    return Expanded(
+      child: TapScale(
+        onTap: () => onTap(index),
+        child: AnimatedContainer(
+          duration: kDurNormal,
+          curve: kCurve,
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+          decoration: BoxDecoration(
+            color: selected ? kSurface2 : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                selected ? icon : outlinedIcon,
+                color: selected ? kGreen : kGrey,
+                size: 22,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+              const SizedBox(height: 2),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 9,
+                    color: selected ? kWhite : kGrey,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

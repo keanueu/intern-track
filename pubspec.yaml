@@ -72,6 +72,7 @@ flutter:
     - family: Exter
       fonts:
         - asset: fonts/Exter-Regular.ttf
+
           weight: 400
         - asset: fonts/Exter-SemiBold.ttf
           weight: 600

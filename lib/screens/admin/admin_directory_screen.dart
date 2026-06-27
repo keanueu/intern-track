@@ -123,12 +123,14 @@ class AdminDirectoryScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Onboarding & Kiosk',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: kWhite,
+                    const Expanded(
+                      child: Text(
+                        'Onboarding & Kiosk',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: kWhite,
+                        ),
                       ),
                     ),
                     TextButton.icon(

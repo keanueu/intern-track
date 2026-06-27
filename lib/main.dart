@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io' show Platform;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kReleaseMode, kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/manual_punch_screen.dart';
@@ -19,7 +18,7 @@ import 'theme/app_theme.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+  if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux || defaultTargetPlatform == TargetPlatform.macOS)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
@@ -190,30 +189,38 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool selected = current == index;
 
-    return TapScale(
-      onTap: () => onTap(index),
-      child: AnimatedContainer(
-        duration: kDurNormal,
-        curve: kCurve,
-        width: 64,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-        decoration: BoxDecoration(
-          color: selected ? kGreen.withValues(alpha: 0.12) : Colors.transparent,
-          borderRadius: kRadiusBtn,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(selected ? icon : outlinedIcon,
-                color: selected ? kGreen : kGrey, size: 22),
-            const SizedBox(height: 3),
-            Text(label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                  color: selected ? kGreen : kGrey,
-                )),
-          ],
+    return Expanded(
+      child: TapScale(
+        onTap: () => onTap(index),
+        child: AnimatedContainer(
+          duration: kDurNormal,
+          curve: kCurve,
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+          decoration: BoxDecoration(
+            color: selected ? kGreen.withValues(alpha: 0.12) : Colors.transparent,
+            borderRadius: kRadiusBtn,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(selected ? icon : outlinedIcon,
+                  color: selected ? kGreen : kGrey, size: 22),
+              const SizedBox(height: 2),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                    color: selected ? kGreen : kGrey,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
