@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
-import '../services/admin_state.dart';
-import 'admin/admin_shell.dart';
 import '../main.dart'; // For MainContainer
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -20,17 +19,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() => _errorMessage = 'Please enter both email and password.');
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      setState(() => _errorMessage = 'Please fill in all fields.');
       return;
     }
 
@@ -40,30 +41,21 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     final appState = Provider.of<AppState>(context, listen: false);
-    await appState.login(email, password);
+    await appState.register(name, email, password);
 
     if (!mounted) return;
 
     setState(() => _isLoading = false);
 
     if (appState.isLoggedIn) {
-      if (appState.currentRole == 'admin') {
-        // Init admin state and navigate to Admin Shell
-        final adminState = Provider.of<AdminState>(context, listen: false);
-        adminState.load();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminShell()),
-        );
-      } else {
-        // Navigate to Intern Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainContainer()),
-        );
-      }
+      // Navigate to Intern Dashboard, removing all previous routes
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainContainer()),
+        (route) => false,
+      );
     } else {
-      setState(() => _errorMessage = 'Invalid email or password.');
+      setState(() => _errorMessage = 'Registration failed. Please try again.');
     }
   }
 
@@ -81,14 +73,12 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.hub_rounded, size: 80, color: Color(0xFF32D74B)),
-              const SizedBox(height: 24),
               const Text(
-                'OJT Tracker',
+                'Create Account',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 32,
@@ -99,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Sign in to your account',
+                'Sign up to get started',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -107,6 +97,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 48),
+
+              // Name Field
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2C2C2E),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF3C3C3E)),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: TextField(
+                  controller: _nameController,
+                  style: const TextStyle(color: Colors.white),
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.person_outline_rounded, color: Colors.white.withValues(alpha: 0.5)),
+                    hintText: 'Full Name',
+                    hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // Email Field
               Container(
@@ -150,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
 
               if (_errorMessage != null)
                 Padding(
@@ -162,9 +174,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-              // Login Button
+              // Register Button
               ElevatedButton(
-                onPressed: _isLoading ? null : _handleLogin,
+                onPressed: _isLoading ? null : _handleRegister,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF32D74B),
                   disabledBackgroundColor: const Color(0xFF32D74B).withValues(alpha: 0.5),
@@ -179,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                       )
                     : const Text(
-                        'Continue',
+                        'Create Account',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,

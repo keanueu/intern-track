@@ -51,6 +51,35 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> register(String fullName, String email, String password) async {
+    if (!_dbSupported) return;
+    _loading = true;
+    notifyListeners();
+
+    final newProfile = ProfileModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      fullName: fullName,
+      role: 'intern',
+      qrCodeToken: DateTime.now().millisecondsSinceEpoch.toString(), // Generate a basic token
+      company: 'Not set',
+      supervisor: 'Not set',
+      requiredHours: 486,
+      course: 'BSIT',
+      batch: 'Batch 2025',
+      startDate: DateTime.now().toIso8601String(),
+      email: email,
+      password: password,
+      department: '',
+    );
+
+    await DBHelper.instance.registerIntern(newProfile);
+    _profile = newProfile;
+    await _refresh();
+
+    _loading = false;
+    notifyListeners();
+  }
+
   void logout() {
     _profile = ProfileModel.empty();
     _logs = [];

@@ -10,7 +10,7 @@ import 'screens/profile_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'services/app_state.dart';
 import 'services/admin_state.dart';
-import 'screens/login_screen.dart';
+import 'screens/get_started_screen.dart';
 import 'theme/app_theme.dart';
 
 
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
-      home: const LoginScreen(),
+      home: const GetStartedScreen(),
     );
   }
 }
