@@ -83,14 +83,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> register(String fullName, String email, String password) async {
+  Future<void> register(String fullName, String email, String password, {String role = 'intern'}) async {
     _loading = true;
     notifyListeners();
 
     final newProfile = ProfileModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       fullName: fullName,
-      role: 'intern',
+      role: role,
       qrCodeToken: DateTime.now().millisecondsSinceEpoch.toString(), // Generate a basic token
       company: 'Not set',
       supervisor: 'Not set',

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../services/admin_state.dart';
 import '../../models/profile_model.dart';
 import '../../models/dtr_model.dart';
+import '../../theme/app_theme.dart';
 
 class AdminReportsScreen extends StatefulWidget {
   const AdminReportsScreen({super.key});
@@ -20,10 +21,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
 
   Future<void> _generatePdf(BuildContext context, ProfileModel intern) async {
     final state = context.read<AdminState>();
-    // Fetch logs specifically for this intern
-    // To do this simply, we can use filteredLogs from state or just filter allLogs here.
     final logs = state.allLogs.where((l) => l.userId == intern.id).toList();
-    // sort ascending for the report
     logs.sort((a, b) => a.timeIn.compareTo(b.timeIn));
 
     double totalHours = logs.fold(0.0, (sum, log) => sum + log.calculatedHours);
@@ -152,95 +150,98 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
     final state = context.watch<AdminState>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1C1E),
+      backgroundColor: kBg,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Reports & Export',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2C2C2E),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<ProfileModel>(
-                        value: _selectedIntern,
-                        hint: const Text('Select Intern', style: TextStyle(color: Colors.grey)),
-                        isExpanded: true,
-                        dropdownColor: const Color(0xFF3C3C3E),
-                        icon: const Icon(Icons.arrow_drop_down_rounded, color: Colors.white),
-                        items: state.interns.map((intern) {
-                          return DropdownMenuItem(
-                            value: intern,
-                            child: Text(intern.fullName, style: const TextStyle(color: Colors.white)),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          setState(() => _selectedIntern = val);
-                        },
+              child: FadeSlideIn(
+                index: 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Reports & Export',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: kWhite,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: kSurface,
+                        borderRadius: kRadiusCard,
+                        border: Border.all(color: kBorder),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<ProfileModel>(
+                          value: _selectedIntern,
+                          hint: const Text('Select Intern', style: TextStyle(color: kGrey)),
+                          isExpanded: true,
+                          dropdownColor: kSurface,
+                          icon: const Icon(Icons.arrow_drop_down_rounded, color: kWhite),
+                          items: state.interns.map((intern) {
+                            return DropdownMenuItem(
+                              value: intern,
+                              child: Text(intern.fullName, style: const TextStyle(color: kWhite)),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            setState(() => _selectedIntern = val);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (_selectedIntern != null)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2C2C2E),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              _selectedIntern!.fullName,
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Company: ${_selectedIntern!.company}',
-                              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                            ),
-                            const SizedBox(height: 24),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF32D74B),
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                ),
-                                icon: const Icon(Icons.picture_as_pdf_rounded, color: Colors.black),
-                                label: const Text('Generate PDF Report', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                                onPressed: () => _generatePdf(context, _selectedIntern!),
+                  child: FadeSlideIn(
+                    index: 1,
+                    child: Column(
+                      children: [
+                        DarkCard(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _selectedIntern!.fullName,
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: kWhite),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 8),
+                              Text(
+                                'Company: ${_selectedIntern!.company}',
+                                style: const TextStyle(color: kGrey),
+                              ),
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: kGreen,
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(borderRadius: kRadiusBtn),
+                                  ),
+                                  icon: const Icon(Icons.picture_as_pdf_rounded, color: kBg),
+                                  label: const Text('Generate PDF Report', style: TextStyle(color: kBg, fontWeight: FontWeight.bold)),
+                                  onPressed: () => _generatePdf(context, _selectedIntern!),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               )
@@ -249,7 +250,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                 child: Center(
                   child: Text(
                     'Select an intern to generate report',
-                    style: TextStyle(color: Colors.grey),
+                    style: TextStyle(color: kGrey),
                   ),
                 ),
               ),

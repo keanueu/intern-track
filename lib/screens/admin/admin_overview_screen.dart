@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../services/admin_state.dart';
+import '../../services/app_state.dart';
+import '../../theme/app_theme.dart';
+import '../login_screen.dart';
 
 class AdminOverviewScreen extends StatefulWidget {
   const AdminOverviewScreen({super.key});
@@ -11,32 +14,44 @@ class AdminOverviewScreen extends StatefulWidget {
 }
 
 class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
+  void _logout() {
+    context.read<AppState>().logout();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AdminState>();
     final stats = state.stats;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1C1E),
+      backgroundColor: kBg,
       body: SafeArea(
         child: state.loading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFF32D74B)))
+            ? const Center(child: CircularProgressIndicator(color: kGreen))
             : RefreshIndicator(
-                color: const Color(0xFF32D74B),
+                color: kGreen,
+                backgroundColor: kSurface,
                 onRefresh: () => context.read<AdminState>().load(),
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildHeader(),
-                      const SizedBox(height: 32),
-                      _buildStatsRow(stats.totalInterns, stats.clockedInNow, stats.avgCompletion),
-                      const SizedBox(height: 32),
-                      _buildActiveNowSection(state),
-                      const SizedBox(height: 32),
-                      _buildTeamProgressSection(state),
+                      const SizedBox(height: 20),
+                      FadeSlideIn(index: 0, child: _buildHeader()),
+                      const SizedBox(height: 20),
+                      FadeSlideIn(index: 1, child: _buildStatsRow(stats.totalInterns, stats.clockedInNow, stats.avgCompletion)),
+                      const SizedBox(height: 24),
+                      FadeSlideIn(index: 2, child: _buildActiveNowSection(state)),
+                      const SizedBox(height: 24),
+                      FadeSlideIn(index: 3, child: _buildTeamProgressSection(state)),
+                      const SizedBox(height: 100), // Padding for floating nav bar
                     ],
                   ),
                 ),
@@ -46,24 +61,35 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Team Overview',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Team Overview',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: kWhite,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
+              style: const TextStyle(
+                fontSize: 14,
+                color: kGrey,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        Text(
-          DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white.withValues(alpha: 0.7),
-          ),
+        IconButton(
+          icon: const Icon(Icons.logout_rounded, color: kRed),
+          onPressed: _logout,
+          tooltip: 'Logout Admin',
         ),
       ],
     );
@@ -80,22 +106,22 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
             color: Colors.blueAccent,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
             title: 'Active Now',
             value: active.toString(),
             icon: Icons.bolt_rounded,
-            color: const Color(0xFF32D74B),
+            color: kGreen,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            title: 'Avg Completion',
+            title: 'Avg Compl.',
             value: '${(avgCompletion * 100).toStringAsFixed(1)}%',
             icon: Icons.pie_chart_rounded,
-            color: Colors.amber,
+            color: kAmber,
           ),
         ),
       ],
@@ -103,51 +129,30 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
   }
 
   Widget _buildActiveNowSection(AdminState state) {
-    // We can filter the active sessions manually for the UI.
-    // In db_helper we have an active session method, but here we can just compute it from allLogs or fetch it.
-    // For simplicity, we just filter the allLogs array where time_out is null and day is today.
-    // Wait, allLogs in state is dependent on filters. It's better to use getActiveSessions but we don't have it in state.
-    // Alternatively, just query open logs directly from anomalies or state. 
-    // Let's use the UI to display interns who have an open log today.
-    // To implement "Active Now" properly without modifying state again, we can just look at `allLogs` if it's unfiltered, or we can add a getter in AdminState later.
-    // Actually, let's just find interns who have a log with time_out == null
-    // But we need the intern names.
-    // We'll iterate over interns and check their last log, or we can fetch getActiveSessions. 
-    // For now we'll do a placeholder query or manual UI filter. Let's use the stats value for now, and since we need a list, we'll create a small FutureBuilder or state update.
-    // I'll leave a placeholder message to refresh data if needed, or I'll implement the list correctly later. Let's assume we can compute it from `interns` if we have their current status.
-    
-    // To make it simple right now, let's just show a list of active interns by cross-referencing.
-    // Actually, AdminState doesn't expose getActiveSessions directly. Let's just use empty state for now.
-    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Active Now',
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: kWhite,
           ),
         ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: const Color(0xFF2C2C2E),
-            borderRadius: BorderRadius.circular(20),
-          ),
+        const SizedBox(height: 12),
+        DarkCard(
           child: Row(
             children: [
               Container(
                 width: 12,
                 height: 12,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF32D74B),
+                  color: kGreen,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF32D74B),
+                      color: kGreen,
                       blurRadius: 8,
                       spreadRadius: 2,
                     ),
@@ -158,7 +163,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
               const Expanded(
                 child: Text(
                   'Active session tracking requires dedicated state. See Timesheet for logs.',
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(color: kGrey),
                 ),
               ),
             ],
@@ -169,55 +174,51 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
   }
 
   Widget _buildTeamProgressSection(AdminState state) {
-    // We'll use a FutureBuilder or just use the `interns` list without progress if it's not in state.
-    // The design says "Team Progress - all interns sorted by completion %".
-    // We can just list interns.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
           'Team Progress',
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: kWhite,
           ),
         ),
-        const SizedBox(height: 16),
-        ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: state.interns.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 16),
-          itemBuilder: (context, index) {
-            final intern = state.interns[index];
-            final initial = intern.fullName.isNotEmpty ? intern.fullName[0].toUpperCase() : '?';
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2E),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.white10,
-                    child: Text(initial, style: const TextStyle(color: Colors.white)),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      intern.fullName,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+        const SizedBox(height: 12),
+        if (state.interns.isEmpty)
+          const Text('No interns registered yet.', style: TextStyle(color: kGrey))
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: state.interns.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final intern = state.interns[index];
+              final initial = intern.fullName.isNotEmpty ? intern.fullName[0].toUpperCase() : '?';
+              return DarkCard(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: kSurface2,
+                      child: Text(initial, style: const TextStyle(color: kWhite)),
                     ),
-                  ),
-                  const Text('See Profile', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                ],
-              ),
-            );
-          },
-        ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        intern.fullName,
+                        style: const TextStyle(color: kWhite, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right_rounded, color: kGrey, size: 20),
+                  ],
+                ),
+              );
+            },
+          ),
       ],
     );
   }
@@ -238,13 +239,8 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DarkCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2E),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -253,18 +249,20 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: kWhite,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.white.withValues(alpha: 0.7),
+            style: const TextStyle(
+              fontSize: 11,
+              color: kGrey,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

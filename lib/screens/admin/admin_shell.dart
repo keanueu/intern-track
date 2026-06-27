@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/admin_state.dart';
-import '../../services/app_state.dart';
+
+import '../../theme/app_theme.dart';
 import 'admin_directory_screen.dart';
 import 'admin_overview_screen.dart';
 import 'admin_timesheet_screen.dart';
 import 'admin_reports_screen.dart';
 import 'admin_approvals_screen.dart';
-import '../login_screen.dart';
 
 class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
@@ -19,12 +19,12 @@ class AdminShell extends StatefulWidget {
 class _AdminShellState extends State<AdminShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const AdminOverviewScreen(),       // Live Master Overview
-    const AdminApprovalsScreen(),      // Approvals Queue
-    const AdminTimesheetScreen(),      // Master Ledger
-    const AdminDirectoryScreen(),      // Onboarding & Kiosk
-    const AdminReportsScreen(),        // Reports / Export
+  final List<Widget> _screens = const [
+    AdminOverviewScreen(),       // Live Master Overview
+    AdminApprovalsScreen(),      // Approvals Queue
+    AdminTimesheetScreen(),      // Master Ledger
+    AdminDirectoryScreen(),      // Onboarding & Kiosk
+    AdminReportsScreen(),        // Reports / Export
   ];
 
   @override
@@ -35,89 +35,124 @@ class _AdminShellState extends State<AdminShell> {
     });
   }
 
-  void _logout() {
-    context.read<AppState>().logout();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1C1C1E),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-            onPressed: _logout,
-            tooltip: 'Logout Admin',
-          ),
-        ],
+      backgroundColor: kBg,
+      body: AnimatedSwitcher(
+        duration: kDurNormal,
+        switchInCurve: kCurve,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.05),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+          );
+        },
+        child: _screens[_currentIndex],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
+      bottomNavigationBar: _AdminFloatingNavBar(
+        currentIndex: _currentIndex,
+        onTap: (i) => setState(() => _currentIndex = i),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF2C2C2E),
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, Icons.dashboard_rounded, 'Overview'),
-              _buildNavItem(1, Icons.fact_check_rounded, 'Approvals'),
-              _buildNavItem(2, Icons.table_chart_rounded, 'Ledger'),
-              _buildNavItem(3, Icons.people_rounded, 'Onboarding'),
-              _buildNavItem(4, Icons.picture_as_pdf_rounded, 'Reports'),
-            ],
-          ),
+    );
+  }
+}
+
+class _AdminFloatingNavBar extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const _AdminFloatingNavBar({
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: kBg,
+      padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 8),
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+          color: kSurface,
+          borderRadius: kRadiusNav,
+          border: Border.all(color: kBorder),
+          boxShadow: kCardShadow,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _AdminNavItem(icon: Icons.dashboard_rounded, outlinedIcon: Icons.dashboard_outlined, label: 'Overview', index: 0, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: Icons.fact_check_rounded, outlinedIcon: Icons.fact_check_outlined, label: 'Approvals', index: 1, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: Icons.table_chart_rounded, outlinedIcon: Icons.table_chart_outlined, label: 'Ledger', index: 2, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: Icons.people_rounded, outlinedIcon: Icons.people_outline_rounded, label: 'Onboarding', index: 3, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: Icons.picture_as_pdf_rounded, outlinedIcon: Icons.picture_as_pdf_outlined, label: 'Reports', index: 4, current: currentIndex, onTap: onTap),
+          ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    final isSelected = _currentIndex == index;
-    final color = isSelected ? const Color(0xFF32D74B) : Colors.white54;
+class _AdminNavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData outlinedIcon;
+  final String label;
+  final int index;
+  final int current;
+  final ValueChanged<int> onTap;
 
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      behavior: HitTestBehavior.opaque,
+  const _AdminNavItem({
+    required this.icon,
+    required this.outlinedIcon,
+    required this.label,
+    required this.index,
+    required this.current,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool selected = current == index;
+
+    return TapScale(
+      onTap: () => onTap(index),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        duration: kDurNormal,
+        curve: kCurve,
+        width: 64,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF32D74B).withValues(alpha: 0.1) : Colors.transparent,
+          color: selected ? kSurface2 : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 24),
+            Icon(
+              selected ? icon : outlinedIcon,
+              color: selected ? kGreen : kGrey,
+              size: 22,
+            ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: color,
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: selected ? kWhite : kGrey,
+                fontSize: 9,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

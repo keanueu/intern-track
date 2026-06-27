@@ -95,9 +95,9 @@ class AdminDirectoryScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kGreen,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(borderRadius: kRadiusBtn),
                 ),
-                child: const Text('Register Intern', style: TextStyle(color: kWhite, fontSize: 16, fontWeight: FontWeight.w600)),
+                child: const Text('Register Intern', style: TextStyle(color: kBg, fontSize: 16, fontWeight: FontWeight.w600)),
               ),
               const SizedBox(height: 24),
             ],
@@ -111,72 +111,102 @@ class AdminDirectoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBg,
-      appBar: AppBar(
-        backgroundColor: kBg,
-        elevation: 0,
-        title: const Text('Onboarding & Kiosk', style: TextStyle(color: kWhite, fontWeight: FontWeight.w700)),
-        centerTitle: false,
-        actions: [
-          TextButton.icon(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminKioskScreen())),
-            icon: const Icon(Icons.qr_code_scanner_rounded, color: kGreen, size: 20),
-            label: const Text('Kiosk', style: TextStyle(color: kGreen, fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-      body: Consumer<AdminState>(
-        builder: (context, state, child) {
-          if (state.loading) return const Center(child: CircularProgressIndicator(color: kGreen));
-
-          if (state.interns.isEmpty) {
-            return const Center(child: Text('No interns registered yet.', style: TextStyle(color: kGrey)));
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: state.interns.length,
-            itemBuilder: (context, index) {
-              final intern = state.interns[index];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: kSurface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: kBorder),
-                ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: FadeSlideIn(
+                index: 0,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      backgroundColor: kGreen.withValues(alpha: 0.2),
-                      child: Text(intern.fullName[0].toUpperCase(), style: const TextStyle(color: kGreen, fontWeight: FontWeight.w700)),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(intern.fullName, style: const TextStyle(color: kWhite, fontSize: 16, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 4),
-                          Text(intern.email.isEmpty ? 'No email' : intern.email, style: const TextStyle(color: kGrey, fontSize: 13)),
-                        ],
+                    const Text(
+                      'Onboarding & Kiosk',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: kWhite,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
-                      onPressed: () => state.deleteIntern(intern.id),
+                    TextButton.icon(
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminKioskScreen())),
+                      icon: const Icon(Icons.qr_code_scanner_rounded, color: kGreen, size: 20),
+                      label: const Text('Kiosk', style: TextStyle(color: kGreen, fontWeight: FontWeight.w600)),
+                      style: TextButton.styleFrom(
+                        backgroundColor: kGreen.withValues(alpha: 0.1),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn),
+                      ),
                     ),
                   ],
                 ),
-              );
-            },
-          );
-        },
+              ),
+            ),
+            Expanded(
+              child: Consumer<AdminState>(
+                builder: (context, state, child) {
+                  if (state.loading) return const Center(child: CircularProgressIndicator(color: kGreen));
+
+                  if (state.interns.isEmpty) {
+                    return const Center(child: Text('No interns registered yet.', style: TextStyle(color: kGrey)));
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 100),
+                    itemCount: state.interns.length,
+                    itemBuilder: (context, index) {
+                      final intern = state.interns[index];
+                      return FadeSlideIn(
+                        index: index.clamp(0, 5) + 1,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: DarkCard(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: kSurface2,
+                                  child: Text(intern.fullName[0].toUpperCase(), style: const TextStyle(color: kWhite, fontWeight: FontWeight.w700)),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(intern.fullName, style: const TextStyle(color: kWhite, fontSize: 16, fontWeight: FontWeight.w600)),
+                                      const SizedBox(height: 4),
+                                      Text(intern.email.isEmpty ? 'No email' : intern.email, style: const TextStyle(color: kGrey, fontSize: 13)),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline_rounded, color: kRed),
+                                  onPressed: () => state.deleteIntern(intern.id),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddInternDialog(context),
-        backgroundColor: kGreen,
-        child: const Icon(Icons.person_add_rounded, color: kWhite),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80.0), // Above floating nav bar
+        child: FloatingActionButton(
+          onPressed: () => _showAddInternDialog(context),
+          backgroundColor: kGreen,
+          elevation: 4,
+          child: const Icon(Icons.person_add_rounded, color: kBg),
+        ),
       ),
     );
   }
