@@ -132,7 +132,7 @@ class _AdminNavItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
           decoration: BoxDecoration(
             color: selected ? kSurface2 : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(100),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

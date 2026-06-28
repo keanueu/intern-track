@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
-      home: const GetStartedScreen(),
+      home: const MainContainer(),
     );
   }
 }
@@ -198,7 +198,7 @@ class _NavItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
           decoration: BoxDecoration(
             color: selected ? kGreen.withValues(alpha: 0.12) : Colors.transparent,
-            borderRadius: kRadiusBtn,
+            borderRadius: BorderRadius.circular(100),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -29,7 +29,7 @@ const kGreenGradientDeep = LinearGradient(
 // ── Border Radii ──────────────────────────────────────────────────────────────
 const kRadiusCard   = BorderRadius.all(Radius.circular(16));
 const kRadiusBtn    = BorderRadius.all(Radius.circular(10));
-const kRadiusNav    = BorderRadius.all(Radius.circular(20));
+const kRadiusNav    = BorderRadius.all(Radius.circular(100));
 const kRadiusAvatar = BorderRadius.all(Radius.circular(10));
 const kRadiusTag    = BorderRadius.all(Radius.circular(6));
 const kRadiusInput  = BorderRadius.all(Radius.circular(10));
