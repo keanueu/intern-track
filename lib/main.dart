@@ -11,7 +11,6 @@ import 'screens/profile_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'services/app_state.dart';
 import 'services/admin_state.dart';
-import 'screens/get_started_screen.dart';
 import 'theme/app_theme.dart';
 
 
