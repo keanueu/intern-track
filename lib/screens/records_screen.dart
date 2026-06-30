@@ -54,11 +54,11 @@ class RecordsScreen extends StatelessWidget {
                           index: 1,
                           child: Row(
                             children: [
-                              _SummaryChip(label: 'Days Present', value: '$totalDays', icon: Icons.calendar_today_rounded, color: kGreen),
+                              _SummaryChip(label: 'Days Present', value: '$totalDays', icon: AppIcons.calendar, color: kGreen),
                               const SizedBox(width: 10),
-                              _SummaryChip(label: 'Total Hours', value: totalHours.toStringAsFixed(1), icon: Icons.timer_rounded, color: kAmber),
+                              _SummaryChip(label: 'Total Hours', value: totalHours.toStringAsFixed(1), icon: AppIcons.timer, color: kAmber),
                               const SizedBox(width: 10),
-                              _SummaryChip(label: 'This Week', value: '${weekLogs.length}', icon: Icons.date_range_rounded, color: kGreenLight),
+                              _SummaryChip(label: 'This Week', value: '${weekLogs.length}', icon: AppIcons.dateRange, color: kGreenLight),
                             ],
                           ),
                         ),
@@ -152,7 +152,7 @@ class _EmptyState extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: kGreen.withValues(alpha: 0.3)),
             ),
-            child: const Icon(Icons.event_note_rounded, size: 36, color: kGreen),
+            child: const Icon(AppIcons.eventNote, size: 36, color: kGreen),
           ),
           const SizedBox(height: 16),
           const Text('No records yet',
@@ -212,7 +212,7 @@ class _SwipeableRecord extends StatelessWidget {
           color: kRed.withValues(alpha: 0.9),
           borderRadius: borderRadius,
         ),
-        child: const Icon(Icons.delete_rounded, color: kWhite),
+        child: const Icon(AppIcons.delete, color: kWhite),
       ),
       confirmDismiss: (_) async {
         onDelete();

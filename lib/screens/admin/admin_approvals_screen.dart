@@ -48,7 +48,7 @@ class AdminApprovalsScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.check_circle_outline_rounded, size: 64, color: kGrey.withValues(alpha: 0.5)),
+          Icon(AppIcons.checkCircleOutline, size: 64, color: kGrey.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
           Text(
             'All caught up!',
@@ -111,7 +111,7 @@ class AdminApprovalsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.calendar_today_rounded, size: 14, color: kGrey),
+              const Icon(AppIcons.calendar, size: 14, color: kGrey),
               const SizedBox(width: 6),
               Text(dateStr, style: const TextStyle(color: kGrey, fontSize: 13)),
               const Spacer(),

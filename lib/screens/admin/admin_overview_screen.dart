@@ -87,7 +87,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
           ],
         ),
         IconButton(
-          icon: const Icon(Icons.logout_rounded, color: kRed),
+          icon: const Icon(AppIcons.logout, color: kRed),
           onPressed: _logout,
           tooltip: 'Logout Admin',
         ),
@@ -102,7 +102,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
           child: _StatCard(
             title: 'Total Interns',
             value: total.toString(),
-            icon: Icons.people_rounded,
+            icon: AppIcons.people,
             color: Colors.blueAccent,
           ),
         ),
@@ -111,7 +111,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
           child: _StatCard(
             title: 'Active Now',
             value: active.toString(),
-            icon: Icons.bolt_rounded,
+            icon: AppIcons.bolt,
             color: kGreen,
           ),
         ),
@@ -120,7 +120,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
           child: _StatCard(
             title: 'Avg Compl.',
             value: '${(avgCompletion * 100).toStringAsFixed(1)}%',
-            icon: Icons.pie_chart_rounded,
+            icon: AppIcons.pieChart,
             color: kAmber,
           ),
         ),
@@ -213,7 +213,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
                         style: const TextStyle(color: kWhite, fontWeight: FontWeight.w600),
                       ),
                     ),
-                    const Icon(Icons.chevron_right_rounded, color: kGrey, size: 20),
+                    const Icon(AppIcons.chevronRight, color: kGrey, size: 20),
                   ],
                 ),
               );

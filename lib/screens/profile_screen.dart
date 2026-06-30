@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             children: [
                               _MenuItem(
-                                icon: Icons.work_history_rounded,
+                                icon: AppIcons.workHistory,
                                 label: 'OJT Details',
                                 sub: '${profile.company} • ${profile.supervisor}',
                                 color: kGreen,
@@ -210,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Column(
                             children: [
                               _MenuItem(
-                                icon: Icons.qr_code_rounded,
+                                icon: AppIcons.qr,
                                 label: 'My QR Token',
                                 sub: 'View to pair scanner',
                                 color: kAmber,
@@ -218,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               const _CardDivider(),
                               _MenuItem(
-                                icon: Icons.download_rounded,
+                                icon: AppIcons.download,
                                 label: 'Export DTR',
                                 sub: 'Copy summary to clipboard',
                                 color: kGreenLight,
@@ -370,7 +370,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(6),
                     decoration:
                         BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                    child: const Icon(Icons.close_rounded,
+                    child: const Icon(AppIcons.close,
                         color: kGrey, size: 18),
                   ),
                 ),
@@ -380,22 +380,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _Field(
                 controller: nameCtrl,
                 label: 'Full Name',
-                icon: Icons.person_rounded),
+                icon: AppIcons.profile),
             const SizedBox(height: 12),
             _Field(
                 controller: courseCtrl,
                 label: 'Course',
-                icon: Icons.school_rounded),
+                icon: AppIcons.school),
             const SizedBox(height: 12),
             _Field(
                 controller: batchCtrl,
                 label: 'Batch / Year',
-                icon: Icons.calendar_today_rounded),
+                icon: AppIcons.calendar),
             const SizedBox(height: 12),
             _Field(
                 controller: hoursCtrl,
                 label: 'Required OJT Hours',
-                icon: Icons.timer_rounded,
+                icon: AppIcons.timer,
                 numeric: true),
             const SizedBox(height: 20),
             SizedBox(
@@ -468,7 +468,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(6),
                     decoration:
                         BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                    child: const Icon(Icons.close_rounded,
+                    child: const Icon(AppIcons.close,
                         color: kGrey, size: 18),
                   ),
                 ),
@@ -478,12 +478,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _Field(
                 controller: companyCtrl,
                 label: 'Company Name',
-                icon: Icons.business_rounded),
+                icon: AppIcons.business),
             const SizedBox(height: 12),
             _Field(
                 controller: supervisorCtrl,
                 label: 'Supervisor Name',
-                icon: Icons.manage_accounts_rounded),
+                icon: AppIcons.manageAccounts),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
@@ -579,7 +579,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         border:
                             Border.all(color: kGreen.withValues(alpha: 0.3)),
                       ),
-                      child: const Icon(Icons.copy_rounded,
+                      child: const Icon(AppIcons.copy,
                           size: 16, color: kGreen),
                     ),
                   ),
@@ -628,7 +628,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Row(children: [
-          Icon(Icons.check_circle_rounded, color: kGreen),
+          Icon(AppIcons.checkCircle, color: kGreen),
           SizedBox(width: 10),
           Text('DTR report copied to clipboard!',
               style: TextStyle(color: kWhite)),
@@ -782,7 +782,7 @@ class _MenuItem extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
+              const Icon(AppIcons.chevronRight,
                   color: kGreyDark, size: 20),
             ],
           ),
@@ -836,7 +836,7 @@ class _AvatarPicker extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(color: kBorder, borderRadius: BorderRadius.circular(2))),
               _PickOption(
-                icon: Icons.camera_alt_rounded,
+                icon: AppIcons.camera,
                 label: 'Take Photo',
                 color: kGreen,
                 onTap: () async {
@@ -849,7 +849,7 @@ class _AvatarPicker extends StatelessWidget {
                 },
               ),
               _PickOption(
-                icon: Icons.photo_library_rounded,
+                icon: AppIcons.photoLibrary,
                 label: 'Choose from Gallery',
                 color: kGreenLight,
                 onTap: () async {
@@ -863,7 +863,7 @@ class _AvatarPicker extends StatelessWidget {
               ),
               if (profile.avatarPath != null)
                 _PickOption(
-                  icon: Icons.delete_outline_rounded,
+                  icon: AppIcons.deleteOutline,
                   label: 'Remove Photo',
                   color: kRed,
                   onTap: () {
@@ -905,7 +905,7 @@ class _AvatarPicker extends StatelessWidget {
             ),
             child: hasImage
                 ? null
-                : const Icon(Icons.person_rounded, color: kWhite, size: 36),
+                : const Icon(AppIcons.profile, color: kWhite, size: 36),
           ),
           // Camera badge
           Positioned(
@@ -917,7 +917,7 @@ class _AvatarPicker extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: kSurface, width: 2),
               ),
-              child: const Icon(Icons.camera_alt_rounded, size: 14, color: kBg),
+              child: const Icon(AppIcons.camera, size: 14, color: kBg),
             ),
           ),
         ],

@@ -135,7 +135,7 @@ class AdminDirectoryScreen extends StatelessWidget {
                     ),
                     TextButton.icon(
                       onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminKioskScreen())),
-                      icon: const Icon(Icons.qr_code_scanner_rounded, color: kGreen, size: 20),
+                      icon: const Icon(AppIcons.qrScanner, color: kGreen, size: 20),
                       label: const Text('Kiosk', style: TextStyle(color: kGreen, fontWeight: FontWeight.w600)),
                       style: TextButton.styleFrom(
                         backgroundColor: kGreen.withValues(alpha: 0.1),
@@ -185,7 +185,7 @@ class AdminDirectoryScreen extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete_outline_rounded, color: kRed),
+                                  icon: const Icon(AppIcons.deleteOutline, color: kRed),
                                   onPressed: () => state.deleteIntern(intern.id),
                                 ),
                               ],
@@ -207,7 +207,7 @@ class AdminDirectoryScreen extends StatelessWidget {
           onPressed: () => _showAddInternDialog(context),
           backgroundColor: kGreen,
           elevation: 4,
-          child: const Icon(Icons.person_add_rounded, color: kBg),
+          child: const Icon(AppIcons.addPerson, color: kBg),
         ),
       ),
     );

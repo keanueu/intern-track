@@ -137,7 +137,7 @@ class _TopBar extends StatelessWidget {
             width: 40, height: 40,
             decoration: BoxDecoration(
                 color: kSurface, borderRadius: kRadiusAvatar, border: Border.all(color: kBorder)),
-            child: const Icon(Icons.notifications_none_rounded, color: kWhite, size: 20),
+            child: const Icon(AppIcons.notifications, color: kWhite, size: 20),
           ),
         ),
       ],
@@ -204,7 +204,7 @@ class _HeroBanner extends StatelessWidget {
               borderRadius: kRadiusCard,
             ),
             child: Icon(
-              isPunchedIn ? Icons.check_circle_rounded : Icons.qr_code_2_rounded,
+              isPunchedIn ? AppIcons.checkCircle : AppIcons.qr,
               color: kWhite, size: 38,
             ),
           ),
@@ -241,7 +241,7 @@ class _TodayCards extends StatelessWidget {
           label: 'TIME IN',
           value: latest != null ? _fmt(latest.timeIn) : '--:--',
           sub: latest != null ? 'Logged today' : 'No entry yet',
-          icon: Icons.login_rounded,
+          icon: AppIcons.login,
           color: kGreen,
         )),
         const SizedBox(width: 12),
@@ -253,7 +253,7 @@ class _TodayCards extends StatelessWidget {
               : latest?.timeOut != null
                   ? 'Session ended'
                   : 'No entry yet',
-          icon: Icons.logout_rounded,
+          icon: AppIcons.logout,
           color: kAmber,
         )),
       ],

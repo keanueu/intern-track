@@ -184,7 +184,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                           hint: const Text('Select Intern', style: TextStyle(color: kGrey)),
                           isExpanded: true,
                           dropdownColor: kSurface,
-                          icon: const Icon(Icons.arrow_drop_down_rounded, color: kWhite),
+                          icon: const Icon(AppIcons.chevronDown, color: kWhite),
                           items: state.interns.map((intern) {
                             return DropdownMenuItem(
                               value: intern,
@@ -232,7 +232,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                                     padding: const EdgeInsets.symmetric(vertical: 16),
                                     shape: RoundedRectangleBorder(borderRadius: kRadiusBtn),
                                   ),
-                                  icon: const Icon(Icons.picture_as_pdf_rounded, color: kBg),
+                                  icon: const Icon(AppIcons.pdf, color: kBg),
                                   label: const Text('Generate PDF Report', style: TextStyle(color: kBg, fontWeight: FontWeight.bold)),
                                   onPressed: () => _generatePdf(context, _selectedIntern!),
                                 ),

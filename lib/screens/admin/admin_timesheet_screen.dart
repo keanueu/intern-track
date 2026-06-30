@@ -39,7 +39,7 @@ class _AdminTimesheetScreenState extends State<AdminTimesheetScreen> {
               ),
               const SizedBox(height: 24),
               ListTile(
-                leading: const Icon(Icons.edit_rounded, color: kWhite),
+                leading: const Icon(AppIcons.edit, color: kWhite),
                 title: const Text('Edit Log', style: TextStyle(color: kWhite)),
                 onTap: () {
                   Navigator.pop(context);
@@ -48,7 +48,7 @@ class _AdminTimesheetScreenState extends State<AdminTimesheetScreen> {
               ),
               if (log.timeOut == null)
                 ListTile(
-                  leading: const Icon(Icons.timer_off_rounded, color: kAmber),
+                  leading: const Icon(AppIcons.timerOff, color: kAmber),
                   title: const Text('Close Session', style: TextStyle(color: kAmber)),
                   onTap: () async {
                     Navigator.pop(context);
@@ -138,7 +138,7 @@ class _AdminTimesheetScreenState extends State<AdminTimesheetScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.warning_rounded, color: kAmber),
+                      const Icon(AppIcons.warning, color: kAmber),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(

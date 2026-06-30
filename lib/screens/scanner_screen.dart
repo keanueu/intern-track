@@ -25,7 +25,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: [
-            const Icon(Icons.check_circle_rounded, color: kGreen),
+            const Icon(AppIcons.checkCircle, color: kGreen),
             const SizedBox(width: 10),
             Expanded(child: Text(result, style: const TextStyle(color: kWhite))),
           ]),
@@ -81,7 +81,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                               color: activeColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(Icons.qr_code_2_rounded, color: activeColor, size: 20),
+                            child: Icon(AppIcons.qr, color: activeColor, size: 20),
                           ),
                           const SizedBox(width: 12),
                           Column(

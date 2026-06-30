@@ -25,7 +25,7 @@ class GetStartedScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.hub_rounded,
+                  AppIcons.hub,
                   size: 100,
                   color: Color(0xFF32D74B),
                 ),

@@ -90,7 +90,7 @@ class _AdminKioskScreenState extends State<AdminKioskScreen> {
                           color: kGreen.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.qr_code_scanner_rounded, color: kGreen, size: 20),
+                        child: const Icon(AppIcons.qrScanner, color: kGreen, size: 20),
                       ),
                       const SizedBox(width: 12),
                       const Column(

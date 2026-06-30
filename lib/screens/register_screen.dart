@@ -93,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          icon: const Icon(AppIcons.chevronLeft, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -134,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: Row(
                   children: [
-                    Icon(Icons.badge_outlined, color: Colors.white.withValues(alpha: 0.5)),
+                    Icon(AppIcons.badge, color: Colors.white.withValues(alpha: 0.5)),
                     const SizedBox(width: 16),
                     Expanded(
                       child: DropdownButtonHideUnderline(
@@ -142,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           value: _selectedRole,
                           dropdownColor: const Color(0xFF2C2C2E),
                           style: const TextStyle(color: Colors.white, fontSize: 16),
-                          icon: Icon(Icons.arrow_drop_down, color: Colors.white.withValues(alpha: 0.5)),
+                          icon: Icon(AppIcons.chevronDown, color: Colors.white.withValues(alpha: 0.5)),
                           items: const [
                             DropdownMenuItem(value: 'intern', child: Text('Intern')),
                             DropdownMenuItem(value: 'admin', child: Text('Admin / Supervisor')),
@@ -172,7 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    icon: Icon(Icons.person_outline_rounded, color: Colors.white.withValues(alpha: 0.5)),
+                    icon: Icon(AppIcons.profileOutline, color: Colors.white.withValues(alpha: 0.5)),
                     hintText: 'Full Name',
                     hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                   ),
@@ -194,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    icon: Icon(Icons.email_outlined, color: Colors.white.withValues(alpha: 0.5)),
+                    icon: Icon(AppIcons.email, color: Colors.white.withValues(alpha: 0.5)),
                     hintText: 'Email address',
                     hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                   ),
@@ -216,7 +216,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: true,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    icon: Icon(Icons.lock_outline_rounded, color: Colors.white.withValues(alpha: 0.5)),
+                    icon: Icon(AppIcons.lock, color: Colors.white.withValues(alpha: 0.5)),
                     hintText: 'Password',
                     hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                   ),

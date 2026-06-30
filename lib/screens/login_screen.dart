@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+          icon: const Icon(AppIcons.chevronLeft, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.hub_rounded, size: 80, color: Color(0xFF32D74B)),
+              const Icon(AppIcons.hub, size: 80, color: Color(0xFF32D74B)),
               const SizedBox(height: 24),
               const Text(
                 'OJT Tracker',
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    icon: Icon(Icons.email_outlined, color: Colors.white.withValues(alpha: 0.5)),
+                    icon: Icon(AppIcons.email, color: Colors.white.withValues(alpha: 0.5)),
                     hintText: 'Email address',
                     hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                   ),
@@ -144,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    icon: Icon(Icons.lock_outline_rounded, color: Colors.white.withValues(alpha: 0.5)),
+                    icon: Icon(AppIcons.lock, color: Colors.white.withValues(alpha: 0.5)),
                     hintText: 'Password',
                     hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
                   ),

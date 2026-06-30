@@ -51,7 +51,7 @@ class DeviceSelector extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              Icons.phone_iphone_rounded,
+                              AppIcons.phone,
                               size: 13,
                               color: isSelected
                                   ? Colors.white
@@ -104,7 +104,7 @@ class DeviceSelector extends StatelessWidget {
                 turns: landscape ? 0.25 : 0,
                 duration: const Duration(milliseconds: 300),
                 child: Icon(
-                  Icons.screen_rotation_rounded,
+                  AppIcons.rotate,
                   size: 18,
                   color: landscape ? Colors.white : Colors.white.withValues(alpha: 0.7),
                 ),

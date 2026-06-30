@@ -136,8 +136,8 @@ class _FloatingNavBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _NavItem(icon: Icons.home_rounded, outlinedIcon: Icons.home_outlined, label: 'Home', index: 0, current: currentIndex, onTap: onTap),
-            _NavItem(icon: Icons.edit_note_rounded, outlinedIcon: Icons.edit_note_outlined, label: 'Manual', index: 1, current: currentIndex, onTap: onTap),
+            _NavItem(icon: AppIcons.home, outlinedIcon: AppIcons.homeOutline, label: 'Home', index: 0, current: currentIndex, onTap: onTap),
+            _NavItem(icon: AppIcons.manual, outlinedIcon: AppIcons.manualOutline, label: 'Manual', index: 1, current: currentIndex, onTap: onTap),
 
             // Center QR button
             TapScale(
@@ -153,13 +153,13 @@ class _FloatingNavBar extends StatelessWidget {
                     border: Border.all(color: currentIndex == 2 ? kGreen : kBorder, width: 1.5),
                     boxShadow: currentIndex == 2 ? kGreenGlow : kCardShadow,
                   ),
-                  child: const Icon(Icons.qr_code_2_rounded, color: kWhite, size: 24),
+                  child: const Icon(AppIcons.qr, color: kWhite, size: 24),
                 ),
               ),
             ),
 
-            _NavItem(icon: Icons.bar_chart_rounded, outlinedIcon: Icons.bar_chart_outlined, label: 'Records', index: 3, current: currentIndex, onTap: onTap),
-            _NavItem(icon: Icons.person_rounded, outlinedIcon: Icons.person_outline_rounded, label: 'Profile', index: 4, current: currentIndex, onTap: onTap),
+            _NavItem(icon: AppIcons.records, outlinedIcon: AppIcons.recordsOutline, label: 'Records', index: 3, current: currentIndex, onTap: onTap),
+            _NavItem(icon: AppIcons.profile, outlinedIcon: AppIcons.profileOutline, label: 'Profile', index: 4, current: currentIndex, onTap: onTap),
           ],
         ),
       ),

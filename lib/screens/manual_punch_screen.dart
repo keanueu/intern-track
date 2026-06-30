@@ -35,7 +35,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
-          const Icon(Icons.check_circle_rounded, color: kGreen),
+          const Icon(AppIcons.checkCircle, color: kGreen),
           const SizedBox(width: 10),
           Expanded(child: Text(msg, style: const TextStyle(color: kWhite))),
         ]),
@@ -103,7 +103,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.wifi_off_rounded, size: 14, color: kGreen),
+                          const Icon(AppIcons.wifiOff, size: 14, color: kGreen),
                           const SizedBox(width: 8),
                           const Expanded(
                             child: Text(
@@ -217,7 +217,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                       child: Column(
                         children: [
                           _GroupedPunchAction(
-                            icon: Icons.login_rounded,
+                            icon: AppIcons.login,
                             label: 'Time In',
                             sublabel: isPunchedIn
                                 ? 'Already logged in'
@@ -228,7 +228,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                           ),
                           const Divider(height: 1, indent: 56, endIndent: 0, color: kBorder),
                           _GroupedPunchAction(
-                            icon: Icons.logout_rounded,
+                            icon: AppIcons.logout,
                             label: 'Time Out',
                             sublabel: !isPunchedIn
                                 ? 'No active session'
@@ -239,7 +239,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                           ),
                           const Divider(height: 1, indent: 56, endIndent: 0, color: kBorder),
                           _GroupedPunchAction(
-                            icon: Icons.free_breakfast_rounded,
+                            icon: AppIcons.breakfast,
                             label: 'Break',
                             sublabel: !isPunchedIn
                                 ? 'Must be timed in first'
@@ -297,7 +297,7 @@ class _TodaySummary extends StatelessWidget {
               color: kGreen.withValues(alpha: 0.12),
               borderRadius: kRadiusTag,
             ),
-            child: const Icon(Icons.today_rounded, size: 16, color: kGreen),
+            child: const Icon(AppIcons.today, size: 16, color: kGreen),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -377,7 +377,7 @@ class _GroupedPunchAction extends StatelessWidget {
               ),
             ),
             const Icon(
-              Icons.chevron_right_rounded,
+              AppIcons.chevronRight,
               color: kGreyDark,
               size: 20,
             ),

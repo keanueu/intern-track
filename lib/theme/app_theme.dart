@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 // ── Colours ───────────────────────────────────────────────────────────────────
@@ -13,6 +14,72 @@ const kGrey       = Color(0xFF6B7280);
 const kGreyDark   = Color(0xFF374151);
 const kRed        = Color(0xFFFF4757);
 const kAmber      = Color(0xFFFFB800);
+
+class AppIcons {
+  const AppIcons._();
+
+  static const home = CupertinoIcons.house_fill;
+  static const homeOutline = CupertinoIcons.house;
+  static const manual = CupertinoIcons.pencil_ellipsis_rectangle;
+  static const manualOutline = CupertinoIcons.pencil;
+  static const qr = CupertinoIcons.qrcode;
+  static const qrScanner = CupertinoIcons.qrcode_viewfinder;
+  static const records = CupertinoIcons.chart_bar_fill;
+  static const recordsOutline = CupertinoIcons.chart_bar;
+  static const profile = CupertinoIcons.person_fill;
+  static const profileOutline = CupertinoIcons.person;
+  static const phone = CupertinoIcons.device_phone_portrait;
+  static const rotate = CupertinoIcons.rotate_right;
+  static const cellular = CupertinoIcons.antenna_radiowaves_left_right;
+  static const wifi = CupertinoIcons.wifi;
+  static const wifiOff = CupertinoIcons.wifi_slash;
+  static const battery = CupertinoIcons.battery_full;
+  static const checkCircle = CupertinoIcons.check_mark_circled_solid;
+  static const checkCircleOutline = CupertinoIcons.check_mark_circled;
+  static const calendar = CupertinoIcons.calendar;
+  static const delete = CupertinoIcons.delete_solid;
+  static const deleteOutline = CupertinoIcons.delete;
+  static const addPerson = CupertinoIcons.person_badge_plus;
+  static const logout = CupertinoIcons.square_arrow_right;
+  static const login = CupertinoIcons.square_arrow_left;
+  static const people = CupertinoIcons.person_2_fill;
+  static const peopleOutline = CupertinoIcons.person_2;
+  static const bolt = CupertinoIcons.bolt_fill;
+  static const pieChart = CupertinoIcons.chart_pie_fill;
+  static const chevronLeft = CupertinoIcons.chevron_left;
+  static const chevronRight = CupertinoIcons.chevron_right;
+  static const chevronDown = CupertinoIcons.chevron_down;
+  static const pdf = CupertinoIcons.doc_richtext;
+  static const pdfOutline = CupertinoIcons.doc_text;
+  static const notifications = CupertinoIcons.bell;
+  static const email = CupertinoIcons.mail;
+  static const lock = CupertinoIcons.lock;
+  static const timer = CupertinoIcons.timer;
+  static const eventNote = CupertinoIcons.doc_text;
+  static const hub = CupertinoIcons.circle_grid_hex_fill;
+  static const dateRange = CupertinoIcons.calendar_today;
+  static const breakfast = CupertinoIcons.pause_circle_fill;
+  static const today = CupertinoIcons.today;
+  static const close = CupertinoIcons.xmark;
+  static const workHistory = CupertinoIcons.briefcase_fill;
+  static const download = CupertinoIcons.arrow_down_doc_fill;
+  static const school = CupertinoIcons.book_fill;
+  static const business = CupertinoIcons.building_2_fill;
+  static const manageAccounts = CupertinoIcons.person_crop_circle_badge_checkmark;
+  static const copy = CupertinoIcons.doc_on_doc_fill;
+  static const camera = CupertinoIcons.camera_fill;
+  static const photoLibrary = CupertinoIcons.photo_fill_on_rectangle_fill;
+  static const badge = CupertinoIcons.rosette;
+  static const edit = CupertinoIcons.pencil_circle_fill;
+  static const timerOff = CupertinoIcons.timer;
+  static const warning = CupertinoIcons.exclamationmark_triangle_fill;
+  static const dashboard = CupertinoIcons.rectangle_grid_2x2_fill;
+  static const dashboardOutline = CupertinoIcons.rectangle_grid_2x2;
+  static const approvals = CupertinoIcons.checkmark_rectangle_fill;
+  static const approvalsOutline = CupertinoIcons.checkmark_rectangle;
+  static const table = CupertinoIcons.table_fill;
+  static const tableOutline = CupertinoIcons.table;
+}
 
 const kGreenGradient = LinearGradient(
   colors: [kGreen, kGreenLight],

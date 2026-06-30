@@ -90,11 +90,11 @@ class _AdminFloatingNavBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _AdminNavItem(icon: Icons.dashboard_rounded, outlinedIcon: Icons.dashboard_outlined, label: 'Overview', index: 0, current: currentIndex, onTap: onTap),
-            _AdminNavItem(icon: Icons.fact_check_rounded, outlinedIcon: Icons.fact_check_outlined, label: 'Approvals', index: 1, current: currentIndex, onTap: onTap),
-            _AdminNavItem(icon: Icons.table_chart_rounded, outlinedIcon: Icons.table_chart_outlined, label: 'Ledger', index: 2, current: currentIndex, onTap: onTap),
-            _AdminNavItem(icon: Icons.people_rounded, outlinedIcon: Icons.people_outline_rounded, label: 'Onboarding', index: 3, current: currentIndex, onTap: onTap),
-            _AdminNavItem(icon: Icons.picture_as_pdf_rounded, outlinedIcon: Icons.picture_as_pdf_outlined, label: 'Reports', index: 4, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: AppIcons.dashboard, outlinedIcon: AppIcons.dashboardOutline, label: 'Overview', index: 0, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: AppIcons.approvals, outlinedIcon: AppIcons.approvalsOutline, label: 'Approvals', index: 1, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: AppIcons.table, outlinedIcon: AppIcons.tableOutline, label: 'Ledger', index: 2, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: AppIcons.people, outlinedIcon: AppIcons.peopleOutline, label: 'Onboarding', index: 3, current: currentIndex, onTap: onTap),
+            _AdminNavItem(icon: AppIcons.pdf, outlinedIcon: AppIcons.pdfOutline, label: 'Reports', index: 4, current: currentIndex, onTap: onTap),
           ],
         ),
       ),

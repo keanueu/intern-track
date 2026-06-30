@@ -194,11 +194,11 @@ class _StatusBar extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 14),
                 child: Row(
                   children: const [
-                    Icon(Icons.signal_cellular_alt, size: 16, color: Color(0xFF1C1C1E)),
+                    Icon(AppIcons.cellular, size: 16, color: Color(0xFF1C1C1E)),
                     SizedBox(width: 5),
-                    Icon(Icons.wifi_rounded, size: 16, color: Color(0xFF1C1C1E)),
+                    Icon(AppIcons.wifi, size: 16, color: Color(0xFF1C1C1E)),
                     SizedBox(width: 5),
-                    Icon(Icons.battery_full_rounded, size: 18, color: Color(0xFF1C1C1E)),
+                    Icon(AppIcons.battery, size: 18, color: Color(0xFF1C1C1E)),
                   ],
                 ),
               ),
