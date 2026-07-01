@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
 import '../services/admin_state.dart';
+import '../theme/app_theme.dart';
 import 'admin/admin_shell.dart';
 import '../main.dart'; // For MainContainer
 

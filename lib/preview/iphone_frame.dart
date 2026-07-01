@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 import 'device_specs.dart';
 import 'notch_widget.dart';
 
