@@ -188,40 +188,47 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool selected = current == index;
 
-    return Expanded(
-      child: TapScale(
-        onTap: () => onTap(index),
-        child: AnimatedContainer(
-          duration: kDurNormal,
-          curve: kCurve,
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-          decoration: BoxDecoration(
-            color: selected ? kGreen.withValues(alpha: 0.12) : Colors.transparent,
-            borderRadius: BorderRadius.circular(100),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(selected ? icon : outlinedIcon,
-                  color: selected ? kGreen : kGrey, size: 22),
-              const SizedBox(height: 2),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                    color: selected ? kGreen : kGrey,
-                  ),
-                ),
+return Expanded(
+  child: TapScale(
+    onTap: () => onTap(index),
+    child: Center(
+      child: AnimatedContainer(
+        duration: kDurNormal,
+        curve: kCurve,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 10,
+        ),
+        decoration: BoxDecoration(
+          color: selected
+              ? kGreen.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              selected ? icon : outlinedIcon,
+              color: selected ? kGreen : kGrey,
+              size: 22,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: selected
+                    ? FontWeight.w700
+                    : FontWeight.w400,
+                color: selected ? kGreen : kGrey,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 }
