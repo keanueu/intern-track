@@ -12,6 +12,8 @@ class ProfileModel {
   final String email;
   final String password;
   final String department;
+  final double weeklyTargetHours;
+  final int weekStartDay;
 
   ProfileModel({
     required this.id,
@@ -27,6 +29,8 @@ class ProfileModel {
     this.email = '',
     this.password = '123456',
     this.department = '',
+    this.weeklyTargetHours = 40,
+    this.weekStartDay = 1,
   });
 
   factory ProfileModel.empty() => ProfileModel(
@@ -41,6 +45,7 @@ class ProfileModel {
         startDate: DateTime.now().toIso8601String(),
         email: 'intern@example.com',
         password: 'internpassword',
+        weeklyTargetHours: 40,
       );
 
   Map<String, dynamic> toMap() => {
@@ -56,6 +61,8 @@ class ProfileModel {
         'email': email,
         'password': password,
         'department': department,
+        'weekly_target_hours': weeklyTargetHours,
+        'week_start_day': weekStartDay,
       };
 
   factory ProfileModel.fromMap(Map<String, dynamic> m) {
@@ -75,6 +82,8 @@ class ProfileModel {
       email: m['email'] ?? '',
       password: m['password'] ?? '123456',
       department: m['department'] ?? '',
+      weeklyTargetHours: (m['weekly_target_hours'] as num?)?.toDouble() ?? 40,
+      weekStartDay: (m['week_start_day'] as int?) ?? 1,
     );
   }
 
@@ -90,6 +99,8 @@ class ProfileModel {
     String? email,
     String? password,
     String? department,
+    double? weeklyTargetHours,
+    int? weekStartDay,
   }) =>
       ProfileModel(
         id: id,
@@ -105,5 +116,7 @@ class ProfileModel {
         email: email ?? this.email,
         password: password ?? this.password,
         department: department ?? this.department,
+        weeklyTargetHours: weeklyTargetHours ?? this.weeklyTargetHours,
+        weekStartDay: weekStartDay ?? this.weekStartDay,
       );
 }

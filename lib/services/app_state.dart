@@ -14,6 +14,9 @@ class AppState extends ChangeNotifier {
   int _daysPresent = 0;
   DtrLog? _openLog;
   bool _loading = false;
+  List<Map<String, dynamic>> _shifts = [];
+  List<Map<String, dynamic>> _calendarEvents = [];
+  List<Map<String, dynamic>> _competencies = [];
   
   // In-memory fallback for unsupported platforms (e.g., Web)
   static final List<ProfileModel> _mockProfiles = [
@@ -151,6 +154,9 @@ class AppState extends ChangeNotifier {
     _totalHours = await DBHelper.instance.getTotalHours(id);
     _daysPresent = await DBHelper.instance.getDaysPresent(id);
     _openLog = await DBHelper.instance.getOpenLog(id);
+    _shifts = await DBHelper.instance.getShifts(id);
+    _calendarEvents = await DBHelper.instance.getCalendarEvents(id);
+    _competencies = await DBHelper.instance.getCompetencies(id);
   }
 
   Future<String> punch({double? lat, double? lng, String? locationName}) async {
@@ -282,4 +288,115 @@ class AppState extends ChangeNotifier {
     if (!_dbSupported) return;
     await DBHelper.instance.deletePhoto(photoId);
   }
+
+  // ── Weekly Stats ────────────────────────────────────────────────────────
+
+  double get weeklyHours {
+    final now = DateTime.now();
+    final start = now.subtract(Duration(days: now.weekday - 1));
+    final weekStart = DateTime(start.year, start.month, start.day);
+    return _logs
+        .where((l) => l.timeOut != null && l.timeIn.isAfter(weekStart))
+        .fold(0.0, (sum, l) => sum + l.calculatedHours);
+  }
+
+  double get weeklyTarget => _profile.weeklyTargetHours;
+
+  double get weeklyPercent => weeklyTarget > 0 ? (weeklyHours / weeklyTarget).clamp(0.0, 1.0) : 0.0;
+
+  // ── Shifts ──────────────────────────────────────────────────────────────
+
+  List<Map<String, dynamic>> get shifts => _shifts;
+
+  Future<void> loadShifts() async {
+    if (!_dbSupported) return;
+    _shifts = await DBHelper.instance.getShifts(_profile.id);
+    notifyListeners();
+  }
+
+  Future<void> saveShift(Map<String, dynamic> shift) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.saveShift(shift);
+    await loadShifts();
+  }
+
+  Future<void> deleteShift(String shiftId) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.deleteShift(shiftId);
+    await loadShifts();
+  }
+
+  Future<void> clearShifts() async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.clearShifts(_profile.id);
+    await loadShifts();
+  }
+
+  Map<String, dynamic>? get todayShift {
+    final today = DateTime.now().weekday - 1;
+    try {
+      return _shifts.firstWhere((s) => s['day_of_week'] == today || (today == 6 && s['day_of_week'] == 7));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // ── Calendar Events (Holiday/Leave) ─────────────────────────────────────
+
+  List<Map<String, dynamic>> get calendarEvents => _calendarEvents;
+
+  Future<void> loadCalendarEvents() async {
+    if (!_dbSupported) return;
+    _calendarEvents = await DBHelper.instance.getCalendarEvents(_profile.id);
+    notifyListeners();
+  }
+
+  Future<void> saveCalendarEvent(Map<String, dynamic> event) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.saveCalendarEvent(event);
+    await loadCalendarEvents();
+  }
+
+  Future<void> deleteCalendarEvent(String eventId) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.deleteCalendarEvent(eventId);
+    await loadCalendarEvents();
+  }
+
+  bool isDateExcluded(DateTime date) {
+    final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    return _calendarEvents.any((e) => e['date'] == dateStr);
+  }
+
+  // ── Competencies ────────────────────────────────────────────────────────
+
+  List<Map<String, dynamic>> get competencies => _competencies;
+
+  Future<void> loadCompetencies() async {
+    if (!_dbSupported) return;
+    _competencies = await DBHelper.instance.getCompetencies(_profile.id);
+    notifyListeners();
+  }
+
+  Future<void> saveCompetency(Map<String, dynamic> competency) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.saveCompetency(competency);
+    await loadCompetencies();
+  }
+
+  Future<void> toggleCompetency(String competencyId, int completed) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.toggleCompetency(competencyId, completed);
+    await loadCompetencies();
+  }
+
+  Future<void> deleteCompetency(String competencyId) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.deleteCompetency(competencyId);
+    await loadCompetencies();
+  }
+
+  int get completedCompetencies => _competencies.where((c) => c['completed'] == 1).length;
+  int get totalCompetencies => _competencies.length;
+  double get competencyPercent => totalCompetencies > 0 ? completedCompetencies / totalCompetencies : 0.0;
 }

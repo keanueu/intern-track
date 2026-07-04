@@ -595,4 +595,76 @@ class DBHelper {
     final db = await database;
     await db.delete('dtr_photos', where: 'id = ?', whereArgs: [photoId]);
   }
+
+  // ── Shifts ──────────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getShifts(String userId) async {
+    final db = await database;
+    return db.query('shifts', where: 'user_id = ?', whereArgs: [userId], orderBy: 'day_of_week ASC');
+  }
+
+  Future<void> saveShift(Map<String, dynamic> shift) async {
+    final db = await database;
+    await db.insert('shifts', shift, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> deleteShift(String shiftId) async {
+    final db = await database;
+    await db.delete('shifts', where: 'id = ?', whereArgs: [shiftId]);
+  }
+
+  Future<void> clearShifts(String userId) async {
+    final db = await database;
+    await db.delete('shifts', where: 'user_id = ?', whereArgs: [userId]);
+  }
+
+  // ── Calendar Events (Holiday/Leave) ─────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getCalendarEvents(String userId) async {
+    final db = await database;
+    return db.query('calendar_events', where: 'user_id = ?', whereArgs: [userId], orderBy: 'date ASC');
+  }
+
+  Future<List<Map<String, dynamic>>> getCalendarEventsInRange(String userId, DateTime start, DateTime end) async {
+    final db = await database;
+    return db.query(
+      'calendar_events',
+      where: 'user_id = ? AND date >= ? AND date <= ?',
+      whereArgs: [userId, start.toIso8601String().substring(0, 10), end.toIso8601String().substring(0, 10)],
+      orderBy: 'date ASC',
+    );
+  }
+
+  Future<void> saveCalendarEvent(Map<String, dynamic> event) async {
+    final db = await database;
+    await db.insert('calendar_events', event, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> deleteCalendarEvent(String eventId) async {
+    final db = await database;
+    await db.delete('calendar_events', where: 'id = ?', whereArgs: [eventId]);
+  }
+
+  // ── Competencies ────────────────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getCompetencies(String userId) async {
+    final db = await database;
+    return db.query('competencies', where: 'user_id = ?', whereArgs: [userId], orderBy: 'created_at DESC');
+  }
+
+  Future<void> saveCompetency(Map<String, dynamic> competency) async {
+    final db = await database;
+    await db.insert('competencies', competency, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> toggleCompetency(String competencyId, int completed) async {
+    final db = await database;
+    final now = completed == 1 ? DateTime.now().toIso8601String() : null;
+    await db.update('competencies', {'completed': completed, 'completed_at': now}, where: 'id = ?', whereArgs: [competencyId]);
+  }
+
+  Future<void> deleteCompetency(String competencyId) async {
+    final db = await database;
+    await db.delete('competencies', where: 'id = ?', whereArgs: [competencyId]);
+  }
 }

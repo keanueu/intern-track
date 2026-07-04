@@ -8,6 +8,9 @@ import '../services/app_state.dart';
 import '../models/profile_model.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
+import 'schedule_screen.dart';
+import 'calendar_screen.dart';
+import 'competency_screen.dart';
 
 // image_picker + dart:io File only work on Android/iOS
 bool get _isMobile {
@@ -196,6 +199,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 sub: '${profile.company} • ${profile.supervisor}',
                                 color: kGreen,
                                 onTap: () => _showOjtDetails(context, state),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('PLANNING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        ),
+                        DarkCard(
+                          padding: EdgeInsets.zero,
+                          child: Column(
+                            children: [
+                              _MenuItem(
+                                icon: AppIcons.calendar,
+                                label: 'Schedule',
+                                sub: 'Set your weekly shift times',
+                                color: kGreen,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScheduleScreen())),
+                              ),
+                              const _CardDivider(),
+                              _MenuItem(
+                                icon: AppIcons.dateRange,
+                                label: 'Calendar',
+                                sub: 'Holidays, leave & sick days',
+                                color: kAmber,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CalendarScreen())),
+                              ),
+                              const _CardDivider(),
+                              _MenuItem(
+                                icon: AppIcons.badge,
+                                label: 'Competencies',
+                                sub: '${state.completedCompetencies}/${state.totalCompetencies} completed',
+                                color: kGreenLight,
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CompetencyScreen())),
                               ),
                             ],
                           ),

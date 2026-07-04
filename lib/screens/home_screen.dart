@@ -48,11 +48,39 @@ class HomeScreen extends StatelessWidget {
                     // Session Controls (Break + Activity) when punched in
                     if (state.isPunchedIn)
                       FadeSlideIn(index: 4, child: _SessionControls(state: state)),
+
+                    // Weekly Goal
+                    const SizedBox(height: 20),
+                    FadeSlideIn(
+                      index: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Weekly Goal',
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                          Text(
+                            '${state.weeklyHours.toStringAsFixed(1)} / ${state.weeklyTarget.toInt()}h',
+                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: kGreen),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    FadeSlideIn(index: 6, child: _WeeklyGoalBar(state: state)),
+                    const SizedBox(height: 6),
+
+                    // Upcoming Shift
+                    if (state.todayShift != null)
+                      FadeSlideIn(
+                        index: 7,
+                        child: _UpcomingShiftCard(state: state),
+                      ),
+
                     const SizedBox(height: 24),
 
                     // 4. Week strip — labelled so user knows what it is
                     FadeSlideIn(
-                      index: 5,
+                      index: 8,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -66,17 +94,17 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    FadeSlideIn(index: 6, child: _WeekStrip(state: state)),
+                    FadeSlideIn(index: 9, child: _WeekStrip(state: state)),
                     const SizedBox(height: 24),
 
                     // 5. OJT Hours — unified progress + stats in one card
                     FadeSlideIn(
-                      index: 7,
+                      index: 10,
                       child: const Text('OJT Progress',
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
                     ),
                     const SizedBox(height: 10),
-                    FadeSlideIn(index: 8, child: _OjtProgressCard(state: state)),
+                    FadeSlideIn(index: 11, child: _OjtProgressCard(state: state)),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -472,6 +500,121 @@ class _SessionControls extends StatelessWidget {
   }
 }
 
+class _WeeklyGoalBar extends StatelessWidget {
+  final AppState state;
+  const _WeeklyGoalBar({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final pct = state.weeklyPercent;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: kSurface,
+        borderRadius: kRadiusCard,
+        border: Border.all(color: kBorder),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${(pct * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: kGreen),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${state.weeklyHours.toStringAsFixed(1)}h of ${state.weeklyTarget.toInt()}h this week',
+                  style: const TextStyle(fontSize: 11, color: kGrey),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 100, height: 6,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: AnimatedBuilder(
+                animation: AlwaysStoppedAnimation(pct),
+                builder: (_, __) => Row(
+                  children: [
+                    Flexible(
+                      flex: (pct * 100).round().clamp(0, 100),
+                      child: Container(decoration: BoxDecoration(gradient: kGreenGradient)),
+                    ),
+                    Flexible(
+                      flex: ((1 - pct) * 100).round().clamp(0, 100),
+                      child: Container(color: kSurface2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UpcomingShiftCard extends StatelessWidget {
+  final AppState state;
+  const _UpcomingShiftCard({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final shift = state.todayShift;
+    if (shift == null) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: kSurface2,
+        borderRadius: kRadiusCard,
+        border: Border.all(color: kBorder),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: kGreen.withValues(alpha: 0.12),
+              borderRadius: kRadiusTag,
+            ),
+            child: const Icon(AppIcons.today, color: kGreen, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Today's Shift",
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kWhite)),
+                Text(
+                  '${shift['start_time']} – ${shift['end_time']}',
+                  style: const TextStyle(fontSize: 13, color: kGrey),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: kGreen.withValues(alpha: 0.1),
+              borderRadius: kRadiusTag,
+            ),
+            child: Text('${shift['break_minutes']}m break',
+                style: const TextStyle(fontSize: 10, color: kGreen, fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _WeekStrip extends StatefulWidget {
   final AppState state;
   const _WeekStrip({required this.state});
@@ -501,6 +644,7 @@ class _WeekStripState extends State<_WeekStrip> {
         final day = start.add(Duration(days: i));
         final isSelected = _selected == i;
         final hasPunch = widget.state.hasPunchedOn(day);
+        final isExcluded = widget.state.isDateExcluded(day);
 
         return TapScale(
           onTap: () => setState(() => _selected = i),
@@ -536,9 +680,11 @@ class _WeekStripState extends State<_WeekStrip> {
                     shape: BoxShape.circle,
                     color: isSelected
                         ? kBg.withValues(alpha: 0.5)
-                        : hasPunch
-                            ? kGreen
-                            : kGreyDark,
+                        : isExcluded
+                            ? kAmber
+                            : hasPunch
+                                ? kGreen
+                                : kGreyDark,
                   ),
                 ),
               ],
