@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
-import '../services/admin_state.dart';
 import '../theme/app_theme.dart';
-import 'admin/admin_shell.dart';
-import '../main.dart'; // For MainContainer
+import '../main.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,7 +15,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _selectedRole = 'intern';
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -57,30 +54,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     final appState = Provider.of<AppState>(context, listen: false);
-    await appState.register(name, email, password, role: _selectedRole);
+    await appState.register(name, email, password);
 
     if (!mounted) return;
 
     setState(() => _isLoading = false);
 
     if (appState.isLoggedIn) {
-      if (appState.currentRole == 'admin') {
-        // Init admin state and navigate to Admin Shell
-        final adminState = Provider.of<AdminState>(context, listen: false);
-        adminState.load();
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminShell()),
-          (route) => false,
-        );
-      } else {
-        // Navigate to Intern Dashboard
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const MainContainer()),
-          (route) => false,
-        );
-      }
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainContainer()),
+        (route) => false,
+      );
     } else {
       setState(() => _errorMessage = 'Registration failed. Please try again.');
     }
@@ -124,40 +109,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Role Selector
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2C2C2E),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF3C3C3E)),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                child: Row(
-                  children: [
-                    Icon(AppIcons.badge, color: Colors.white.withValues(alpha: 0.5)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _selectedRole,
-                          dropdownColor: const Color(0xFF2C2C2E),
-                          style: const TextStyle(color: Colors.white, fontSize: 16),
-                          icon: Icon(AppIcons.chevronDown, color: Colors.white.withValues(alpha: 0.5)),
-                          items: const [
-                            DropdownMenuItem(value: 'intern', child: Text('Intern')),
-                            DropdownMenuItem(value: 'admin', child: Text('Admin / Supervisor')),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) setState(() => _selectedRole = value);
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
 
               // Name Field
               Container(

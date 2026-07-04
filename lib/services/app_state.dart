@@ -18,9 +18,7 @@ class AppState extends ChangeNotifier {
   // In-memory fallback for unsupported platforms (e.g., Web)
   static final List<ProfileModel> _mockProfiles = [
     ProfileModel.empty(),
-    ProfileModel.admin(),
   ];
-
   Future<void> _loadMockProfiles() async {
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getString('mock_profiles');
@@ -57,7 +55,6 @@ class AppState extends ChangeNotifier {
   double get requiredHours => _profile.requiredHours;
   double get remainingHours => (_profile.requiredHours - _totalHours).clamp(0, _profile.requiredHours);
   double get completionPercent => _totalHours / _profile.requiredHours;
-  String get currentRole => _profile.role;
   bool get isLoggedIn => _profile.id != 'default_user' && _profile.id.isNotEmpty;
 
   Future<void> login(String email, String password) async {
@@ -83,15 +80,14 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> register(String fullName, String email, String password, {String role = 'intern'}) async {
+  Future<void> register(String fullName, String email, String password) async {
     _loading = true;
     notifyListeners();
 
     final newProfile = ProfileModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       fullName: fullName,
-      role: role,
-      qrCodeToken: DateTime.now().millisecondsSinceEpoch.toString(), // Generate a basic token
+      qrCodeToken: DateTime.now().millisecondsSinceEpoch.toString(),
       company: 'Not set',
       supervisor: 'Not set',
       requiredHours: 486,

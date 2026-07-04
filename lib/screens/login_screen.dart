@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
-import '../services/admin_state.dart';
 import '../theme/app_theme.dart';
-import 'admin/admin_shell.dart';
-import '../main.dart'; // For MainContainer
+import '../main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -48,21 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (appState.isLoggedIn) {
-      if (appState.currentRole == 'admin') {
-        // Init admin state and navigate to Admin Shell
-        final adminState = Provider.of<AdminState>(context, listen: false);
-        adminState.load();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminShell()),
-        );
-      } else {
-        // Navigate to Intern Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainContainer()),
-        );
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const MainContainer()),
+      );
     } else {
       setState(() => _errorMessage = 'Invalid email or password.');
     }

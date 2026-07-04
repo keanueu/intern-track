@@ -4,8 +4,7 @@ class DtrLog {
   final DateTime timeIn;
   final DateTime? timeOut;
   final double calculatedHours;
-  final String syncStatus; // 'pending' or 'synced'
-  final String? internName; // transient — populated for admin views, not stored
+  final String syncStatus;
 
   DtrLog({
     required this.id,
@@ -14,7 +13,6 @@ class DtrLog {
     this.timeOut,
     this.calculatedHours = 0.0,
     this.syncStatus = 'pending',
-    this.internName,
   });
 
   // Convert a DtrLog object into a Map for SQLite insertion
@@ -38,7 +36,6 @@ class DtrLog {
       timeOut: map['time_out'] != null ? DateTime.parse(map['time_out']) : null,
       calculatedHours: (map['calculated_hours'] as num?)?.toDouble() ?? 0.0,
       syncStatus: map['sync_status'] ?? 'pending',
-      internName: map['intern_name'] as String?,
     );
   }
 

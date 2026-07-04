@@ -10,7 +10,6 @@ import 'screens/records_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'services/app_state.dart';
-import 'services/admin_state.dart';
 import 'theme/app_theme.dart';
 
 
@@ -30,7 +29,6 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()..load()),
-        ChangeNotifierProvider(create: (_) => AdminState()),
       ],
       child: DevicePreview(
         enabled: !kReleaseMode,
