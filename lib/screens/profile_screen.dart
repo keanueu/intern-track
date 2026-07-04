@@ -11,6 +11,7 @@ import 'login_screen.dart';
 import 'schedule_screen.dart';
 import 'calendar_screen.dart';
 import 'competency_screen.dart';
+import 'export_screen.dart';
 
 // image_picker + dart:io File only work on Android/iOS
 bool get _isMobile {
@@ -257,10 +258,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const _CardDivider(),
                               _MenuItem(
                                 icon: AppIcons.download,
-                                label: 'Export DTR',
-                                sub: 'Copy summary to clipboard',
+                                label: 'Export & Backup',
+                                sub: 'PDF, CSV, clipboard & data backup',
                                 color: kGreenLight,
-                                onTap: () => _exportDtr(context, state),
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExportScreen())),
                               ),
                             ],
                           ),
@@ -629,61 +630,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
-  }
-
-  void _exportDtr(BuildContext context, AppState state) {
-    final profile = state.profile;
-    final logs = state.logs;
-    final buffer = StringBuffer();
-
-    buffer.writeln('=== DTR REPORT ===');
-    buffer.writeln('Name: ${profile.fullName}');
-    buffer.writeln('Course: ${profile.course} • ${profile.batch}');
-    buffer.writeln('Company: ${profile.company}');
-    buffer.writeln('Supervisor: ${profile.supervisor}');
-    buffer.writeln('Generated: ${DateTime.now()}');
-    buffer.writeln('');
-    buffer.writeln('--- ATTENDANCE LOG ---');
-    for (final log in logs) {
-      final timeIn = _fmtDt(log.timeIn);
-      final timeOut = log.timeOut != null ? _fmtDt(log.timeOut!) : 'N/A';
-      buffer.writeln(
-          'Date: ${log.timeIn.month}/${log.timeIn.day}/${log.timeIn.year}');
-      buffer.writeln('  Time In:  $timeIn');
-      buffer.writeln('  Time Out: $timeOut');
-      buffer.writeln('  Hours:    ${log.calculatedHours.toStringAsFixed(2)}');
-      buffer.writeln('');
-    }
-    buffer.writeln('--- SUMMARY ---');
-    buffer.writeln('Days Present : ${state.daysPresent}');
-    buffer.writeln('Total Hours  : ${state.totalHours.toStringAsFixed(2)}');
-    buffer.writeln('Required     : ${profile.requiredHours.toInt()}');
-    buffer.writeln('Remaining    : ${state.remainingHours.toStringAsFixed(2)}');
-    buffer.writeln(
-        'Completion   : ${(state.completionPercent * 100).toStringAsFixed(1)}%');
-
-    Clipboard.setData(ClipboardData(text: buffer.toString()));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Row(children: [
-          Icon(AppIcons.checkCircle, color: kGreen),
-          SizedBox(width: 10),
-          Text('DTR report copied to clipboard!',
-              style: TextStyle(color: kWhite)),
-        ]),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: kSurface,
-        shape: RoundedRectangleBorder(
-            borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
-      ),
-    );
-  }
-
-  String _fmtDt(DateTime dt) {
-    final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ampm = dt.hour >= 12 ? 'PM' : 'AM';
-    return '$h:$m $ampm';
   }
 }
 
