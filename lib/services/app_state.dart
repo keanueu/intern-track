@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../database/db_helper.dart';
 import '../models/profile_model.dart';
 import '../models/dtr_model.dart';
+import 'settings_service.dart';
+import 'notification_service.dart';
 
 class AppState extends ChangeNotifier {
   ProfileModel _profile = ProfileModel.empty();
@@ -145,6 +147,16 @@ class AppState extends ChangeNotifier {
 
     _loading = false;
     notifyListeners();
+
+    _scheduleRemindersIfNeeded();
+  }
+
+  Future<void> _scheduleRemindersIfNeeded() async {
+    if (!_dbSupported) return;
+    final settings = SettingsService.instance;
+    if (settings.remindersEnabled && _shifts.isNotEmpty) {
+      await NotificationService.instance.scheduleShiftReminders(_shifts);
+    }
   }
 
   Future<void> _refresh() async {

@@ -9,17 +9,22 @@ import 'screens/manual_punch_screen.dart';
 import 'screens/records_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/scanner_screen.dart';
+import 'screens/lock_screen.dart';
 import 'services/app_state.dart';
+import 'services/settings_service.dart';
+import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
 
-
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux || defaultTargetPlatform == TargetPlatform.macOS)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
+
+  await SettingsService.instance.load();
+  await NotificationService.instance.init();
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -28,6 +33,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: SettingsService.instance),
         ChangeNotifierProvider(create: (_) => AppState()..load()),
       ],
       child: DevicePreview(
@@ -43,11 +49,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = context.watch<SettingsService>().flutterThemeMode;
+
     return MaterialApp(
       locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
+      builder: (context, child) {
+        return DevicePreview.appBuilder(context, LockScreen(child: child!));
+      },
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      darkTheme: buildAppTheme(),
+      themeMode: themeMode,
       home: const MainContainer(),
     );
   }

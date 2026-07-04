@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
@@ -180,19 +181,54 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-class _HeroBanner extends StatelessWidget {
+class _HeroBanner extends StatefulWidget {
   final AppState state;
   const _HeroBanner({required this.state});
 
   @override
+  State<_HeroBanner> createState() => _HeroBannerState();
+}
+
+class _HeroBannerState extends State<_HeroBanner> {
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && widget.state.isPunchedIn) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _elapsed(DateTime from) {
+    final diff = DateTime.now().difference(from);
+    final h = diff.inHours;
+    final m = diff.inMinutes % 60;
+    final s = diff.inSeconds % 60;
+    if (h > 0) return '${h}h ${m}m ${s}s';
+    if (m > 0) return '${m}m ${s}s';
+    return '${s}s';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = widget.state;
     final isPunchedIn = state.isPunchedIn;
     final openLog = state.openLog;
     String sub = 'Scan QR or use manual entry';
     if (isPunchedIn && openLog != null) {
       final h = openLog.timeIn.hour.toString().padLeft(2, '0');
       final m = openLog.timeIn.minute.toString().padLeft(2, '0');
-      sub = 'Active since $h:$m';
+      final elapsed = _elapsed(openLog.timeIn);
+      sub = 'Since $h:$m  ·  $elapsed';
     }
 
     return Container(

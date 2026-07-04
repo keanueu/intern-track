@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -41,6 +42,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   void _handleQrDetection(BarcodeCapture capture) async {
     if (!_canScan) return;
+    HapticFeedback.mediumImpact();
     final barcodes = capture.barcodes;
     if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
       setState(() => _canScan = false);

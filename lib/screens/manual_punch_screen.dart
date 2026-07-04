@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/app_state.dart';
@@ -55,6 +56,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
   }
 
   Future<void> _punch(BuildContext context) async {
+    HapticFeedback.mediumImpact();
     final state = context.read<AppState>();
     final pos = await _getLocation();
     final msg = await state.punch(

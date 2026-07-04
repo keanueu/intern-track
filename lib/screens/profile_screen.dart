@@ -12,6 +12,7 @@ import 'schedule_screen.dart';
 import 'calendar_screen.dart';
 import 'competency_screen.dart';
 import 'export_screen.dart';
+import '../services/settings_service.dart';
 
 // image_picker + dart:io File only work on Android/iOS
 bool get _isMobile {
@@ -235,6 +236,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 sub: '${state.completedCompetencies}/${state.totalCompetencies} completed',
                                 color: kGreenLight,
                                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CompetencyScreen())),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('PREFERENCES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        ),
+                        DarkCard(
+                          padding: EdgeInsets.zero,
+                          child: Column(
+                            children: [
+                              _SettingsToggle(
+                                icon: AppIcons.lock,
+                                label: 'Biometric Lock',
+                                sub: 'Unlock with fingerprint or face',
+                                value: context.watch<SettingsService>().lockEnabled,
+                                color: kGreen,
+                                onChanged: (v) => context.read<SettingsService>().setLockEnabled(v),
+                              ),
+                              if (context.watch<SettingsService>().lockEnabled)
+                                Column(
+                                  children: [
+                                    const _CardDivider(),
+                                    _SettingsSelect(
+                                      icon: AppIcons.timer,
+                                      label: 'Lock Timeout',
+                                      sub: '${context.watch<SettingsService>().lockTimeoutSeconds}s after going to background',
+                                      color: kAmber,
+                                      options: const ['15s', '30s', '1m', '5m'],
+                                      values: const [15, 30, 60, 300],
+                                      selected: context.watch<SettingsService>().lockTimeoutSeconds,
+                                      onChanged: (v) => context.read<SettingsService>().setLockTimeout(v),
+                                    ),
+                                  ],
+                                ),
+                              const _CardDivider(),
+                              _SettingsSelect(
+                                icon: AppIcons.pieChart,
+                                label: 'Theme',
+                                sub: '${context.watch<SettingsService>().themeMode.name[0].toUpperCase()}${context.watch<SettingsService>().themeMode.name.substring(1)}',
+                                color: kGreenLight,
+                                options: const ['Dark', 'System'],
+                                values: const [AppThemeMode.dark, AppThemeMode.system],
+                                selected: context.watch<SettingsService>().themeMode,
+                                onChanged: (v) => context.read<SettingsService>().setThemeMode(v),
+                              ),
+                              const _CardDivider(),
+                              _SettingsToggle(
+                                icon: AppIcons.notifications,
+                                label: 'Reminders',
+                                sub: 'Shift reminders & notifications',
+                                value: context.watch<SettingsService>().remindersEnabled,
+                                color: kGreen,
+                                onChanged: (v) {
+                                  final s = context.read<AppState>();
+                                  context.read<SettingsService>().setRemindersEnabled(v, shifts: s.shifts);
+                                },
                               ),
                             ],
                           ),
@@ -780,6 +840,169 @@ class _CardDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const Divider(height: 1, indent: 60, endIndent: 20, color: kBorder);
+}
+
+class _SettingsToggle extends StatelessWidget {
+  final IconData icon;
+  final String label, sub;
+  final bool value;
+  final Color color;
+  final ValueChanged<bool> onChanged;
+
+  const _SettingsToggle({
+    required this.icon,
+    required this.label,
+    required this.sub,
+    required this.value,
+    required this.color,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: kRadiusTag,
+                border: Border.all(color: color.withValues(alpha: 0.25)),
+              ),
+              child: Icon(icon, size: 18, color: color),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: kWhite)),
+                  Text(sub,
+                      style: const TextStyle(fontSize: 11, color: kGrey),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 28,
+              child: Switch.adaptive(
+                value: value,
+                activeColor: kGreen,
+                inactiveThumbColor: kGrey,
+                inactiveTrackColor: kBorder,
+                onChanged: onChanged,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _SettingsSelect extends StatelessWidget {
+  final IconData icon;
+  final String label, sub;
+  final Color color;
+  final List<String> options;
+  final List<dynamic> values;
+  final dynamic selected;
+  final ValueChanged<dynamic> onChanged;
+
+  const _SettingsSelect({
+    required this.icon,
+    required this.label,
+    required this.sub,
+    required this.color,
+    required this.options,
+    required this.values,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => TapScale(
+        onTap: () => _showPicker(context),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: kRadiusTag,
+                  border: Border.all(color: color.withValues(alpha: 0.25)),
+                ),
+                child: Icon(icon, size: 18, color: color),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: kWhite)),
+                    Text(sub,
+                        style: const TextStyle(fontSize: 11, color: kGrey),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+              const Icon(AppIcons.chevronRight, color: kGreyDark, size: 20),
+            ],
+          ),
+        ),
+      );
+
+  void _showPicker(BuildContext context) {
+    final idx = values.indexOf(selected);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: kSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: kBorder),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                      color: kBorder,
+                      borderRadius: BorderRadius.circular(2))),
+              ...List.generate(options.length, (i) {
+                final selected = i == idx;
+                return _PickOption(
+                  icon: selected ? AppIcons.checkCircle : AppIcons.checkCircleOutline,
+                  label: options[i],
+                  color: selected ? kGreen : kGrey,
+                  onTap: () {
+                    onChanged(values[i]);
+                    Navigator.pop(ctx);
+                  },
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _AvatarPicker extends StatelessWidget {
