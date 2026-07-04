@@ -93,6 +93,12 @@ const kGreenGradientDeep = LinearGradient(
   end: Alignment.bottomRight,
 );
 
+const kAmberGradient = LinearGradient(
+  colors: [kAmber, Color(0xFFFFD740)],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
+
 // ── Border Radii ──────────────────────────────────────────────────────────────
 const kRadiusCard   = BorderRadius.all(Radius.circular(16));
 const kRadiusBtn    = BorderRadius.all(Radius.circular(10));

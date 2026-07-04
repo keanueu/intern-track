@@ -262,6 +262,40 @@ class _SwipeableRecord extends StatelessWidget {
                               : 'Session in progress',
                           style: const TextStyle(fontSize: 13, color: kGrey),
                         ),
+                        if (log.timeOut != null && (log.breakMinutes > 0 || log.activities.isNotEmpty || log.lat != null))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Row(
+                              children: [
+                                if (log.breakMinutes > 0)
+                                  _MetaChip(
+                                    icon: AppIcons.timer,
+                                    label: '${log.breakMinutes}m break',
+                                    color: kAmber,
+                                  ),
+                                if (log.activities.isNotEmpty)
+                                  Padding(
+                                    padding: EdgeInsets.only(left: log.breakMinutes > 0 ? 6 : 0),
+                                    child: _MetaChip(
+                                      icon: AppIcons.hub,
+                                      label: '${log.activities.length} activities',
+                                      color: kGreenLight,
+                                    ),
+                                  ),
+                                if (log.lat != null)
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      left: (log.breakMinutes > 0 || log.activities.isNotEmpty) ? 6 : 0,
+                                    ),
+                                    child: _MetaChip(
+                                      icon: AppIcons.cellular,
+                                      label: 'Location',
+                                      color: kGreen,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -329,4 +363,21 @@ class _SummaryChip extends StatelessWidget {
       ),
     );
   }
+}
+
+class _MetaChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _MetaChip({required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: color),
+          const SizedBox(width: 3),
+          Text(label, style: TextStyle(fontSize: 9, color: color, fontWeight: FontWeight.w600)),
+        ],
+      );
 }

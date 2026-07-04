@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
 import '../theme/app_theme.dart';
+import 'break_tracking_screen.dart';
+import 'activity_log_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -41,11 +43,16 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     FadeSlideIn(index: 3, child: _TodayCards(state: state)),
+                    const SizedBox(height: 16),
+
+                    // Session Controls (Break + Activity) when punched in
+                    if (state.isPunchedIn)
+                      FadeSlideIn(index: 4, child: _SessionControls(state: state)),
                     const SizedBox(height: 24),
 
                     // 4. Week strip — labelled so user knows what it is
                     FadeSlideIn(
-                      index: 4,
+                      index: 5,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -59,17 +66,17 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    FadeSlideIn(index: 5, child: _WeekStrip(state: state)),
+                    FadeSlideIn(index: 6, child: _WeekStrip(state: state)),
                     const SizedBox(height: 24),
 
                     // 5. OJT Hours — unified progress + stats in one card
                     FadeSlideIn(
-                      index: 6,
+                      index: 7,
                       child: const Text('OJT Progress',
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
                     ),
                     const SizedBox(height: 10),
-                    FadeSlideIn(index: 7, child: _OjtProgressCard(state: state)),
+                    FadeSlideIn(index: 8, child: _OjtProgressCard(state: state)),
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -299,6 +306,170 @@ class _StatCard extends StatelessWidget {
           ],
         ),
       );
+}
+
+class _SessionControls extends StatelessWidget {
+  final AppState state;
+  const _SessionControls({required this.state});
+
+  void _openBreakSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: kSurface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        side: BorderSide(color: kBorder),
+      ),
+      builder: (_) => const BreakTrackingScreen(),
+    );
+  }
+
+  void _openActivitySheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: kSurface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        side: BorderSide(color: kBorder),
+      ),
+      builder: (_) => const ActivityLogScreen(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isOnBreak = state.isOnBreak;
+    final activityCount = state.isPunchedIn && state.openLog != null 
+        ? state.openLog!.activities.length 
+        : 0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: kSurface,
+        borderRadius: kRadiusCard,
+        border: Border.all(color: kBorder),
+        boxShadow: kCardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('Session Controls',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: kWhite)),
+              if (isOnBreak)
+                Container(
+                  margin: const EdgeInsets.only(left: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: kAmber.withValues(alpha: 0.15),
+                    borderRadius: kRadiusTag,
+                    border: Border.all(color: kAmber.withValues(alpha: 0.3)),
+                  ),
+                  child: const Text('BREAK',
+                      style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: kAmber)),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TapScale(
+                  onTap: () => _openBreakSheet(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: isOnBreak ? kAmberGradient : kGreenGradient,
+                      borderRadius: kRadiusBtn,
+                      boxShadow: isOnBreak ? null : kGreenGlow,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          isOnBreak ? AppIcons.timer : AppIcons.breakfast,
+                          color: kBg, size: 20,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          isOnBreak ? 'End Break' : 'Break',
+                          style: const TextStyle(
+                              color: kBg, fontWeight: FontWeight.w700, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TapScale(
+                  onTap: () => _openActivitySheet(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: kSurface2,
+                      borderRadius: kRadiusBtn,
+                      border: Border.all(color: kBorder),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(AppIcons.hub, color: kGreen, size: 20),
+                        const SizedBox(height: 4),
+                        Text(
+                          activityCount > 0 ? '$activityCount activities' : 'Activity',
+                          style: const TextStyle(
+                              color: kWhite, fontWeight: FontWeight.w700, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TapScale(
+                  onTap: () {
+                    // Photo capture will be added
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Photo capture coming soon',
+                            style: TextStyle(color: kWhite)),
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: kSurface,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: kSurface2,
+                      borderRadius: kRadiusBtn,
+                      border: Border.all(color: kBorder),
+                    ),
+                    child: const Column(
+                      children: [
+                        Icon(AppIcons.camera, color: kGreenLight, size: 20),
+                        SizedBox(height: 4),
+                        Text('Photo',
+                            style: TextStyle(
+                                color: kWhite, fontWeight: FontWeight.w700, fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _WeekStrip extends StatefulWidget {

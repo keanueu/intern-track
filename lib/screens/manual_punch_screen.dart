@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:provider/provider.dart';
+import 'package:geolocator/geolocator.dart';
 import '../services/app_state.dart';
 import '../theme/app_theme.dart';
+import 'break_tracking_screen.dart';
 
 class ManualPunchScreen extends StatefulWidget {
   const ManualPunchScreen({super.key});
@@ -29,13 +31,42 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
     super.dispose();
   }
 
+  Future<Position?> _getLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return null;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return null;
+      }
+      if (permission == LocationPermission.deniedForever) return null;
+
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 5),
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _punch(BuildContext context) async {
     final state = context.read<AppState>();
-    final msg = await state.punch();
+    final pos = await _getLocation();
+    final msg = await state.punch(
+      lat: pos?.latitude,
+      lng: pos?.longitude,
+      locationName: null,
+    );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
-          const Icon(AppIcons.checkCircle, color: kGreen),
+          Icon(msg.contains('Success') ? AppIcons.checkCircle : AppIcons.warning,
+              color: msg.contains('Success') ? kGreen : kAmber),
           const SizedBox(width: 10),
           Expanded(child: Text(msg, style: const TextStyle(color: kWhite))),
         ]),
@@ -243,10 +274,21 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                             label: 'Break',
                             sublabel: !isPunchedIn
                                 ? 'Must be timed in first'
-                                : 'Log lunch or rest break',
+                                : state.isOnBreak ? 'End your current break' : 'Log lunch or rest break',
                             accentColor: kGreenLight,
                             enabled: isPunchedIn,
-                            onTap: () => _punch(context),
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: kSurface,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                                  side: BorderSide(color: kBorder),
+                                ),
+                                builder: (_) => const BreakTrackingScreen(),
+                              );
+                            },
                           ),
                         ],
                       ),

@@ -153,17 +153,17 @@ class AppState extends ChangeNotifier {
     _openLog = await DBHelper.instance.getOpenLog(id);
   }
 
-  Future<String> punch() async {
+  Future<String> punch({double? lat, double? lng, String? locationName}) async {
     if (!_dbSupported) return 'Available on mobile only';
-    final result = await DBHelper.instance.manualPunch(_profile.id);
+    final result = await DBHelper.instance.manualPunch(_profile.id, lat: lat, lng: lng, locationName: locationName);
     await _refresh();
     notifyListeners();
     return result;
   }
 
-  Future<String> scanPunch(String qrToken) async {
+  Future<String> scanPunch(String qrToken, {double? lat, double? lng, String? locationName}) async {
     if (!_dbSupported) return 'Available on mobile only';
-    final result = await DBHelper.instance.processTimeLog(qrToken);
+    final result = await DBHelper.instance.processTimeLog(qrToken, lat: lat, lng: lng, locationName: locationName);
     await _refresh();
     notifyListeners();
     return result;
@@ -196,5 +196,90 @@ class AppState extends ChangeNotifier {
         l.timeIn.month == date.month &&
         l.timeIn.day == date.day &&
         l.timeOut != null);
+  }
+
+  // ── Break Tracking ───────────────────────────────────────────────────────
+
+  bool get isOnBreak {
+    if (_openLog == null) return false;
+    return _openLog!.breakEntries.any((b) => b.end == null);
+  }
+
+  BreakEntry? get activeBreak {
+    if (_openLog == null) return null;
+    try {
+      return _openLog!.breakEntries.firstWhere((b) => b.end == null);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  int get todayBreakMinutes {
+    final today = DateTime.now();
+    return _logs
+        .where((l) =>
+            l.timeIn.year == today.year &&
+            l.timeIn.month == today.month &&
+            l.timeIn.day == today.day)
+        .fold(0, (sum, l) => sum + l.breakMinutes);
+  }
+
+  Future<String> startBreak() async {
+    if (!_dbSupported) return 'Available on mobile only';
+    final result = await DBHelper.instance.startBreak(_profile.id);
+    await _refresh();
+    notifyListeners();
+    return result;
+  }
+
+  Future<String> endBreak() async {
+    if (!_dbSupported) return 'Available on mobile only';
+    final result = await DBHelper.instance.endBreak(_profile.id);
+    await _refresh();
+    notifyListeners();
+    return result;
+  }
+
+  Future<String> setBreakType(String type) async {
+    if (!_dbSupported) return 'Available on mobile only';
+    final result = await DBHelper.instance.setBreakType(_profile.id, type);
+    await _refresh();
+    notifyListeners();
+    return result;
+  }
+
+  // ── Activities ───────────────────────────────────────────────────────────
+
+  Future<String> addActivity(ActivityEntry activity) async {
+    if (!_dbSupported) return 'Available on mobile only';
+    final result = await DBHelper.instance.addActivity(_profile.id, activity);
+    await _refresh();
+    notifyListeners();
+    return result;
+  }
+
+  Future<String> removeActivity(String activityId) async {
+    if (!_dbSupported) return 'Available on mobile only';
+    final result = await DBHelper.instance.removeActivity(_profile.id, activityId);
+    await _refresh();
+    notifyListeners();
+    return result;
+  }
+
+  // ── Photos ───────────────────────────────────────────────────────────────
+
+  Future<void> addPhoto(DtrPhoto photo) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.addPhoto(photo);
+  }
+
+  Future<List<DtrPhoto>> getPhotosForLog(String logId) async {
+    if (!_dbSupported) return [];
+    return DBHelper.instance.getPhotosForLog(logId);
+  }
+
+  Future<void> deletePhoto(String photoId) async {
+    if (!_dbSupported) return;
+    await DBHelper.instance.deletePhoto(photoId);
   }
 }

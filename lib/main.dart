@@ -195,7 +195,7 @@ return Expanded(
         curve: kCurve,
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 10,
+          vertical: 6,
         ),
         decoration: BoxDecoration(
           color: selected
