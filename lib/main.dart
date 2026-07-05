@@ -90,7 +90,6 @@ class _MainContainerState extends State<MainContainer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBg,
       body: AnimatedSwitcher(
         duration: kDurNormal,
         switchInCurve: kCurve,
@@ -130,13 +129,12 @@ class _FloatingNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: kBg,
       padding: const EdgeInsets.only(bottom: 20, top: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: 62,
+            height: 60,
             width: 328,
             decoration: BoxDecoration(
               color: kSurface,
@@ -146,7 +144,8 @@ class _FloatingNavBar extends StatelessWidget {
             ),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                const pillSize = 50.0;
+                const pillWidth = 60.0;
+                const pillHeight = 52.0;
                 final itemWidth = constraints.maxWidth / 5;
                 return Stack(
                   clipBehavior: Clip.none,
@@ -189,15 +188,14 @@ class _FloatingNavBar extends StatelessWidget {
                     AnimatedPositioned(
                       duration: kDurNormal,
                       curve: kCurve,
-                      left:
-                          currentIndex * itemWidth + (itemWidth - pillSize) / 2,
-                      top: (59 - pillSize) / 2,
+                      left: currentIndex * itemWidth + (itemWidth - pillWidth) / 2,
+                      top: (59 - pillHeight) / 2.5,
                       child: Container(
-                        width: pillSize,
-                        height: pillSize,
+                        width: pillWidth,
+                        height: pillHeight,
                         decoration: BoxDecoration(
                           color: kGreen.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: BorderRadius.circular(pillHeight / 2),
                         ),
                       ),
                     ),
@@ -237,7 +235,7 @@ class _NavItem extends StatelessWidget {
         child: Center(
           child: Icon(
             selected ? icon : outlinedIcon,
-            color: selected ? kGreen : kGrey,
+            color: selected ? kGreen : const Color.fromARGB(255, 255, 255, 255),
             size: 22,
           ),
         ),

@@ -14,7 +14,6 @@ class HomeScreen extends StatelessWidget {
     return Consumer<AppState>(
       builder: (context, state, _) {
         return Scaffold(
-          backgroundColor: kBg,
           body: SafeArea(
             child: RefreshIndicator(
               color: kGreen,
