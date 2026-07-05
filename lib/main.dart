@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart' show kReleaseMode, kIsWeb, defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/foundation.dart'
+    show kReleaseMode, kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/manual_punch_screen.dart';
@@ -18,7 +19,10 @@ import 'theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (!kIsWeb && (defaultTargetPlatform == TargetPlatform.windows || defaultTargetPlatform == TargetPlatform.linux || defaultTargetPlatform == TargetPlatform.macOS)) {
+  if (!kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux ||
+          defaultTargetPlatform == TargetPlatform.macOS)) {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   }
@@ -83,10 +87,6 @@ class _MainContainerState extends State<MainContainer> {
     ProfileScreen(),
   ];
 
-  void _openScanner() {
-    setState(() => _currentIndex = 2);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +113,6 @@ class _MainContainerState extends State<MainContainer> {
       bottomNavigationBar: _FloatingNavBar(
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
-        onScanTap: _openScanner,
       ),
     );
   }
@@ -122,56 +121,92 @@ class _MainContainerState extends State<MainContainer> {
 class _FloatingNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-  final VoidCallback onScanTap;
 
   const _FloatingNavBar({
     required this.currentIndex,
     required this.onTap,
-    required this.onScanTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: kBg,
-      padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20, top: 8),
-      child: Container(
-        height: 64,
-        decoration: BoxDecoration(
-          color: kSurface,
-          borderRadius: kRadiusNav,
-          border: Border.all(color: kBorder),
-          boxShadow: kCardShadow,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _NavItem(icon: AppIcons.home, outlinedIcon: AppIcons.homeOutline, label: 'Home', index: 0, current: currentIndex, onTap: onTap),
-            _NavItem(icon: AppIcons.manual, outlinedIcon: AppIcons.manualOutline, label: 'Manual', index: 1, current: currentIndex, onTap: onTap),
-
-            // Center QR button
-            TapScale(
-              onTap: onScanTap,
-              child: Transform.translate(
-                offset: const Offset(0, -12),
-                child: Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    gradient: currentIndex == 2 ? kGreenGradient : const LinearGradient(colors: [kSurface2, kSurface2]),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: currentIndex == 2 ? kGreen : kBorder, width: 1.5),
-                    boxShadow: currentIndex == 2 ? kGreenGlow : kCardShadow,
-                  ),
-                  child: const Icon(AppIcons.qr, color: kWhite, size: 24),
-                ),
-              ),
+      padding: const EdgeInsets.only(bottom: 20, top: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 62,
+            width: 328,
+            decoration: BoxDecoration(
+              color: kSurface,
+              borderRadius: kRadiusNav,
+              border: Border.all(color: kBorder),
+              boxShadow: kCardShadow,
             ),
-
-            _NavItem(icon: AppIcons.records, outlinedIcon: AppIcons.recordsOutline, label: 'Records', index: 3, current: currentIndex, onTap: onTap),
-            _NavItem(icon: AppIcons.profile, outlinedIcon: AppIcons.profileOutline, label: 'Profile', index: 4, current: currentIndex, onTap: onTap),
-          ],
-        ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                const pillSize = 50.0;
+                final itemWidth = constraints.maxWidth / 5;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _NavItem(
+                            icon: AppIcons.home,
+                            outlinedIcon: AppIcons.homeOutline,
+                            index: 0,
+                            current: currentIndex,
+                            onTap: onTap),
+                        _NavItem(
+                            icon: AppIcons.manual,
+                            outlinedIcon: AppIcons.manualOutline,
+                            index: 1,
+                            current: currentIndex,
+                            onTap: onTap),
+                        _NavItem(
+                            icon: AppIcons.qr,
+                            outlinedIcon: AppIcons.qrOutline,
+                            index: 2,
+                            current: currentIndex,
+                            onTap: onTap),
+                        _NavItem(
+                            icon: AppIcons.records,
+                            outlinedIcon: AppIcons.recordsOutline,
+                            index: 3,
+                            current: currentIndex,
+                            onTap: onTap),
+                        _NavItem(
+                            icon: AppIcons.profile,
+                            outlinedIcon: AppIcons.profileOutline,
+                            index: 4,
+                            current: currentIndex,
+                            onTap: onTap),
+                      ],
+                    ),
+                    AnimatedPositioned(
+                      duration: kDurNormal,
+                      curve: kCurve,
+                      left:
+                          currentIndex * itemWidth + (itemWidth - pillSize) / 2,
+                      top: (59 - pillSize) / 2,
+                      child: Container(
+                        width: pillSize,
+                        height: pillSize,
+                        decoration: BoxDecoration(
+                          color: kGreen.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -180,7 +215,6 @@ class _FloatingNavBar extends StatelessWidget {
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final IconData outlinedIcon;
-  final String label;
   final int index;
   final int current;
   final ValueChanged<int> onTap;
@@ -188,7 +222,6 @@ class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
     required this.outlinedIcon,
-    required this.label,
     required this.index,
     required this.current,
     required this.onTap,
@@ -198,47 +231,17 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool selected = current == index;
 
-return Expanded(
-  child: TapScale(
-    onTap: () => onTap(index),
-    child: Center(
-      child: AnimatedContainer(
-        duration: kDurNormal,
-        curve: kCurve,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 6,
-        ),
-        decoration: BoxDecoration(
-          color: selected
-              ? kGreen.withValues(alpha: 0.12)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(999),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              selected ? icon : outlinedIcon,
-              color: selected ? kGreen : kGrey,
-              size: 22,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: selected
-                    ? FontWeight.w700
-                    : FontWeight.w400,
-                color: selected ? kGreen : kGrey,
-              ),
-            ),
-          ],
+    return Expanded(
+      child: TapScale(
+        onTap: () => onTap(index),
+        child: Center(
+          child: Icon(
+            selected ? icon : outlinedIcon,
+            color: selected ? kGreen : kGrey,
+            size: 22,
+          ),
         ),
       ),
-    ),
-  ),
-);
-}
+    );
+  }
 }

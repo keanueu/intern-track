@@ -20,10 +20,11 @@ class AppIcons {
 
   static const home = CupertinoIcons.house_fill;
   static const homeOutline = CupertinoIcons.house;
-  static const manual = CupertinoIcons.pencil_ellipsis_rectangle;
-  static const manualOutline = CupertinoIcons.pencil;
+  static const manual = CupertinoIcons.time_solid;
+  static const manualOutline = CupertinoIcons.clock;
   static const qr = CupertinoIcons.qrcode;
   static const qrScanner = CupertinoIcons.qrcode_viewfinder;
+  static const qrOutline = CupertinoIcons.qrcode_viewfinder;
   static const records = CupertinoIcons.chart_bar_fill;
   static const recordsOutline = CupertinoIcons.chart_bar;
   static const profile = CupertinoIcons.person_fill;
