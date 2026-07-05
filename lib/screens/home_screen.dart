@@ -13,11 +13,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         return Scaffold(
           body: SafeArea(
             child: RefreshIndicator(
               color: kGreen,
-              backgroundColor: kSurface,
+              backgroundColor: c.surface,
               onRefresh: () => state.load(),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -38,8 +39,8 @@ class HomeScreen extends StatelessWidget {
                     // 3. Today's time-in / time-out — directly under hero (same topic)
                     FadeSlideIn(
                       index: 2,
-                      child: const Text("Today's Punches",
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                      child: Text("Today's Punches",
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
                     ),
                     const SizedBox(height: 10),
                     FadeSlideIn(index: 3, child: _TodayCards(state: state)),
@@ -56,8 +57,8 @@ class HomeScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Weekly Goal',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                          Text('Weekly Goal',
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
                           Text(
                             '${state.weeklyHours.toStringAsFixed(1)} / ${state.weeklyTarget.toInt()}h',
                             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: kGreen),
@@ -84,11 +85,11 @@ class HomeScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('This Week',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                          Text('This Week',
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
                           Text(
                             _weekRangeLabel(),
-                            style: const TextStyle(fontSize: 11, color: kGrey),
+                            style: TextStyle(fontSize: 11, color: c.textSecondary),
                           ),
                         ],
                       ),
@@ -100,8 +101,8 @@ class HomeScreen extends StatelessWidget {
                     // 5. OJT Hours — unified progress + stats in one card
                     FadeSlideIn(
                       index: 10,
-                      child: const Text('OJT Progress',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                      child: Text('OJT Progress',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
                     ),
                     const SizedBox(height: 10),
                     FadeSlideIn(index: 11, child: _OjtProgressCard(state: state)),
@@ -131,6 +132,7 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final firstName = state.profile.fullName.split(' ').first;
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     final n = DateTime.now();
@@ -149,10 +151,10 @@ class _TopBar extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             initial,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: kWhite,
+              color: c.textPrimary,
             ),
           ),
         ),
@@ -161,9 +163,9 @@ class _TopBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Hello, $firstName 👋',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: kWhite)),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
             Text('${n.day} ${months[n.month - 1]} ${n.year}',
-                style: const TextStyle(fontSize: 12, color: kGrey)),
+                style: TextStyle(fontSize: 12, color: c.textSecondary)),
           ],
         ),
         const Spacer(),
@@ -171,8 +173,8 @@ class _TopBar extends StatelessWidget {
           child: Container(
             width: 40, height: 40,
             decoration: BoxDecoration(
-                color: kSurface, borderRadius: kRadiusAvatar, border: Border.all(color: kBorder)),
-            child: const Icon(AppIcons.notifications, color: kWhite, size: 20),
+                color: c.surface, borderRadius: kRadiusAvatar, border: Border.all(color: c.border)),
+            child: Icon(AppIcons.notifications, color: c.textPrimary, size: 20),
           ),
         ),
       ],
@@ -219,6 +221,7 @@ class _HeroBannerState extends State<_HeroBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final state = widget.state;
     final isPunchedIn = state.isPunchedIn;
     final openLog = state.openLog;
@@ -252,18 +255,18 @@ class _HeroBannerState extends State<_HeroBanner> {
                   ),
                   child: Text(
                     isPunchedIn ? '● Active Session' : 'OJT Tracker',
-                    style: const TextStyle(color: kWhite, fontSize: 11, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: c.textPrimary, fontSize: 11, fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   isPunchedIn ? 'Currently\nLogged In' : 'Log Your\nAttendance',
-                  style: const TextStyle(
-                      color: kWhite, fontSize: 26, fontWeight: FontWeight.w900, height: 1.15),
+                  style: TextStyle(
+                      color: c.textPrimary, fontSize: 26, fontWeight: FontWeight.w900, height: 1.15),
                 ),
                 const SizedBox(height: 8),
                 Text(sub,
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
+                    style: TextStyle(color: c.textPrimary.withValues(alpha: 0.8), fontSize: 12)),
               ],
             ),
           ),
@@ -275,7 +278,7 @@ class _HeroBannerState extends State<_HeroBanner> {
             ),
             child: Icon(
               isPunchedIn ? AppIcons.checkCircle : AppIcons.qr,
-              color: kWhite, size: 38,
+              color: c.textPrimary, size: 38,
             ),
           ),
         ],
@@ -341,12 +344,14 @@ class _StatCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: kSurface,
+          color: c.surface,
           borderRadius: kRadiusCard,
-          border: Border.all(color: kBorder),
+          border: Border.all(color: c.border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,16 +364,17 @@ class _StatCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(label,
-                style: const TextStyle(
-                    fontSize: 10, fontWeight: FontWeight.w600, color: kGrey, letterSpacing: 0.8)),
+                style: TextStyle(
+                    fontSize: 10, fontWeight: FontWeight.w600, color: c.textSecondary, letterSpacing: 0.8)),
             const SizedBox(height: 4),
             Text(value,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: kWhite)),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: c.textPrimary)),
             const SizedBox(height: 3),
-            Text(sub, style: const TextStyle(fontSize: 11, color: kGrey)),
+            Text(sub, style: TextStyle(fontSize: 11, color: c.textSecondary)),
           ],
         ),
       );
+  }
 }
 
 class _SessionControls extends StatelessWidget {
@@ -376,26 +382,28 @@ class _SessionControls extends StatelessWidget {
   const _SessionControls({required this.state});
 
   void _openBreakSheet(BuildContext context) {
+    final c = ThemeColors.of(context);
     showModalBottomSheet(
       context: context,
-      backgroundColor: kSurface,
+      backgroundColor: c.surface,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (_) => const BreakTrackingScreen(),
     );
   }
 
   void _openActivitySheet(BuildContext context) {
+    final c = ThemeColors.of(context);
     showModalBottomSheet(
       context: context,
-      backgroundColor: kSurface,
+      backgroundColor: c.surface,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (_) => const ActivityLogScreen(),
     );
@@ -403,6 +411,7 @@ class _SessionControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final isOnBreak = state.isOnBreak;
     final activityCount = state.isPunchedIn && state.openLog != null 
         ? state.openLog!.activities.length 
@@ -411,18 +420,18 @@ class _SessionControls extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kSurface,
+        color: c.surface,
         borderRadius: kRadiusCard,
-        border: Border.all(color: kBorder),
-        boxShadow: kCardShadow,
+        border: Border.all(color: c.border),
+        boxShadow: kCardShadowFrom(c),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Text('Session Controls',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: kWhite)),
+              Text('Session Controls',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.textPrimary)),
               if (isOnBreak)
                 Container(
                   margin: const EdgeInsets.only(left: 8),
@@ -454,13 +463,13 @@ class _SessionControls extends StatelessWidget {
                       children: [
                         Icon(
                           isOnBreak ? AppIcons.timer : AppIcons.breakfast,
-                          color: kBg, size: 20,
+                          color: c.onAccent, size: 20,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           isOnBreak ? 'End Break' : 'Break',
-                          style: const TextStyle(
-                              color: kBg, fontWeight: FontWeight.w700, fontSize: 12),
+                          style: TextStyle(
+                              color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 12),
                         ),
                       ],
                     ),
@@ -474,9 +483,9 @@ class _SessionControls extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: kSurface2,
+                      color: c.surface2,
                       borderRadius: kRadiusBtn,
-                      border: Border.all(color: kBorder),
+                      border: Border.all(color: c.border),
                     ),
                     child: Column(
                       children: [
@@ -484,8 +493,8 @@ class _SessionControls extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           activityCount > 0 ? '$activityCount activities' : 'Activity',
-                          style: const TextStyle(
-                              color: kWhite, fontWeight: FontWeight.w700, fontSize: 12),
+                          style: TextStyle(
+                              color: c.textPrimary, fontWeight: FontWeight.w700, fontSize: 12),
                         ),
                       ],
                     ),
@@ -499,29 +508,29 @@ class _SessionControls extends StatelessWidget {
                     // Photo capture will be added
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text('Photo capture coming soon',
-                            style: TextStyle(color: kWhite)),
+                        content: Text('Photo capture coming soon',
+                            style: TextStyle(color: c.textPrimary)),
                         behavior: SnackBarBehavior.floating,
-                        backgroundColor: kSurface,
+                        backgroundColor: c.surface,
                         shape: RoundedRectangleBorder(
-                            borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+                            borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
                       ),
                     );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: kSurface2,
+                      color: c.surface2,
                       borderRadius: kRadiusBtn,
-                      border: Border.all(color: kBorder),
+                      border: Border.all(color: c.border),
                     ),
-                    child: const Column(
+                    child: Column(
                       children: [
-                        Icon(AppIcons.camera, color: kGreenLight, size: 20),
-                        SizedBox(height: 4),
+                        const Icon(AppIcons.camera, color: kGreenLight, size: 20),
+                        const SizedBox(height: 4),
                         Text('Photo',
                             style: TextStyle(
-                                color: kWhite, fontWeight: FontWeight.w700, fontSize: 12)),
+                                color: c.textPrimary, fontWeight: FontWeight.w700, fontSize: 12)),
                       ],
                     ),
                   ),
@@ -541,13 +550,14 @@ class _WeeklyGoalBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final pct = state.weeklyPercent;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: kSurface,
+        color: c.surface,
         borderRadius: kRadiusCard,
-        border: Border.all(color: kBorder),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -562,7 +572,7 @@ class _WeeklyGoalBar extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${state.weeklyHours.toStringAsFixed(1)}h of ${state.weeklyTarget.toInt()}h this week',
-                  style: const TextStyle(fontSize: 11, color: kGrey),
+                  style: TextStyle(fontSize: 11, color: c.textSecondary),
                 ),
               ],
             ),
@@ -581,7 +591,7 @@ class _WeeklyGoalBar extends StatelessWidget {
                     ),
                     Flexible(
                       flex: ((1 - pct) * 100).round().clamp(0, 100),
-                      child: Container(color: kSurface2),
+                      child: Container(color: c.surface2),
                     ),
                   ],
                 ),
@@ -600,6 +610,7 @@ class _UpcomingShiftCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final shift = state.todayShift;
     if (shift == null) return const SizedBox.shrink();
 
@@ -607,9 +618,9 @@ class _UpcomingShiftCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: kSurface2,
+        color: c.surface2,
         borderRadius: kRadiusCard,
-        border: Border.all(color: kBorder),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -626,11 +637,11 @@ class _UpcomingShiftCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Today's Shift",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kWhite)),
+                Text("Today's Shift",
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textPrimary)),
                 Text(
                   '${shift['start_time']} – ${shift['end_time']}',
-                  style: const TextStyle(fontSize: 13, color: kGrey),
+                  style: TextStyle(fontSize: 13, color: c.textSecondary),
                 ),
               ],
             ),
@@ -669,6 +680,7 @@ class _WeekStripState extends State<_WeekStrip> {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final today = DateTime.now();
     final start = today.subtract(Duration(days: today.weekday - 1));
@@ -690,9 +702,9 @@ class _WeekStripState extends State<_WeekStrip> {
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected ? kGreenGradient : null,
-              color: isSelected ? null : kSurface,
+              color: isSelected ? null : c.surface,
               borderRadius: kRadiusBtn,
-              border: Border.all(color: isSelected ? kGreen : kBorder),
+              border: Border.all(color: isSelected ? kGreen : c.border),
               boxShadow: isSelected ? kGreenGlow : null,
             ),
             child: Column(
@@ -701,25 +713,25 @@ class _WeekStripState extends State<_WeekStrip> {
                     style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? kBg : kGrey)),
+                        color: isSelected ? c.onAccent : c.textSecondary)),
                 const SizedBox(height: 4),
                 Text('${day.day}',
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: isSelected ? kBg : kWhite)),
+                        color: isSelected ? c.onAccent : c.textPrimary)),
                 const SizedBox(height: 6),
                 Container(
                   width: 5, height: 5,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isSelected
-                        ? kBg.withValues(alpha: 0.5)
+                        ? c.onAccent.withValues(alpha: 0.5)
                         : isExcluded
                             ? kAmber
                             : hasPunch
                                 ? kGreen
-                                : kGreyDark,
+                                : c.textMuted,
                   ),
                 ),
               ],
@@ -738,15 +750,16 @@ class _OjtProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final pct = (state.completionPercent * 100).clamp(0.0, 100.0);
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: kSurface,
+        color: c.surface,
         borderRadius: kRadiusCard,
-        border: Border.all(color: kBorder),
-        boxShadow: kCardShadow,
+        border: Border.all(color: c.border),
+        boxShadow: kCardShadowFrom(c),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -755,8 +768,8 @@ class _OjtProgressCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('OJT Completion',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: kWhite)),
+              Text('OJT Completion',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.textPrimary)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -778,11 +791,11 @@ class _OjtProgressCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             '${state.totalHours.toStringAsFixed(1)} of ${state.requiredHours.toInt()} hours rendered',
-            style: const TextStyle(fontSize: 11, color: kGrey),
+            style: TextStyle(fontSize: 11, color: c.textSecondary),
           ),
 
           const SizedBox(height: 16),
-          const Divider(height: 1, color: kBorder),
+          Divider(height: 1, color: c.border),
           const SizedBox(height: 16),
 
           // 3 stats inline under the bar — same topic, same card
@@ -807,23 +820,29 @@ class _InlineStat extends StatelessWidget {
   const _InlineStat({required this.label, required this.value, required this.color});
 
   @override
-  Widget build(BuildContext context) => Expanded(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Expanded(
         child: Column(
           children: [
             Text(value,
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: color)),
             const SizedBox(height: 2),
             Text(label,
-                style: const TextStyle(fontSize: 10, color: kGrey)),
+                style: TextStyle(fontSize: 10, color: c.textSecondary)),
           ],
         ),
       );
+  }
 }
 
 class _InlineDivider extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Container(
-        width: 1, height: 32, color: kBorder,
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Container(
+        width: 1, height: 32, color: c.border,
         margin: const EdgeInsets.symmetric(horizontal: 8),
       );
+  }
 }

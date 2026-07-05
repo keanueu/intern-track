@@ -1,19 +1,104 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// ── Colours ───────────────────────────────────────────────────────────────────
-const kBg         = Color(0xFF0A0A0F);
-const kSurface    = Color(0xFF111118);
-const kSurface2   = Color(0xFF1A1A24);
-const kBorder     = Color(0xFF1E1E2A);
+// ── Static colours (theme-independent) ────────────────────────────────────────
 const kGreen      = Color(0xFF00C853);
 const kGreenLight = Color(0xFF00E676);
 const kGreenDark  = Color(0xFF007A33);
-const kWhite      = Color(0xFFFFFFFF);
-const kGrey       = Color(0xFF6B7280);
-const kGreyDark   = Color(0xFF374151);
 const kRed        = Color(0xFFFF4757);
 const kAmber      = Color(0xFFFFB800);
+
+// ── Theme-aware colour set ─────────────────────────────────────────────────────
+class ThemeColors extends ThemeExtension<ThemeColors> {
+  final Color bg;
+  final Color surface;
+  final Color surface2;
+  final Color border;
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color textMuted;
+  final Color onAccent;
+  final Color shadowColor;
+
+  const ThemeColors({
+    required this.bg,
+    required this.surface,
+    required this.surface2,
+    required this.border,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.textMuted,
+    required this.onAccent,
+    required this.shadowColor,
+  });
+
+  static const _dark = ThemeColors(
+    bg: Color(0xFF0A0A0F),
+    surface: Color(0xFF111118),
+    surface2: Color(0xFF1A1A24),
+    border: Color(0xFF1E1E2A),
+    textPrimary: Color(0xFFFFFFFF),
+    textSecondary: Color(0xFF6B7280),
+    textMuted: Color(0xFF374151),
+    onAccent: Color(0xFF0A0A0F),
+    shadowColor: Color(0x66000000),
+  );
+
+  static const _light = ThemeColors(
+    bg: Color(0xFFF5F5F7),
+    surface: Color(0xFFFFFFFF),
+    surface2: Color(0xFFF0F0F2),
+    border: Color(0xFFE0E0E5),
+    textPrimary: Color(0xFF1A1A1A),
+    textSecondary: Color(0xFF8E8E93),
+    textMuted: Color(0xFFA0A0A5),
+    onAccent: Color(0xFF0A0A0F),
+    shadowColor: Color(0x14000000),
+  );
+
+  static ThemeColors of(BuildContext context) =>
+      Theme.of(context).extension<ThemeColors>()!;
+
+  @override
+  ThemeExtension<ThemeColors> copyWith({
+    Color? bg,
+    Color? surface,
+    Color? surface2,
+    Color? border,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? textMuted,
+    Color? onAccent,
+    Color? shadowColor,
+  }) =>
+      ThemeColors(
+        bg: bg ?? this.bg,
+        surface: surface ?? this.surface,
+        surface2: surface2 ?? this.surface2,
+        border: border ?? this.border,
+        textPrimary: textPrimary ?? this.textPrimary,
+        textSecondary: textSecondary ?? this.textSecondary,
+        textMuted: textMuted ?? this.textMuted,
+        onAccent: onAccent ?? this.onAccent,
+        shadowColor: shadowColor ?? this.shadowColor,
+      );
+
+  @override
+  ThemeColors lerp(ThemeExtension<ThemeColors>? other, double t) {
+    if (other is! ThemeColors) return this;
+    return ThemeColors(
+      bg: Color.lerp(bg, other.bg, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      surface2: Color.lerp(surface2, other.surface2, t)!,
+      border: Color.lerp(border, other.border, t)!,
+      textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
+      textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
+      textMuted: Color.lerp(textMuted, other.textMuted, t)!,
+      onAccent: Color.lerp(onAccent, other.onAccent, t)!,
+      shadowColor: Color.lerp(shadowColor, other.shadowColor, t)!,
+    );
+  }
+}
 
 class AppIcons {
   const AppIcons._();
@@ -118,41 +203,42 @@ const kCurve     = Curves.easeOutCubic;
 List<BoxShadow> kGreenGlow = [
   BoxShadow(color: kGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 8)),
 ];
-List<BoxShadow> kCardShadow = [
-  BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 20, offset: const Offset(0, 8)),
+
+List<BoxShadow> kCardShadowFrom(ThemeColors c) => [
+  BoxShadow(color: c.shadowColor, blurRadius: 20, offset: const Offset(0, 8)),
 ];
 
 // ── ThemeData ─────────────────────────────────────────────────────────────────
-ThemeData buildAppTheme() {
+ThemeData _buildTheme(ThemeColors colors, Brightness brightness) {
   const exter = 'Exter';
 
-  final base = ThemeData(brightness: Brightness.dark, useMaterial3: true, fontFamily: exter);
+  final ColorScheme colorScheme = brightness == Brightness.dark
+      ? const ColorScheme.dark(primary: kGreen, surface: Color(0xFF111118), onSurface: Color(0xFFFFFFFF))
+      : ColorScheme.light(primary: kGreen, surface: colors.surface, onSurface: colors.textPrimary);
+
+  final base = ThemeData(brightness: brightness, useMaterial3: true, fontFamily: exter);
 
   TextTheme applyExter(TextTheme t) => t.copyWith(
-    displayLarge:   t.displayLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w800, fontSize: 32),
-    displayMedium:  t.displayMedium!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
-    displaySmall:   t.displaySmall!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
-    headlineLarge:  t.headlineLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
-    headlineMedium: t.headlineMedium!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700),
-    headlineSmall:  t.headlineSmall!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
-    titleLarge:     t.titleLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w700, fontSize: 18),
-    titleMedium:    t.titleMedium!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
-    titleSmall:     t.titleSmall!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
-    bodyLarge:      t.bodyLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w500),
-    bodyMedium:     t.bodyMedium!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w500, fontSize: 13),
-    bodySmall:      t.bodySmall!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w400),
-    labelLarge:     t.labelLarge!.copyWith(fontFamily: exter, color: kWhite, fontWeight: FontWeight.w600),
-    labelMedium:    t.labelMedium!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w500),
-    labelSmall:     t.labelSmall!.copyWith(fontFamily: exter, color: kGrey,  fontWeight: FontWeight.w400, fontSize: 11),
+    displayLarge:   t.displayLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w800, fontSize: 32),
+    displayMedium:  t.displayMedium!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
+    displaySmall:   t.displaySmall!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
+    headlineLarge:  t.headlineLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
+    headlineMedium: t.headlineMedium!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
+    headlineSmall:  t.headlineSmall!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
+    titleLarge:     t.titleLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700, fontSize: 18),
+    titleMedium:    t.titleMedium!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
+    titleSmall:     t.titleSmall!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
+    bodyLarge:      t.bodyLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w500),
+    bodyMedium:     t.bodyMedium!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w500, fontSize: 13),
+    bodySmall:      t.bodySmall!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w400),
+    labelLarge:     t.labelLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
+    labelMedium:    t.labelMedium!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w500),
+    labelSmall:     t.labelSmall!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w400, fontSize: 11),
   );
 
   return base.copyWith(
-    scaffoldBackgroundColor: kBg,
-    colorScheme: const ColorScheme.dark(
-      primary: kGreen,
-      surface: kSurface,
-      onSurface: kWhite,
-    ),
+    scaffoldBackgroundColor: colors.bg,
+    colorScheme: colorScheme,
     textTheme: applyExter(base.textTheme),
     primaryTextTheme: applyExter(base.primaryTextTheme),
     typography: Typography.material2021().copyWith(
@@ -162,25 +248,29 @@ ThemeData buildAppTheme() {
       dense: applyExter(Typography.material2021().dense),
       tall: applyExter(Typography.material2021().tall),
     ),
-    dividerColor: kBorder,
+    dividerColor: colors.border,
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: kSurface2,
+      fillColor: colors.surface2,
       border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-      labelStyle: const TextStyle(fontFamily: exter, color: kGrey),
-      hintStyle: const TextStyle(fontFamily: exter, color: kGrey),
+      labelStyle: TextStyle(fontFamily: exter, color: colors.textSecondary),
+      hintStyle: TextStyle(fontFamily: exter, color: colors.textSecondary),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: kGreen,
-        foregroundColor: kBg,
+        foregroundColor: colors.onAccent,
         shape: const RoundedRectangleBorder(borderRadius: kRadiusBtn),
         padding: const EdgeInsets.symmetric(vertical: 16),
         textStyle: const TextStyle(fontFamily: exter, fontWeight: FontWeight.w700, fontSize: 15),
       ),
     ),
+    extensions: [colors],
   );
 }
+
+ThemeData buildDarkTheme() => _buildTheme(ThemeColors._dark, Brightness.dark);
+ThemeData buildLightTheme() => _buildTheme(ThemeColors._light, Brightness.light);
 
 // ── TapScale ──────────────────────────────────────────────────────────────────
 class TapScale extends StatefulWidget {
@@ -283,11 +373,13 @@ class _AnimatedGradientBarState extends State<AnimatedGradientBar>
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return AnimatedBuilder(
         animation: _anim,
         builder: (_, __) => Container(
           height: widget.height,
-          decoration: BoxDecoration(color: kSurface2, borderRadius: BorderRadius.circular(widget.height)),
+          decoration: BoxDecoration(color: c.surface2, borderRadius: BorderRadius.circular(widget.height)),
           child: FractionallySizedBox(
             alignment: Alignment.centerLeft,
             widthFactor: _anim.value,
@@ -301,9 +393,10 @@ class _AnimatedGradientBarState extends State<AnimatedGradientBar>
           ),
         ),
       );
+  }
 }
 
-// ── Dark surface card ─────────────────────────────────────────────────────────
+// ── Themed card ────────────────────────────────────────────────────────────────
 class DarkCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -312,18 +405,21 @@ class DarkCard extends StatelessWidget {
   const DarkCard({super.key, required this.child, this.padding, this.onTap});
 
   @override
-  Widget build(BuildContext context) => TapScale(
-        onTap: onTap,
-        scale: onTap != null ? 0.97 : 1.0,
-        child: Container(
-          padding: padding ?? const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: kSurface,
-            borderRadius: kRadiusCard,
-            border: Border.all(color: kBorder, width: 1),
-            boxShadow: kCardShadow,
-          ),
-          child: child,
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TapScale(
+      onTap: onTap,
+      scale: onTap != null ? 0.97 : 1.0,
+      child: Container(
+        padding: padding ?? const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: kRadiusCard,
+          border: Border.all(color: c.border, width: 1),
+          boxShadow: kCardShadowFrom(c),
         ),
-      );
+        child: child,
+      ),
+    );
+  }
 }

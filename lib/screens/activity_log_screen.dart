@@ -61,17 +61,18 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
   }
 
   void _showSnack(String msg, {bool error = false}) {
+    final c = ThemeColors.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(children: [
           Icon(error ? AppIcons.warning : AppIcons.checkCircle,
               color: error ? kRed : kGreen, size: 18),
           const SizedBox(width: 10),
-          Expanded(child: Text(msg, style: const TextStyle(color: kWhite))),
+          Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
         ]),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: kSurface,
-        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+        backgroundColor: c.surface,
+        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
       ),
     );
   }
@@ -87,6 +88,7 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final sessionActivities = state.isPunchedIn && state.openLog != null
             ? state.openLog!.activities
             : <ActivityEntry>[];
@@ -100,14 +102,14 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Activity Log',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
+                  Text('Activity Log',
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
                   TapScale(
                     onTap: () => Navigator.pop(context),
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                      child: const Icon(AppIcons.close, color: kGrey, size: 18),
+                      decoration: BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                      child: Icon(AppIcons.close, color: c.textSecondary, size: 18),
                     ),
                   ),
                 ],
@@ -116,8 +118,8 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
 
               // Current session activities
               if (sessionActivities.isNotEmpty) ...[
-                const Text('Current Session',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                Text('Current Session',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 6,
@@ -125,23 +127,23 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                   children: sessionActivities.map((a) => Chip(
                     label: Text(
                       a.note != null ? '${_tagLabel(a.tag)}: ${a.note}' : _tagLabel(a.tag),
-                      style: const TextStyle(fontSize: 11, color: kWhite),
+                      style: TextStyle(fontSize: 11, color: c.textPrimary),
                     ),
-                    backgroundColor: kSurface2,
-                    side: const BorderSide(color: kBorder),
-                    deleteIcon: const Icon(AppIcons.close, size: 14, color: kGrey),
+                    backgroundColor: c.surface2,
+                    side: BorderSide(color: c.border),
+                    deleteIcon: Icon(AppIcons.close, size: 14, color: c.textSecondary),
                     onDeleted: () => _removeActivity(state, a.id),
                     shape: RoundedRectangleBorder(borderRadius: kRadiusTag),
                   )).toList(),
                 ),
                 const SizedBox(height: 16),
-                const Divider(height: 1, color: kBorder),
+                Divider(height: 1, color: c.border),
                 const SizedBox(height: 16),
               ],
 
               // Tag selector
-              const Text('What are you working on?',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kWhite)),
+              Text('What are you working on?',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.textPrimary)),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 6,
@@ -154,20 +156,20 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         gradient: selected ? kGreenGradient : null,
-                        color: selected ? null : kSurface2,
+                        color: selected ? null : c.surface2,
                         borderRadius: kRadiusBtn,
-                        border: Border.all(color: selected ? kGreen : kBorder),
+                        border: Border.all(color: selected ? kGreen : c.border),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(t.$3, size: 14, color: selected ? kBg : kGrey),
+                          Icon(t.$3, size: 14, color: selected ? c.onAccent : c.textSecondary),
                           const SizedBox(width: 4),
                           Text(t.$2,
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: selected ? kBg : kWhite)),
+                                  color: selected ? c.onAccent : c.textPrimary)),
                         ],
                       ),
                     ),
@@ -179,15 +181,15 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
               // Note field
               TextField(
                 controller: _noteCtrl,
-                style: const TextStyle(color: kWhite, fontSize: 13),
+                style: TextStyle(color: c.textPrimary, fontSize: 13),
                 decoration: InputDecoration(
                   hintText: 'Add a note (optional)',
-                  hintStyle: const TextStyle(color: kGrey, fontSize: 13),
+                  hintStyle: TextStyle(color: c.textSecondary, fontSize: 13),
                   filled: true,
-                  fillColor: kSurface2,
+                  fillColor: c.surface2,
                   border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
                   enabledBorder: OutlineInputBorder(
-                      borderRadius: kRadiusInput, borderSide: const BorderSide(color: kBorder)),
+                      borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: kRadiusInput, borderSide: const BorderSide(color: kGreen)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -206,9 +208,9 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                       borderRadius: kRadiusBtn,
                       boxShadow: kGreenGlow,
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text('Log Activity',
-                          style: TextStyle(color: kBg, fontWeight: FontWeight.w700, fontSize: 15)),
+                          style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 15)),
                     ),
                   ),
                 ),

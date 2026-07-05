@@ -42,6 +42,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   void _handleQrDetection(BarcodeCapture capture) async {
     if (!_canScan) return;
+    final c = ThemeColors.of(context);
     HapticFeedback.mediumImpact();
     final barcodes = capture.barcodes;
     if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
@@ -58,11 +59,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
           content: Row(children: [
             const Icon(AppIcons.checkCircle, color: kGreen),
             const SizedBox(width: 10),
-            Expanded(child: Text(result, style: const TextStyle(color: kWhite))),
+            Expanded(child: Text(result, style: TextStyle(color: c.textPrimary))),
           ]),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: kSurface,
-          shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+          backgroundColor: c.surface,
+          shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
           duration: const Duration(seconds: 2),
         ));
       }
@@ -75,6 +76,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final activeColor = _canScan
             ? (state.isPunchedIn ? kGreen : kGreenLight)
             : kAmber;
@@ -119,13 +121,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('QR Scanner',
-                                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
+                              Text('QR Scanner',
+                                  style: TextStyle(color: c.textPrimary, fontSize: 15, fontWeight: FontWeight.w800)),
                               Text(
                                 state.isPunchedIn
                                     ? 'Scan to time out'
                                     : 'Scan to time in',
-                                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 11),
+                                style: TextStyle(color: c.textPrimary.withValues(alpha: 0.6), fontSize: 11),
                               ),
                             ],
                           ),
@@ -136,13 +138,13 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             decoration: BoxDecoration(
                               color: state.isPunchedIn
                                   ? kGreen.withValues(alpha: 0.2)
-                                  : Colors.white.withValues(alpha: 0.1),
+                                  : c.textPrimary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               state.isPunchedIn ? 'IN' : 'OUT',
                               style: TextStyle(
-                                color: state.isPunchedIn ? kGreen : Colors.white60,
+                                color: state.isPunchedIn ? kGreen : c.textPrimary.withValues(alpha: 0.6),
                                 fontSize: 11, fontWeight: FontWeight.w800,
                               ),
                             ),
@@ -198,7 +200,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
                             _canScan
                                 ? (state.isPunchedIn ? 'Ready to time out' : 'Ready to time in')
                                 : 'Processing…',
-                            style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                            style: TextStyle(color: c.textPrimary, fontSize: 14, fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -252,6 +254,7 @@ class _FrostedGlassPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
@@ -259,9 +262,9 @@ class _FrostedGlassPill extends StatelessWidget {
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: c.textPrimary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+            border: Border.all(color: c.textPrimary.withValues(alpha: 0.15)),
           ),
           child: child,
         ),

@@ -56,6 +56,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
   }
 
   Future<void> _punch(BuildContext context) async {
+    final c = ThemeColors.of(context);
     HapticFeedback.mediumImpact();
     final state = context.read<AppState>();
     final pos = await _getLocation();
@@ -70,12 +71,12 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
           Icon(msg.contains('Success') ? AppIcons.checkCircle : AppIcons.warning,
               color: msg.contains('Success') ? kGreen : kAmber),
           const SizedBox(width: 10),
-          Expanded(child: Text(msg, style: const TextStyle(color: kWhite))),
+          Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
         ]),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: kSurface,
+        backgroundColor: c.surface,
         shape: RoundedRectangleBorder(
-            borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+            borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
       ));
     }
   }
@@ -102,11 +103,12 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final isPunchedIn = state.isPunchedIn;
         final openLog = state.openLog;
 
         return Scaffold(
-          backgroundColor: kBg,
+          backgroundColor: c.bg,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -118,9 +120,9 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                   // 1. Header (Large Title)
                   FadeSlideIn(
                     index: 0,
-                    child: const Text('Manual Entry',
+                    child: Text('Manual Entry',
                         style: TextStyle(
-                            fontSize: 34, fontWeight: FontWeight.w800, color: kWhite)),
+                            fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
                   ),
 
                   const SizedBox(height: 12),
@@ -138,10 +140,10 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                         children: [
                           const Icon(AppIcons.wifiOff, size: 14, color: kGreen),
                           const SizedBox(width: 8),
-                          const Expanded(
+                          Expanded(
                             child: Text(
                               'Entries are saved offline and sync automatically.',
-                              style: TextStyle(fontSize: 11, color: kGrey, height: 1.4),
+                              style: TextStyle(fontSize: 11, color: c.textSecondary, height: 1.4),
                             ),
                           ),
                         ],
@@ -158,7 +160,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
                       decoration: BoxDecoration(
-                        color: kSurface2,
+                        color: c.surface2,
                         borderRadius: kRadiusCard,
                       ),
                       child: Column(
@@ -168,8 +170,8 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                 kGreenGradient.createShader(bounds),
                             child: Text(
                               _hms,
-                              style: const TextStyle(
-                                color: kWhite,
+                              style: TextStyle(
+                                color: c.textPrimary,
                                 fontSize: 48,
                                 fontWeight: FontWeight.w300,
                                 letterSpacing: 3,
@@ -179,8 +181,8 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                           ),
                           const SizedBox(height: 6),
                           Text(_dateLabel,
-                              style: const TextStyle(
-                                  color: kGrey, fontSize: 13, fontWeight: FontWeight.w500)),
+                              style: TextStyle(
+                                  color: c.textSecondary, fontSize: 13, fontWeight: FontWeight.w500)),
                           const SizedBox(height: 14),
                           // Session status pill
                           Container(
@@ -189,7 +191,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                             decoration: BoxDecoration(
                               color: isPunchedIn
                                   ? kGreen.withValues(alpha: 0.15)
-                                  : kGreyDark.withValues(alpha: 0.4),
+                                  : c.textMuted.withValues(alpha: 0.4),
                               borderRadius: kRadiusNav,
                             ),
                             child: Row(
@@ -199,7 +201,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                   width: 7, height: 7,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: isPunchedIn ? kGreen : kGrey,
+                                    color: isPunchedIn ? kGreen : c.textSecondary,
                                     boxShadow: isPunchedIn ? kGreenGlow : null,
                                   ),
                                 ),
@@ -209,7 +211,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                       ? 'Active since ${_fmt(openLog.timeIn)}'
                                       : 'Not punched in',
                                   style: TextStyle(
-                                    color: isPunchedIn ? kGreen : kGrey,
+                                    color: isPunchedIn ? kGreen : c.textSecondary,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: 0.5,
@@ -234,9 +236,9 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                   // 5. Punch actions — Inset Grouped List
                   FadeSlideIn(
                     index: 4,
-                    child: const Text('ACTIONS',
+                    child: Text('ACTIONS',
                         style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                            fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
                   ),
                   const SizedBox(height: 8),
 
@@ -244,7 +246,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                     index: 5,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: kSurface2,
+                        color: c.surface2,
                         borderRadius: kRadiusCard,
                       ),
                       child: Column(
@@ -259,7 +261,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                             enabled: !isPunchedIn,
                             onTap: () => _punch(context),
                           ),
-                          const Divider(height: 1, indent: 56, endIndent: 0, color: kBorder),
+                          Divider(height: 1, indent: 56, endIndent: 0, color: c.border),
                           _GroupedPunchAction(
                             icon: AppIcons.logout,
                             label: 'Time Out',
@@ -270,7 +272,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                             enabled: isPunchedIn,
                             onTap: () => _punch(context),
                           ),
-                          const Divider(height: 1, indent: 56, endIndent: 0, color: kBorder),
+                          Divider(height: 1, indent: 56, endIndent: 0, color: c.border),
                           _GroupedPunchAction(
                             icon: AppIcons.breakfast,
                             label: 'Break',
@@ -282,11 +284,11 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                             onTap: () {
                               showModalBottomSheet(
                                 context: context,
-                                backgroundColor: kSurface,
+                                backgroundColor: c.surface,
                                 isScrollControlled: true,
-                                shape: const RoundedRectangleBorder(
+                                shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                                  side: BorderSide(color: kBorder),
+                                  side: BorderSide(color: c.border),
                                 ),
                                 builder: (_) => const BreakTrackingScreen(),
                               );
@@ -314,6 +316,7 @@ class _TodaySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final today = DateTime.now();
     final todayLogs = state.logs
         .where((l) =>
@@ -330,7 +333,7 @@ class _TodaySummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: kSurface2,
+        color: c.surface2,
         borderRadius: kRadiusCard,
       ),
       child: Row(
@@ -348,11 +351,11 @@ class _TodaySummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Today's Hours",
+                Text("Today's Hours",
                     style: TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w700, color: kWhite)),
+                        fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
                 Text('${todayHours.toStringAsFixed(2)} hours logged today',
-                    style: const TextStyle(fontSize: 11, color: kGrey)),
+                    style: TextStyle(fontSize: 11, color: c.textSecondary)),
               ],
             ),
           ),
@@ -385,7 +388,8 @@ class _GroupedPunchAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = enabled ? accentColor : kGrey;
+    final c = ThemeColors.of(context);
+    final color = enabled ? accentColor : c.textSecondary;
 
     return TapScale(
       onTap: enabled ? onTap : null,
@@ -411,18 +415,18 @@ class _GroupedPunchAction extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: enabled ? kWhite : kGrey)),
+                          color: enabled ? c.textPrimary : c.textSecondary)),
                   const SizedBox(height: 2),
                   Text(sublabel,
                       style: TextStyle(
                           fontSize: 12,
-                          color: enabled ? kGrey : kGreyDark)),
+                          color: enabled ? c.textSecondary : c.textMuted)),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               AppIcons.chevronRight,
-              color: kGreyDark,
+              color: c.textMuted,
               size: 20,
             ),
           ],

@@ -18,17 +18,18 @@ class _ExportScreenState extends State<ExportScreen> {
 
   void _showSnack(String msg, {bool error = false}) {
     if (!mounted) return;
+    final c = ThemeColors.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(children: [
           Icon(error ? AppIcons.warning : AppIcons.checkCircle,
               color: error ? kRed : kGreen, size: 18),
           const SizedBox(width: 10),
-          Expanded(child: Text(msg, style: const TextStyle(color: kWhite))),
+          Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
         ]),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: kSurface,
-        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+        backgroundColor: c.surface,
+        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
       ),
     );
   }
@@ -99,17 +100,18 @@ class _ExportScreenState extends State<ExportScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         return Scaffold(
-          backgroundColor: kBg,
+          backgroundColor: c.bg,
           appBar: AppBar(
-            backgroundColor: kBg,
+            backgroundColor: c.bg,
             elevation: 0,
             leading: TapScale(
               onTap: () => Navigator.pop(context),
-              child: const Icon(AppIcons.chevronLeft, color: kWhite),
+              child: Icon(AppIcons.chevronLeft, color: c.textPrimary),
             ),
-            title: const Text('Export & Backup',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: kWhite)),
+            title: Text('Export & Backup',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.textPrimary)),
           ),
           body: SafeArea(
             child: Column(
@@ -118,7 +120,7 @@ class _ExportScreenState extends State<ExportScreen> {
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   decoration: BoxDecoration(
-                    color: kSurface2,
+                    color: c.surface2,
                     borderRadius: kRadiusBtn,
                   ),
                   padding: const EdgeInsets.all(4),
@@ -151,13 +153,14 @@ class _ExportScreenState extends State<ExportScreen> {
 
   Widget _tabBtn({required String label, required int index}) {
     final selected = _selectedTab == index;
+    final c = ThemeColors.of(context);
     return Expanded(
       child: TapScale(
         onTap: () => setState(() => _selectedTab = index),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? kSurface : Colors.transparent,
+            color: selected ? c.surface : Colors.transparent,
             borderRadius: kRadiusTag,
             boxShadow: selected ? const [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
           ),
@@ -166,7 +169,7 @@ class _ExportScreenState extends State<ExportScreen> {
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: selected ? kWhite : kGrey)),
+                    color: selected ? c.textPrimary : c.textSecondary)),
           ),
         ),
       ),
@@ -174,14 +177,15 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Widget _buildExportTab(AppState state) {
+    final c = ThemeColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Generate Reports',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+        Text('Generate Reports',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
         const SizedBox(height: 4),
-        const Text('Export your DTR in multiple formats',
-            style: TextStyle(fontSize: 12, color: kGrey)),
+        Text('Export your DTR in multiple formats',
+            style: TextStyle(fontSize: 12, color: c.textSecondary)),
         const SizedBox(height: 20),
 
         _ExportCard(
@@ -212,39 +216,40 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Widget _buildBackupTab() {
+    final c = ThemeColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Data Backup',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+        Text('Data Backup',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
         const SizedBox(height: 4),
-        const Text('Export or import all your data',
-            style: TextStyle(fontSize: 12, color: kGrey)),
+        Text('Export or import all your data',
+            style: TextStyle(fontSize: 12, color: c.textSecondary)),
         const SizedBox(height: 20),
 
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: kSurface,
+            color: c.surface,
             borderRadius: kRadiusCard,
-            border: Border.all(color: kBorder),
+            border: Border.all(color: c.border),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(AppIcons.wifiOff, color: kGreen, size: 20),
-                  SizedBox(width: 10),
+                  const Icon(AppIcons.wifiOff, color: kGreen, size: 20),
+                  const SizedBox(width: 10),
                   Text('Offline Backup',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: kWhite)),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.textPrimary)),
                 ],
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'All data is stored locally on your device. '
                 'Use backup to transfer data between devices or keep a safe copy.',
-                style: TextStyle(fontSize: 12, color: kGrey, height: 1.4),
+                style: TextStyle(fontSize: 12, color: c.textSecondary, height: 1.4),
               ),
               const SizedBox(height: 16),
               SizedBox(
@@ -257,13 +262,13 @@ class _ExportScreenState extends State<ExportScreen> {
                       gradient: kGreenGradient,
                       borderRadius: kRadiusBtn,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(AppIcons.download, color: kBg, size: 18),
-                        SizedBox(width: 8),
+                        Icon(AppIcons.download, color: c.onAccent, size: 18),
+                        const SizedBox(width: 8),
                         Text('Export Backup',
-                            style: TextStyle(color: kBg, fontWeight: FontWeight.w700, fontSize: 15)),
+                            style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 15)),
                       ],
                     ),
                   ),
@@ -277,17 +282,17 @@ class _ExportScreenState extends State<ExportScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
-                      color: kSurface2,
+                      color: c.surface2,
                       borderRadius: kRadiusBtn,
-                      border: Border.all(color: kBorder),
+                      border: Border.all(color: c.border),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(AppIcons.download, color: kGreenLight, size: 18),
-                        SizedBox(width: 8),
+                        const Icon(AppIcons.download, color: kGreenLight, size: 18),
+                        const SizedBox(width: 8),
                         Text('Import Backup',
-                            style: TextStyle(color: kWhite, fontWeight: FontWeight.w700, fontSize: 15)),
+                            style: TextStyle(color: c.textPrimary, fontWeight: FontWeight.w700, fontSize: 15)),
                       ],
                     ),
                   ),
@@ -339,14 +344,16 @@ class _ExportCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => TapScale(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TapScale(
     onTap: onTap,
     child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kSurface,
+        color: c.surface,
         borderRadius: kRadiusCard,
-        border: Border.all(color: kBorder),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -365,15 +372,16 @@ class _ExportCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: kWhite)),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
                 const SizedBox(height: 2),
-                Text(sub, style: const TextStyle(fontSize: 11, color: kGrey)),
+                Text(sub, style: TextStyle(fontSize: 11, color: c.textSecondary)),
               ],
             ),
           ),
-          const Icon(AppIcons.chevronRight, color: kGreyDark, size: 20),
+          Icon(AppIcons.chevronRight, color: c.textMuted, size: 20),
         ],
       ),
     ),
   );
+  }
 }

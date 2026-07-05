@@ -25,6 +25,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void _nextMonth() => setState(() => _viewMonth = DateTime(_viewMonth.year, _viewMonth.month + 1));
 
   void _toggleDate(BuildContext context, AppState state, DateTime date) {
+    final c = ThemeColors.of(context);
     final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
     final existing = state.calendarEvents.cast<Map<String, dynamic>?>().firstWhere(
       (e) => e?['date'] == dateStr,
@@ -36,10 +37,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } else {
       showModalBottomSheet(
         context: context,
-        backgroundColor: kSurface,
-        shape: const RoundedRectangleBorder(
+          backgroundColor: c.surface,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          side: BorderSide(color: kBorder),
+          side: BorderSide(color: c.border),
         ),
         builder: (ctx) => Padding(
           padding: const EdgeInsets.all(24),
@@ -50,20 +51,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Mark Date', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
+                  Text('Mark Date', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
                   TapScale(
                     onTap: () => Navigator.pop(ctx),
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                      child: const Icon(AppIcons.close, color: kGrey, size: 18),
+                      decoration: BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                      child: Icon(AppIcons.close, color: c.textSecondary, size: 18),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               Text('${date.month}/${date.day}/${date.year}',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: kWhite)),
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: c.textPrimary)),
               const SizedBox(height: 16),
               _EventTypeButton(
                 icon: Icons.celebration,
@@ -126,35 +127,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final now = DateTime.now();
         final daysInMonth = DateTime(_viewMonth.year, _viewMonth.month + 1, 0).day;
         final firstWeekday = DateTime(_viewMonth.year, _viewMonth.month, 1).weekday;
 
         return Scaffold(
-          backgroundColor: kBg,
+          backgroundColor: c.bg,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Calendar',
-                      style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: kWhite)),
+                  Text('Calendar',
+                      style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
                   const SizedBox(height: 8),
-                  const Text('Mark holidays, leave, or sick days',
-                      style: TextStyle(fontSize: 14, color: kGrey)),
+                  Text('Mark holidays, leave, or sick days',
+                      style: TextStyle(fontSize: 14, color: c.textSecondary)),
                   const SizedBox(height: 24),
 
                   // Month header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TapScale(onTap: _prevMonth, child: const Icon(AppIcons.chevronLeft, color: kWhite, size: 24)),
+                      TapScale(onTap: _prevMonth, child: Icon(AppIcons.chevronLeft, color: c.textPrimary, size: 24)),
                       Text(
                         '${_monthLabel(_viewMonth.month)} ${_viewMonth.year}',
-                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: kWhite),
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.textPrimary),
                       ),
-                      TapScale(onTap: _nextMonth, child: const Icon(AppIcons.chevronRight, color: kWhite, size: 24)),
+                      TapScale(onTap: _nextMonth, child: Icon(AppIcons.chevronRight, color: c.textPrimary, size: 24)),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -166,7 +168,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         .map((d) => SizedBox(
                           width: 36,
                           child: Text(d, textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 11, color: kGrey, fontWeight: FontWeight.w600)),
+                              style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w600)),
                         ))
                         .toList(),
                   ),
@@ -209,7 +211,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: isToday || isExcluded ? FontWeight.w700 : FontWeight.w500,
-                                    color: isExcluded ? _eventColor(event['type']) : (isToday ? kGreen : kWhite),
+                                    color: isExcluded ? _eventColor(event['type']) : (isToday ? kGreen : c.textPrimary),
                                   ),
                                 ),
                               ),
@@ -226,14 +228,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: kSurface2,
+                      color: c.surface2,
                       borderRadius: kRadiusCard,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Legend',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: kWhite)),
+                        Text('Legend',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
                         const SizedBox(height: 10),
                         _LegendRow(color: kGreen, label: 'Holiday'),
                         const SizedBox(height: 6),
@@ -260,11 +262,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Color _eventColor(String type) {
+    final c = ThemeColors.of(context);
     switch (type) {
       case 'holiday': return kGreen;
       case 'leave': return kAmber;
       case 'sick': return kRed;
-      default: return kGrey;
+      default: return c.textSecondary;
     }
   }
 
@@ -323,11 +326,14 @@ class _LegendRow extends StatelessWidget {
   const _LegendRow({required this.color, required this.label});
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Row(
     children: [
       Container(width: 10, height: 10, decoration: BoxDecoration(shape: BoxShape.circle, color: color)),
       const SizedBox(width: 8),
-      Text(label, style: const TextStyle(fontSize: 12, color: kGrey)),
+      Text(label, style: TextStyle(fontSize: 12, color: c.textSecondary)),
     ],
   );
+  }
 }

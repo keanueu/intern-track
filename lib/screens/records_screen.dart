@@ -11,17 +11,18 @@ class RecordsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final logs = state.logs;
         final weekLogs = state.weekLogs;
         final totalDays = state.daysPresent;
         final totalHours = state.totalHours;
 
         return Scaffold(
-          backgroundColor: kBg,
+          backgroundColor: c.bg,
           body: SafeArea(
             child: RefreshIndicator(
               color: kGreen,
-              backgroundColor: kSurface,
+              backgroundColor: c.surface,
               onRefresh: () => state.load(),
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -35,16 +36,16 @@ class RecordsScreen extends StatelessWidget {
                         // Header (Large Title)
                         FadeSlideIn(
                           index: 0,
-                          child: const Text('Records',
-                              style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: kWhite)),
+                          child: Text('Records',
+                              style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
                         ),
                         
                         const SizedBox(height: 8),
                         
                         FadeSlideIn(
                           index: 0,
-                          child: const Text('Your attendance history',
-                              style: TextStyle(fontSize: 14, color: kGrey)),
+                          child: Text('Your attendance history',
+                              style: TextStyle(fontSize: 14, color: c.textSecondary)),
                         ),
 
                         const SizedBox(height: 24),
@@ -106,22 +107,23 @@ class RecordsScreen extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context, AppState state, String logId) {
+    final c = ThemeColors.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: kSurface,
+        backgroundColor: c.surface,
         shape: RoundedRectangleBorder(
           borderRadius: kRadiusCard,
-          side: const BorderSide(color: kBorder),
+          side: BorderSide(color: c.border),
         ),
-        title: const Text('Delete Record',
-            style: TextStyle(fontWeight: FontWeight.w800, color: kWhite)),
-        content: const Text('This will permanently remove this DTR entry.',
-            style: TextStyle(color: kGrey)),
+        title: Text('Delete Record',
+            style: TextStyle(fontWeight: FontWeight.w800, color: c.textPrimary)),
+        content: Text('This will permanently remove this DTR entry.',
+            style: TextStyle(color: c.textSecondary)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: kGrey)),
+            child: Text('Cancel', style: TextStyle(color: c.textSecondary)),
           ),
           TextButton(
             onPressed: () {
@@ -141,6 +143,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Column(
@@ -155,12 +158,12 @@ class _EmptyState extends StatelessWidget {
             child: const Icon(AppIcons.eventNote, size: 36, color: kGreen),
           ),
           const SizedBox(height: 16),
-          const Text('No records yet',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: kWhite)),
+          Text('No records yet',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
           const SizedBox(height: 6),
-          const Text('Start by scanning your QR\nor using manual entry',
+          Text('Start by scanning your QR\nor using manual entry',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: kGrey)),
+              style: TextStyle(fontSize: 12, color: c.textSecondary)),
         ],
       ),
     );
@@ -197,6 +200,7 @@ class _SwipeableRecord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final borderRadius = BorderRadius.vertical(
       top: isFirst ? const Radius.circular(16) : Radius.zero,
       bottom: isLast ? const Radius.circular(16) : Radius.zero,
@@ -212,7 +216,7 @@ class _SwipeableRecord extends StatelessWidget {
           color: kRed.withValues(alpha: 0.9),
           borderRadius: borderRadius,
         ),
-        child: const Icon(AppIcons.delete, color: kWhite),
+        child: Icon(AppIcons.delete, color: c.textPrimary),
       ),
       confirmDismiss: (_) async {
         onDelete();
@@ -220,12 +224,12 @@ class _SwipeableRecord extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: kSurface2,
+          color: c.surface2,
           borderRadius: borderRadius,
         ),
         child: Column(
           children: [
-            if (!isFirst) const Divider(height: 1, indent: 76, endIndent: 0, color: kBorder),
+            if (!isFirst) Divider(height: 1, indent: 76, endIndent: 0, color: c.border),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -242,9 +246,9 @@ class _SwipeableRecord extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(_dayLabel,
-                            style: const TextStyle(fontSize: 10, color: kGrey, fontWeight: FontWeight.w600)),
+                            style: TextStyle(fontSize: 10, color: c.textSecondary, fontWeight: FontWeight.w600)),
                         Text('${log.timeIn.day}',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: kWhite)),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: c.textPrimary)),
                       ],
                     ),
                   ),
@@ -254,13 +258,13 @@ class _SwipeableRecord extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('${_fmt(log.timeIn)} → ${_fmt(log.timeOut)}',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: kWhite)),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: c.textPrimary)),
                         const SizedBox(height: 4),
                         Text(
                           log.timeOut != null
                               ? '${log.calculatedHours.toStringAsFixed(2)} hrs • $_dayLabel, ${log.timeIn.month}/${log.timeIn.day}'
                               : 'Session in progress',
-                          style: const TextStyle(fontSize: 13, color: kGrey),
+                          style: TextStyle(fontSize: 13, color: c.textSecondary),
                         ),
                         if (log.timeOut != null && (log.breakMinutes > 0 || log.activities.isNotEmpty || log.lat != null))
                           Padding(
@@ -340,11 +344,12 @@ class _SummaryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
-          color: kSurface2,
+          color: c.surface2,
           borderRadius: kRadiusCard,
           border: Border.all(color: color.withValues(alpha: 0.25)),
         ),
@@ -357,7 +362,7 @@ class _SummaryChip extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: color)),
             const SizedBox(height: 2),
             Text(label,
-                style: const TextStyle(fontSize: 11, color: kGrey, fontWeight: FontWeight.w500)),
+                style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w500)),
           ],
         ),
       ),

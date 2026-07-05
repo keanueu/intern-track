@@ -61,8 +61,8 @@ class MyApp extends StatelessWidget {
         return DevicePreview.appBuilder(context, LockScreen(child: child!));
       },
       debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      darkTheme: buildAppTheme(),
+      theme: buildLightTheme(),
+      darkTheme: buildDarkTheme(),
       themeMode: themeMode,
       home: const MainContainer(),
     );
@@ -128,6 +128,7 @@ class _FloatingNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = ThemeColors.of(context);
     return Container(
       padding: const EdgeInsets.only(bottom: 20, top: 8),
       child: Row(
@@ -137,10 +138,10 @@ class _FloatingNavBar extends StatelessWidget {
             height: 60,
             width: 328,
             decoration: BoxDecoration(
-              color: kSurface,
+              color: colors.surface,
               borderRadius: kRadiusNav,
-              border: Border.all(color: kBorder),
-              boxShadow: kCardShadow,
+              border: Border.all(color: colors.border),
+              boxShadow: kCardShadowFrom(colors),
             ),
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -228,6 +229,7 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool selected = current == index;
+    final colors = ThemeColors.of(context);
 
     return Expanded(
       child: TapScale(
@@ -235,7 +237,7 @@ class _NavItem extends StatelessWidget {
         child: Center(
           child: Icon(
             selected ? icon : outlinedIcon,
-            color: selected ? kGreen : const Color.fromARGB(255, 255, 255, 255),
+            color: selected ? kGreen : colors.textPrimary,
             size: 22,
           ),
         ),

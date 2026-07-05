@@ -53,9 +53,10 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     if (_lockService.isLocked) {
       return Scaffold(
-        backgroundColor: kBg,
+        backgroundColor: c.bg,
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -71,17 +72,17 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: kGreenGlow,
                     ),
-                    child: const Icon(AppIcons.lock, color: kWhite, size: 36),
+                    child: Icon(AppIcons.lock, color: c.textPrimary, size: 36),
                   ),
                   const SizedBox(height: 24),
-                  const Text('OJT Tracker',
+                  Text('OJT Tracker',
                       style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
-                          color: kWhite)),
+                          color: c.textPrimary)),
                   const SizedBox(height: 8),
-                  const Text('Authenticate to continue',
-                      style: TextStyle(fontSize: 14, color: kGrey)),
+                  Text('Authenticate to continue',
+                      style: TextStyle(fontSize: 14, color: c.textSecondary)),
                   const SizedBox(height: 32),
                   SizedBox(
                     width: 200,
@@ -95,8 +96,8 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
                           HapticFeedback.heavyImpact();
                           messenger.showSnackBar(
                             SnackBar(
-                              content: const Text('Authentication failed',
-                                  style: TextStyle(color: kWhite)),
+                              content: Text('Authentication failed',
+                                  style: TextStyle(color: c.textPrimary)),
                               behavior: SnackBarBehavior.floating,
                               backgroundColor: kRed,
                               shape: RoundedRectangleBorder(
@@ -112,10 +113,10 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
                           borderRadius: kRadiusBtn,
                           boxShadow: kGreenGlow,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text('Unlock',
                               style: TextStyle(
-                                  color: kBg,
+                                  color: c.onAccent,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16)),
                         ),

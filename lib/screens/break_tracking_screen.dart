@@ -14,17 +14,18 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   String _selectedType = 'short';
 
   void _showSnack(String msg, {bool error = false}) {
+    final c = ThemeColors.of(context);
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(children: [
           Icon(error ? AppIcons.warning : AppIcons.checkCircle, color: error ? kRed : kGreen, size: 18),
           const SizedBox(width: 10),
-          Text(msg, style: const TextStyle(color: kWhite)),
+          Text(msg, style: TextStyle(color: c.textPrimary)),
         ]),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: kSurface,
-        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+        backgroundColor: c.surface,
+        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
       ),
     );
   }
@@ -58,6 +59,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final isOnBreak = state.isOnBreak;
         final activeBreak = state.activeBreak;
         final totalBreakMin = state.todayBreakMinutes;
@@ -71,21 +73,21 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Break Tracker',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
+                  Text('Break Tracker',
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
                   TapScale(
                     onTap: () => Navigator.pop(context),
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                      child: const Icon(AppIcons.close, color: kGrey, size: 18),
+                      decoration: BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                      child: Icon(AppIcons.close, color: c.textSecondary, size: 18),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               Text('Today\'s break time: ${totalBreakMin}m',
-                  style: const TextStyle(fontSize: 12, color: kGrey)),
+                  style: TextStyle(fontSize: 12, color: c.textSecondary)),
               const SizedBox(height: 20),
 
               if (isOnBreak && activeBreak != null)
@@ -99,7 +101,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Break Type', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: kWhite)),
+                    Text('Break Type', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.textPrimary)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -118,6 +120,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   }
 
   Widget _buildBreakActive(activeBreak) {
+    final c = ThemeColors.of(context);
     final duration = DateTime.now().difference(activeBreak.start);
     final mins = duration.inMinutes;
     final secs = duration.inSeconds % 60;
@@ -138,17 +141,17 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
               color: Colors.black.withValues(alpha: 0.2),
               borderRadius: kRadiusTag,
             ),
-            child: const Text('● Break in Progress', style: TextStyle(color: kWhite, fontSize: 11, fontWeight: FontWeight.w600)),
+            child: Text('● Break in Progress', style: TextStyle(color: c.textPrimary, fontSize: 11, fontWeight: FontWeight.w600)),
           ),
           const SizedBox(height: 12),
           Text(
             '${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}',
-            style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: kWhite, fontFamily: 'Exter'),
+            style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: c.textPrimary, fontFamily: 'Exter'),
           ),
           const SizedBox(height: 4),
           Text(
             activeBreak.type == 'lunch' ? 'Lunch Break' : 'Short Break',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+            style: TextStyle(color: c.textPrimary.withValues(alpha: 0.8), fontSize: 13),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -161,12 +164,12 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: kWhite,
+                  color: c.surface,
                   borderRadius: kRadiusBtn,
                 ),
-                child: const Center(
+                child: Center(
                   child: Text('End Break',
-                      style: TextStyle(color: kBg, fontWeight: FontWeight.w700, fontSize: 15)),
+                      style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 15)),
                 ),
               ),
             ),
@@ -177,24 +180,25 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   }
 
   Widget _buildBreakStart(AppState state) {
+    final c = ThemeColors.of(context);
     if (!state.isPunchedIn) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: kSurface2,
+          color: c.surface2,
           borderRadius: kRadiusCard,
-          border: Border.all(color: kBorder),
+          border: Border.all(color: c.border),
         ),
-        child: const Column(
+        child: Column(
           children: [
-            Icon(AppIcons.timer, color: kGrey, size: 32),
+            Icon(AppIcons.timer, color: c.textSecondary, size: 32),
             SizedBox(height: 8),
             Text('No active session',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: kGrey)),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.textSecondary)),
             SizedBox(height: 4),
             Text('Punch in first to start tracking breaks',
-                style: TextStyle(fontSize: 12, color: kGrey)),
+                style: TextStyle(fontSize: 12, color: c.textSecondary)),
           ],
         ),
       );
@@ -211,9 +215,9 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
             borderRadius: kRadiusBtn,
             boxShadow: kGreenGlow,
           ),
-          child: const Center(
+          child: Center(
             child: Text('Start Break',
-                style: TextStyle(color: kBg, fontWeight: FontWeight.w700, fontSize: 15)),
+                style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 15)),
           ),
         ),
       ),
@@ -221,6 +225,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   }
 
   Widget _typeChip(String type, String label, IconData icon) {
+    final c = ThemeColors.of(context);
     final selected = _selectedType == type;
     return TapScale(
       onTap: () => setState(() => _selectedType = type),
@@ -228,19 +233,19 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           gradient: selected ? kGreenGradient : null,
-          color: selected ? null : kSurface2,
+          color: selected ? null : c.surface2,
           borderRadius: kRadiusBtn,
-          border: Border.all(color: selected ? kGreen : kBorder),
+          border: Border.all(color: selected ? kGreen : c.border),
           boxShadow: selected ? kGreenGlow : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: selected ? kBg : kGrey),
+            Icon(icon, size: 16, color: selected ? c.onAccent : c.textSecondary),
             const SizedBox(width: 6),
             Text(label,
                 style: TextStyle(
-                    color: selected ? kBg : kWhite,
+                    color: selected ? c.onAccent : c.textPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13)),
           ],

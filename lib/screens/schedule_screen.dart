@@ -22,6 +22,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   static const _dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   void _editShift(BuildContext context, AppState state, Map<String, dynamic>? existing, int? day) {
+    final c = ThemeColors.of(context);
     final startCtrl = TextEditingController(text: existing?['start_time'] ?? '08:00');
     final endCtrl = TextEditingController(text: existing?['end_time'] ?? '17:00');
     final breakCtrl = TextEditingController(text: ((existing?['break_minutes'] as int?) ?? 60).toString());
@@ -29,11 +30,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: kSurface,
+      backgroundColor: c.surface,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -48,58 +49,58 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(existing != null ? 'Edit Shift - ${_dayLabels[selectedDay - 1]}' : 'Add Shift - ${_dayLabels[selectedDay - 1]}',
-                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
                   child: Container(
                     padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                    child: const Icon(AppIcons.close, color: kGrey, size: 18),
+                    decoration: BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                    child: Icon(AppIcons.close, color: c.textSecondary, size: 18),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const Text('Start Time (HH:mm)', style: TextStyle(fontSize: 12, color: kGrey, fontWeight: FontWeight.w600)),
+            Text('Start Time (HH:mm)', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
               controller: startCtrl,
-              style: const TextStyle(color: kWhite),
+              style: TextStyle(color: c.textPrimary),
               decoration: InputDecoration(
                 hintText: '08:00',
-                filled: true, fillColor: kSurface2,
+                filled: true, fillColor: c.surface2,
                 border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-                enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: const BorderSide(color: kBorder)),
-                focusedBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: const BorderSide(color: kGreen)),
+                enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
+                focusedBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: kGreen)),
               ),
             ),
             const SizedBox(height: 12),
-            const Text('End Time (HH:mm)', style: TextStyle(fontSize: 12, color: kGrey, fontWeight: FontWeight.w600)),
+            Text('End Time (HH:mm)', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
               controller: endCtrl,
-              style: const TextStyle(color: kWhite),
+              style: TextStyle(color: c.textPrimary),
               decoration: InputDecoration(
                 hintText: '17:00',
-                filled: true, fillColor: kSurface2,
+                filled: true, fillColor: c.surface2,
                 border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-                enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: const BorderSide(color: kBorder)),
-                focusedBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: const BorderSide(color: kGreen)),
+                enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
+                focusedBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: kGreen)),
               ),
             ),
             const SizedBox(height: 12),
-            const Text('Break (minutes)', style: TextStyle(fontSize: 12, color: kGrey, fontWeight: FontWeight.w600)),
+            Text('Break (minutes)', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
               controller: breakCtrl,
               keyboardType: TextInputType.number,
-              style: const TextStyle(color: kWhite),
+              style: TextStyle(color: c.textPrimary),
               decoration: InputDecoration(
                 hintText: '60',
-                filled: true, fillColor: kSurface2,
+                filled: true, fillColor: c.surface2,
                 border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-                enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: const BorderSide(color: kBorder)),
-                focusedBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: const BorderSide(color: kGreen)),
+                enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
+                focusedBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: kGreen)),
               ),
             ),
             const SizedBox(height: 20),
@@ -122,8 +123,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(gradient: kGreenGradient, borderRadius: kRadiusBtn),
-                  child: const Center(
-                    child: Text('Save', style: TextStyle(color: kBg, fontWeight: FontWeight.w700, fontSize: 15)),
+                  child: Center(
+                    child: Text('Save', style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 15)),
                   ),
                 ),
               ),
@@ -139,12 +140,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final shifts = state.shifts;
         final hasShiftToday = state.todayShift != null;
         final todayShift = state.todayShift;
 
         return Scaffold(
-          backgroundColor: kBg,
+          backgroundColor: c.bg,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -154,8 +156,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Schedule',
-                          style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: kWhite)),
+                      Text('Schedule',
+                          style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
                       TapScale(
                         onTap: () {
                           if (shifts.length >= 7) {
@@ -165,21 +167,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: kSurface2,
+                            color: c.surface2,
                             borderRadius: kRadiusBtn,
-                            border: Border.all(color: kBorder),
+                            border: Border.all(color: c.border),
                           ),
                           child: Text(
                             shifts.isNotEmpty ? 'Reset' : 'Set All',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGrey),
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textSecondary),
                           ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  const Text('Set your weekly shift schedule',
-                      style: TextStyle(fontSize: 14, color: kGrey)),
+                  Text('Set your weekly shift schedule',
+                      style: TextStyle(fontSize: 14, color: c.textSecondary)),
                   const SizedBox(height: 24),
 
                   if (hasShiftToday)
@@ -193,18 +195,18 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(AppIcons.today, color: kBg, size: 24),
+                          Icon(AppIcons.today, color: c.onAccent, size: 24),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text("Today's Shift",
-                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: kBg)),
+                                Text("Today's Shift",
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.onAccent)),
                                 const SizedBox(height: 4),
                                 Text(
                                   '${todayShift!['start_time']} – ${todayShift['end_time']}',
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: kBg),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: c.onAccent),
                                 ),
                               ],
                             ),
@@ -212,11 +214,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: kBg.withValues(alpha: 0.2),
+                              color: c.onAccent.withValues(alpha: 0.2),
                               borderRadius: kRadiusTag,
                             ),
                             child: Text('${todayShift['break_minutes']}m break',
-                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: kBg)),
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.onAccent)),
                           ),
                         ],
                       ),
@@ -225,7 +227,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
                   Container(
                     decoration: BoxDecoration(
-                      color: kSurface2,
+                      color: c.surface2,
                       borderRadius: kRadiusCard,
                     ),
                     child: Column(
@@ -240,7 +242,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
                         return Column(
                           children: [
-                            if (i > 0) const Divider(height: 1, indent: 16, endIndent: 16, color: kBorder),
+                            if (i > 0) Divider(height: 1, indent: 16, endIndent: 16, color: c.border),
                             TapScale(
                               onTap: () => _editShift(context, state, shift, day),
                               child: Container(
@@ -259,7 +261,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                           Text(_dayLabels[i],
                                               style: TextStyle(
                                                   fontSize: 11, fontWeight: FontWeight.w700,
-                                                  color: isToday ? kGreen : (hasShift ? kWhite : kGrey))),
+                                                  color: isToday ? kGreen : (hasShift ? c.textPrimary : c.textSecondary))),
                                           if (isToday)
                                             Container(
                                               margin: const EdgeInsets.only(top: 2),
@@ -274,10 +276,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                       child: hasShift
                                           ? Text(
                                               '${shift['start_time']} – ${shift['end_time']}',
-                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: kWhite),
+                                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.textPrimary),
                                             )
-                                          : const Text('Day off',
-                                              style: TextStyle(fontSize: 14, color: kGrey)),
+                                          : Text('Day off',
+                                              style: TextStyle(fontSize: 14, color: c.textSecondary)),
                                     ),
                                     if (hasShift)
                                       Container(
@@ -290,7 +292,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                             style: const TextStyle(fontSize: 11, color: kGreen, fontWeight: FontWeight.w600)),
                                       ),
                                     const SizedBox(width: 4),
-                                    const Icon(AppIcons.chevronRight, color: kGreyDark, size: 18),
+                                    Icon(AppIcons.chevronRight, color: c.textMuted, size: 18),
                                   ],
                                 ),
                               ),
@@ -327,11 +329,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Shifts already set. Tap a day to edit.',
-                                  style: TextStyle(color: kWhite)),
+                              content: Text('Shifts already set. Tap a day to edit.',
+                                  style: TextStyle(color: c.textPrimary)),
                               behavior: SnackBarBehavior.floating,
-                              backgroundColor: kSurface,
-                              shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+                              backgroundColor: c.surface,
+                              shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
                             ),
                           );
                         }
@@ -343,9 +345,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           borderRadius: kRadiusBtn,
                           boxShadow: kGreenGlow,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text('Set Default Schedule (Mon-Fri 8-5)',
-                              style: TextStyle(color: kBg, fontWeight: FontWeight.w700, fontSize: 14)),
+                              style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 14)),
                         ),
                       ),
                     ),

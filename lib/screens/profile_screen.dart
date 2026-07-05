@@ -34,11 +34,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
+        final c = ThemeColors.of(context);
         final profile = state.profile;
         final pct = (state.completionPercent * 100).clamp(0.0, 100.0);
 
         return Scaffold(
-          backgroundColor: kBg,
+          backgroundColor: c.bg,
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -53,14 +54,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _AvatarPicker(profile: profile, state: state),
                         const SizedBox(height: 16),
                         Text(profile.fullName,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w800,
-                                color: kWhite)),
+                                color: c.textPrimary)),
                         const SizedBox(height: 4),
                         Text('${profile.course} • ${profile.batch}',
-                            style: const TextStyle(
-                                fontSize: 14, color: kGrey)),
+                            style: TextStyle(
+                                fontSize: 14, color: c.textSecondary)),
                       ],
                     ),
                   ),
@@ -90,14 +91,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               decoration: BoxDecoration(
-                                color: kSurface2,
+                                color: c.surface2,
                                 borderRadius: kRadiusBtn,
-                                border: Border.all(color: kBorder),
+                                border: Border.all(color: c.border),
                               ),
-                              child: const Center(
+                              child: Center(
                                 child: Text('Edit Profile',
                                     style: TextStyle(
-                                        color: kWhite,
+                                        color: c.textPrimary,
                                         fontWeight: FontWeight.w700,
                                         fontSize: 15)),
                               ),
@@ -116,7 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: kSurface2,
+                        color: c.surface2,
                         borderRadius: kRadiusBtn,
                       ),
                       padding: const EdgeInsets.all(4),
@@ -128,14 +129,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: _selectedTab == 0 ? kSurface : Colors.transparent,
+                                  color: _selectedTab == 0 ? c.surface : Colors.transparent,
                                   borderRadius: kRadiusTag,
                                   boxShadow: _selectedTab == 0 ? const [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
                                 ),
                                 child: Center(
                                   child: Text('Progress',
                                       style: TextStyle(
-                                          color: _selectedTab == 0 ? kWhite : kGrey,
+                                          color: _selectedTab == 0 ? c.textPrimary : c.textSecondary,
                                           fontWeight: _selectedTab == 0 ? FontWeight.w700 : FontWeight.w600,
                                           fontSize: 14)),
                                 ),
@@ -148,14 +149,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: _selectedTab == 1 ? kSurface : Colors.transparent,
+                                  color: _selectedTab == 1 ? c.surface : Colors.transparent,
                                   borderRadius: kRadiusTag,
                                   boxShadow: _selectedTab == 1 ? const [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
                                 ),
                                 child: Center(
                                   child: Text('Statistics',
                                       style: TextStyle(
-                                          color: _selectedTab == 1 ? kWhite : kGrey,
+                                          color: _selectedTab == 1 ? c.textPrimary : c.textSecondary,
                                           fontWeight: _selectedTab == 1 ? FontWeight.w700 : FontWeight.w600,
                                           fontSize: 14)),
                                 ),
@@ -187,9 +188,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('ACCOUNT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('ACCOUNT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -206,9 +207,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('PLANNING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('PLANNING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -241,9 +242,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('PREFERENCES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('PREFERENCES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -279,8 +280,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 label: 'Theme',
                                 sub: '${context.watch<SettingsService>().themeMode.name[0].toUpperCase()}${context.watch<SettingsService>().themeMode.name.substring(1)}',
                                 color: kGreenLight,
-                                options: const ['Dark', 'System'],
-                                values: const [AppThemeMode.dark, AppThemeMode.system],
+                                options: const ['Light', 'Dark', 'System'],
+                                values: const [AppThemeMode.light, AppThemeMode.dark, AppThemeMode.system],
                                 selected: context.watch<SettingsService>().themeMode,
                                 onChanged: (v) => context.read<SettingsService>().setThemeMode(v),
                               ),
@@ -300,9 +301,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('DATA & ACTIONS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: kGreyDark)),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 8),
+                          child: Text('DATA & ACTIONS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -374,17 +375,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProgressTab(AppState state, ProfileModel profile, double pct) {
+    final c = ThemeColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('OJT Completion',
+            Text('OJT Completion',
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: kWhite)),
+                    color: c.textPrimary)),
             Container(
               padding: const EdgeInsets.symmetric(
                   horizontal: 10, vertical: 4),
@@ -413,7 +415,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Text(
           '${state.totalHours.toStringAsFixed(1)} of ${profile.requiredHours.toInt()} hours rendered',
           style:
-              const TextStyle(fontSize: 11, color: kGrey),
+              TextStyle(fontSize: 11, color: c.textSecondary),
         ),
       ],
     );
@@ -433,6 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showEditProfile(BuildContext context, AppState state) {
     final profile = state.profile;
+    final c = ThemeColors.of(context);
     final nameCtrl = TextEditingController(text: profile.fullName);
     final courseCtrl = TextEditingController(text: profile.course);
     final batchCtrl = TextEditingController(text: profile.batch);
@@ -442,10 +445,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: kSurface,
-      shape: const RoundedRectangleBorder(
+      backgroundColor: c.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -458,19 +461,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Edit Profile',
+                Text('Edit Profile',
                     style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
-                        color: kWhite)),
+                        color: c.textPrimary)),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration:
-                        BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                    child: const Icon(AppIcons.close,
-                        color: kGrey, size: 18),
+                        BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                    child: Icon(AppIcons.close,
+                        color: c.textSecondary, size: 18),
                   ),
                 ),
               ],
@@ -515,10 +518,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                       gradient: kGreenGradient, borderRadius: kRadiusBtn),
-                  child: const Center(
+                  child: Center(
                     child: Text('Save Changes',
                         style: TextStyle(
-                            color: kBg,
+                            color: c.onAccent,
                             fontWeight: FontWeight.w700,
                             fontSize: 15)),
                   ),
@@ -534,16 +537,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showOjtDetails(BuildContext context, AppState state) {
     final profile = state.profile;
+    final c = ThemeColors.of(context);
     final companyCtrl = TextEditingController(text: profile.company);
     final supervisorCtrl = TextEditingController(text: profile.supervisor);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: kSurface,
-      shape: const RoundedRectangleBorder(
+      backgroundColor: c.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -556,19 +560,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('OJT Details',
+                Text('OJT Details',
                     style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
-                        color: kWhite)),
+                        color: c.textPrimary)),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration:
-                        BoxDecoration(color: kSurface2, borderRadius: kRadiusTag),
-                    child: const Icon(AppIcons.close,
-                        color: kGrey, size: 18),
+                        BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                    child: Icon(AppIcons.close,
+                        color: c.textSecondary, size: 18),
                   ),
                 ),
               ],
@@ -599,10 +603,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                       gradient: kGreenGradient, borderRadius: kRadiusBtn),
-                  child: const Center(
+                  child: Center(
                     child: Text('Save',
                         style: TextStyle(
-                            color: kBg,
+                            color: c.onAccent,
                             fontWeight: FontWeight.w700,
                             fontSize: 15)),
                   ),
@@ -617,12 +621,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showQrToken(BuildContext context, ProfileModel profile) {
+    final c = ThemeColors.of(context);
     showModalBottomSheet(
       context: context,
-      backgroundColor: kSurface,
-      shape: const RoundedRectangleBorder(
+      backgroundColor: c.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(24),
@@ -630,29 +635,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('My QR Token',
+            Text('My QR Token',
                 style: TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.w800, color: kWhite)),
+                    fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
             const SizedBox(height: 8),
-            const Text('Share this token to register on a scanner device.',
-                style: TextStyle(fontSize: 12, color: kGrey)),
+            Text('Share this token to register on a scanner device.',
+                style: TextStyle(fontSize: 12, color: c.textSecondary)),
             const SizedBox(height: 20),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: kSurface2,
+                color: c.surface2,
                 borderRadius: kRadiusBtn,
-                border: Border.all(color: kBorder),
+                border: Border.all(color: c.border),
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(profile.qrCodeToken,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: kWhite)),
+                            color: c.textPrimary)),
                   ),
                   TapScale(
                     onTap: () {
@@ -660,13 +665,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ClipboardData(text: profile.qrCodeToken));
                       ScaffoldMessenger.of(ctx).showSnackBar(
                         SnackBar(
-                          content: const Text('Token copied!',
-                              style: TextStyle(color: kWhite)),
+                          content: Text('Token copied!',
+                              style: TextStyle(color: c.textPrimary)),
                           behavior: SnackBarBehavior.floating,
-                          backgroundColor: kSurface,
+                          backgroundColor: c.surface,
                           shape: RoundedRectangleBorder(
                               borderRadius: kRadiusBtn,
-                              side: const BorderSide(color: kBorder)),
+                              side: BorderSide(color: c.border)),
                         ),
                       );
                     },
@@ -700,7 +705,9 @@ class _InlineStat extends StatelessWidget {
       {required this.label, required this.value, required this.color});
 
   @override
-  Widget build(BuildContext context) => Expanded(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Expanded(
         child: Column(
           children: [
             Text(value,
@@ -708,18 +715,22 @@ class _InlineStat extends StatelessWidget {
                     fontSize: 17, fontWeight: FontWeight.w800, color: color)),
             const SizedBox(height: 2),
             Text(label,
-                style: const TextStyle(fontSize: 10, color: kGrey)),
+                style: TextStyle(fontSize: 10, color: c.textSecondary)),
           ],
         ),
       );
+  }
 }
 
 class _InlineDivider extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Container(
-        width: 1, height: 32, color: kBorder,
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Container(
+        width: 1, height: 32, color: c.border,
         margin: const EdgeInsets.symmetric(horizontal: 8),
       );
+  }
 }
 
 class _StatRow extends StatelessWidget {
@@ -727,20 +738,23 @@ class _StatRow extends StatelessWidget {
   const _StatRow(this.label, this.value);
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 13, color: kGrey)),
+            Text(label, style: TextStyle(fontSize: 13, color: c.textSecondary)),
             Text(value,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
-                    color: kWhite)),
+                    color: c.textPrimary)),
           ],
         ),
       );
+  }
 }
 
 class _Field extends StatelessWidget {
@@ -755,28 +769,31 @@ class _Field extends StatelessWidget {
       this.numeric = false});
 
   @override
-  Widget build(BuildContext context) => TextField(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TextField(
         controller: controller,
         keyboardType: numeric ? TextInputType.number : TextInputType.text,
-        style: const TextStyle(color: kWhite),
+        style: TextStyle(color: c.textPrimary),
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, size: 18, color: kGreen),
           filled: true,
-          fillColor: kSurface2,
+          fillColor: c.surface2,
           border: OutlineInputBorder(
               borderRadius: kRadiusInput, borderSide: BorderSide.none),
           enabledBorder: OutlineInputBorder(
               borderRadius: kRadiusInput,
-              borderSide: const BorderSide(color: kBorder)),
+              borderSide: BorderSide(color: c.border)),
           focusedBorder: OutlineInputBorder(
               borderRadius: kRadiusInput,
               borderSide: const BorderSide(color: kGreen)),
-          labelStyle: const TextStyle(color: kGrey),
+          labelStyle: TextStyle(color: c.textSecondary),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       );
+  }
 }
 
 class _MenuItem extends StatelessWidget {
@@ -794,7 +811,9 @@ class _MenuItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => TapScale(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TapScale(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -815,31 +834,34 @@ class _MenuItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(label,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: kWhite)),
+                            color: c.textPrimary)),
                     Text(sub,
-                        style: const TextStyle(fontSize: 11, color: kGrey),
+                        style: TextStyle(fontSize: 11, color: c.textSecondary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
-              const Icon(AppIcons.chevronRight,
-                  color: kGreyDark, size: 20),
+              Icon(AppIcons.chevronRight,
+                  color: c.textMuted, size: 20),
             ],
           ),
         ),
       );
+  }
 }
 
 class _CardDivider extends StatelessWidget {
   const _CardDivider();
 
   @override
-  Widget build(BuildContext context) =>
-      const Divider(height: 1, indent: 60, endIndent: 20, color: kBorder);
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Divider(height: 1, indent: 60, endIndent: 20, color: c.border);
+  }
 }
 
 class _SettingsToggle extends StatelessWidget {
@@ -859,7 +881,9 @@ class _SettingsToggle extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Padding(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         child: Row(
           children: [
@@ -878,12 +902,12 @@ class _SettingsToggle extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: kWhite)),
+                          color: c.textPrimary)),
                   Text(sub,
-                      style: const TextStyle(fontSize: 11, color: kGrey),
+                      style: TextStyle(fontSize: 11, color: c.textSecondary),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis),
                 ],
@@ -894,14 +918,15 @@ class _SettingsToggle extends StatelessWidget {
               child: Switch.adaptive(
                 value: value,
                 activeColor: kGreen,
-                inactiveThumbColor: kGrey,
-                inactiveTrackColor: kBorder,
+                inactiveThumbColor: c.textSecondary,
+                inactiveTrackColor: c.border,
                 onChanged: onChanged,
               ),
             ),
           ],
         ),
       );
+  }
 }
 
 class _SettingsSelect extends StatelessWidget {
@@ -925,7 +950,9 @@ class _SettingsSelect extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => TapScale(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TapScale(
         onTap: () => _showPicker(context),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -946,31 +973,33 @@ class _SettingsSelect extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(label,
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: kWhite)),
+                            color: c.textPrimary)),
                     Text(sub,
-                        style: const TextStyle(fontSize: 11, color: kGrey),
+                        style: TextStyle(fontSize: 11, color: c.textSecondary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
-              const Icon(AppIcons.chevronRight, color: kGreyDark, size: 20),
+              Icon(AppIcons.chevronRight, color: c.textMuted, size: 20),
             ],
           ),
         ),
       );
+  }
 
   void _showPicker(BuildContext context) {
+    final c = ThemeColors.of(context);
     final idx = values.indexOf(selected);
     showModalBottomSheet(
       context: context,
-      backgroundColor: kSurface,
-      shape: const RoundedRectangleBorder(
+      backgroundColor: c.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (ctx) => SafeArea(
         child: Padding(
@@ -983,14 +1012,14 @@ class _SettingsSelect extends StatelessWidget {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                      color: kBorder,
+                      color: c.border,
                       borderRadius: BorderRadius.circular(2))),
               ...List.generate(options.length, (i) {
                 final selected = i == idx;
                 return _PickOption(
                   icon: selected ? AppIcons.checkCircle : AppIcons.checkCircleOutline,
                   label: options[i],
-                  color: selected ? kGreen : kGrey,
+                  color: selected ? kGreen : c.textSecondary,
                   onTap: () {
                     onChanged(values[i]);
                     Navigator.pop(ctx);
@@ -1011,16 +1040,17 @@ class _AvatarPicker extends StatelessWidget {
   const _AvatarPicker({required this.profile, required this.state});
 
   Future<void> _pick(BuildContext context) async {
+    final c = ThemeColors.of(context);
     // image_picker not supported on Windows/web — show info instead
     if (!_isMobile) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Image picker is only available on mobile devices.',
-              style: TextStyle(color: kWhite)),
+          content: Text('Image picker is only available on mobile devices.',
+              style: TextStyle(color: c.textPrimary)),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: kSurface,
+          backgroundColor: c.surface,
           shape: RoundedRectangleBorder(
-              borderRadius: kRadiusBtn, side: const BorderSide(color: kBorder)),
+              borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
         ),
       );
       return;
@@ -1028,10 +1058,10 @@ class _AvatarPicker extends StatelessWidget {
     final picker = ImagePicker();
     showModalBottomSheet(
       context: context,
-      backgroundColor: kSurface,
-      shape: const RoundedRectangleBorder(
+      backgroundColor: c.surface,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        side: BorderSide(color: kBorder),
+        side: BorderSide(color: c.border),
       ),
       builder: (ctx) => SafeArea(
         child: Padding(
@@ -1041,7 +1071,7 @@ class _AvatarPicker extends StatelessWidget {
             children: [
               Container(width: 36, height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(color: kBorder, borderRadius: BorderRadius.circular(2))),
+                  decoration: BoxDecoration(color: c.border, borderRadius: BorderRadius.circular(2))),
               _PickOption(
                 icon: AppIcons.camera,
                 label: 'Take Photo',
@@ -1087,6 +1117,7 @@ class _AvatarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
     final bool hasImage = _isMobile &&
         profile.avatarPath != null &&
         File(profile.avatarPath!).existsSync();
@@ -1112,7 +1143,7 @@ class _AvatarPicker extends StatelessWidget {
             ),
             child: hasImage
                 ? null
-                : const Icon(AppIcons.profile, color: kWhite, size: 36),
+                : Icon(AppIcons.profile, color: c.textPrimary, size: 36),
           ),
           // Camera badge
           Positioned(
@@ -1122,9 +1153,9 @@ class _AvatarPicker extends StatelessWidget {
               decoration: BoxDecoration(
                 color: kGreen,
                 shape: BoxShape.circle,
-                border: Border.all(color: kSurface, width: 2),
+                border: Border.all(color: c.surface, width: 2),
               ),
-              child: const Icon(AppIcons.camera, size: 14, color: kBg),
+              child: Icon(AppIcons.camera, size: 14, color: c.onAccent),
             ),
           ),
         ],
@@ -1141,7 +1172,9 @@ class _PickOption extends StatelessWidget {
   const _PickOption({required this.icon, required this.label, required this.color, required this.onTap});
 
   @override
-  Widget build(BuildContext context) => TapScale(
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TapScale(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -1158,10 +1191,11 @@ class _PickOption extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Text(label,
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600, color: kWhite)),
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600, color: c.textPrimary)),
             ],
           ),
         ),
       );
+  }
 }
