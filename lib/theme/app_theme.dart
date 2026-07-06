@@ -219,21 +219,21 @@ ThemeData _buildTheme(ThemeColors colors, Brightness brightness) {
   final base = ThemeData(brightness: brightness, useMaterial3: true, fontFamily: exter);
 
   TextTheme applyExter(TextTheme t) => t.copyWith(
-    displayLarge:   t.displayLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w800, fontSize: 32),
-    displayMedium:  t.displayMedium!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
-    displaySmall:   t.displaySmall!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
-    headlineLarge:  t.headlineLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
-    headlineMedium: t.headlineMedium!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700),
-    headlineSmall:  t.headlineSmall!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
-    titleLarge:     t.titleLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w700, fontSize: 18),
-    titleMedium:    t.titleMedium!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
-    titleSmall:     t.titleSmall!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
-    bodyLarge:      t.bodyLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w500),
-    bodyMedium:     t.bodyMedium!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w500, fontSize: 13),
-    bodySmall:      t.bodySmall!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w400),
-    labelLarge:     t.labelLarge!.copyWith(fontFamily: exter, color: colors.textPrimary, fontWeight: FontWeight.w600),
-    labelMedium:    t.labelMedium!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w500),
-    labelSmall:     t.labelSmall!.copyWith(fontFamily: exter, color: colors.textSecondary, fontWeight: FontWeight.w400, fontSize: 11),
+    displayLarge:   t.displayLarge!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w800, fontSize: 32),
+    displayMedium:  t.displayMedium!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w700),
+    displaySmall:   t.displaySmall!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w700),
+    headlineLarge:  t.headlineLarge!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w700),
+    headlineMedium: t.headlineMedium!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w700),
+    headlineSmall:  t.headlineSmall!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w600),
+    titleLarge:     t.titleLarge!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w700, fontSize: 18),
+    titleMedium:    t.titleMedium!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w600),
+    titleSmall:     t.titleSmall!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w600),
+    bodyLarge:      t.bodyLarge!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w500),
+    bodyMedium:     t.bodyMedium!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textSecondary, fontWeight: FontWeight.w500, fontSize: 13),
+    bodySmall:      t.bodySmall!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textSecondary, fontWeight: FontWeight.w400),
+    labelLarge:     t.labelLarge!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textPrimary, fontWeight: FontWeight.w600),
+    labelMedium:    t.labelMedium!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textSecondary, fontWeight: FontWeight.w500),
+    labelSmall:     t.labelSmall!.copyWith(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textSecondary, fontWeight: FontWeight.w400, fontSize: 11),
   );
 
   return base.copyWith(
@@ -253,8 +253,8 @@ ThemeData _buildTheme(ThemeColors colors, Brightness brightness) {
       filled: true,
       fillColor: colors.surface2,
       border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-      labelStyle: TextStyle(fontFamily: exter, color: colors.textSecondary),
-      hintStyle: TextStyle(fontFamily: exter, color: colors.textSecondary),
+      labelStyle: TextStyle(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textSecondary),
+      hintStyle: TextStyle(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], color: colors.textSecondary),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -262,7 +262,7 @@ ThemeData _buildTheme(ThemeColors colors, Brightness brightness) {
         foregroundColor: colors.onAccent,
         shape: const RoundedRectangleBorder(borderRadius: kRadiusBtn),
         padding: const EdgeInsets.symmetric(vertical: 16),
-        textStyle: const TextStyle(fontFamily: exter, fontWeight: FontWeight.w700, fontSize: 15),
+        textStyle: const TextStyle(fontFamily: exter, fontFamilyFallback: ['Roboto', 'sans-serif'], fontWeight: FontWeight.w700, fontSize: 15),
       ),
     ),
     extensions: [colors],
