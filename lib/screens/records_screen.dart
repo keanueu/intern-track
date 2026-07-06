@@ -345,7 +345,7 @@ class _SummaryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = ThemeColors.of(context);
-    return Expanded(
+    return Flexible(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
@@ -362,7 +362,8 @@ class _SummaryChip extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: color)),
             const SizedBox(height: 2),
             Text(label,
-                style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w500)),
+                style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w500),
+                overflow: TextOverflow.ellipsis),
           ],
         ),
       ),

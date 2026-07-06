@@ -200,9 +200,7 @@ const kDurSlow   = Duration(milliseconds: 500);
 const kCurve     = Curves.easeOutCubic;
 
 // ── Shadows ───────────────────────────────────────────────────────────────────
-List<BoxShadow> kGreenGlow = [
-  BoxShadow(color: kGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 8)),
-];
+List<BoxShadow> kGreenGlow = [];
 
 List<BoxShadow> kCardShadowFrom(ThemeColors c) => [
   BoxShadow(color: c.shadowColor, blurRadius: 20, offset: const Offset(0, 8)),
@@ -300,6 +298,7 @@ class _TapScaleState extends State<TapScale> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTapDown: (_) => _ctrl.forward(),
         onTapUp: (_) { _ctrl.reverse(); widget.onTap?.call(); },
         onTapCancel: () => _ctrl.reverse(),
@@ -398,7 +397,6 @@ class _AnimatedGradientBarState extends State<AnimatedGradientBar>
               decoration: BoxDecoration(
                 gradient: kGreenGradient,
                 borderRadius: BorderRadius.circular(widget.height),
-                boxShadow: [BoxShadow(color: kGreen.withValues(alpha: 0.4), blurRadius: 6)],
               ),
             ),
           ),

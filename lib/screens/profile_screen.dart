@@ -89,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: TapScale(
                             onTap: () => _showEditProfile(context, state),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: const EdgeInsets.symmetric(vertical: 17),
                               decoration: BoxDecoration(
                                 color: c.surface2,
                                 borderRadius: kRadiusBtn,
@@ -1180,7 +1180,7 @@ class _PickOption extends StatelessWidget {
     return TapScale(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           child: Row(
             children: [
               Container(

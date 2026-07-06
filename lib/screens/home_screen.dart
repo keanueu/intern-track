@@ -162,8 +162,14 @@ class _TopBar extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Hello, $firstName 👋',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
+            Row(
+              children: [
+                Text('Hello, $firstName',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
+                const SizedBox(width: 6),
+                Icon(Icons.waving_hand, size: 20, color: c.textPrimary),
+              ],
+            ),
             Text('${n.day} ${months[n.month - 1]} ${n.year}',
                 style: TextStyle(fontSize: 12, color: c.textSecondary)),
           ],
