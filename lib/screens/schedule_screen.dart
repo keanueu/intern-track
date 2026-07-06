@@ -147,38 +147,46 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
         return Scaffold(
           backgroundColor: c.bg,
+          appBar: AppBar(
+            backgroundColor: c.bg,
+            elevation: 0,
+            leading: TapScale(
+              onTap: () => Navigator.pop(context),
+              child: Icon(AppIcons.chevronLeft, color: c.textPrimary),
+            ),
+            title: Text('Schedule',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.textPrimary)),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: TapScale(
+                  onTap: () {
+                    if (shifts.length >= 7) {
+                      state.clearShifts();
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: c.surface2,
+                      borderRadius: kRadiusBtn,
+                      border: Border.all(color: c.border),
+                    ),
+                    child: Text(
+                      shifts.isNotEmpty ? 'Reset' : 'Set All',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textSecondary),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Schedule',
-                          style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
-                      TapScale(
-                        onTap: () {
-                          if (shifts.length >= 7) {
-                            state.clearShifts();
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: c.surface2,
-                            borderRadius: kRadiusBtn,
-                            border: Border.all(color: c.border),
-                          ),
-                          child: Text(
-                            shifts.isNotEmpty ? 'Reset' : 'Set All',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textSecondary),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 8),
                   Text('Set your weekly shift schedule',
                       style: TextStyle(fontSize: 14, color: c.textSecondary)),

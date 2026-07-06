@@ -134,14 +134,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
         return Scaffold(
           backgroundColor: c.bg,
+          appBar: AppBar(
+            backgroundColor: c.bg,
+            elevation: 0,
+            leading: TapScale(
+              onTap: () => Navigator.pop(context),
+              child: Icon(AppIcons.chevronLeft, color: c.textPrimary),
+            ),
+            title: Text('Calendar',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.textPrimary)),
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Calendar',
-                      style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
                   const SizedBox(height: 8),
                   Text('Mark holidays, leave, or sick days',
                       style: TextStyle(fontSize: 14, color: c.textSecondary)),

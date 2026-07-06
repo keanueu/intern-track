@@ -155,37 +155,45 @@ class _CompetencyScreenState extends State<CompetencyScreen> {
 
         return Scaffold(
           backgroundColor: c.bg,
+          appBar: AppBar(
+            backgroundColor: c.bg,
+            elevation: 0,
+            leading: TapScale(
+              onTap: () => Navigator.pop(context),
+              child: Icon(AppIcons.chevronLeft, color: c.textPrimary),
+            ),
+            title: Text('Competencies',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: c.textPrimary)),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: TapScale(
+                  onTap: () => _addCompetency(context, state),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      gradient: kGreenGradient,
+                      borderRadius: kRadiusBtn,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(AppIcons.addPerson, color: c.onAccent, size: 16),
+                        const SizedBox(width: 4),
+                        Text('Add', style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Competencies',
-                          style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
-                      TapScale(
-                        onTap: () => _addCompetency(context, state),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            gradient: kGreenGradient,
-                            borderRadius: kRadiusBtn,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(AppIcons.addPerson, color: c.onAccent, size: 16),
-                              const SizedBox(width: 4),
-                              Text('Add', style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 13)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 8),
                   Text('Track your OJT skills and tasks',
                       style: TextStyle(fontSize: 14, color: c.textSecondary)),
