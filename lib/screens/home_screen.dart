@@ -233,10 +233,12 @@ class _HeroBannerState extends State<_HeroBanner> {
     final openLog = state.openLog;
     String sub = 'Scan QR or use manual entry';
     if (isPunchedIn && openLog != null) {
-      final h = openLog.timeIn.hour.toString().padLeft(2, '0');
-      final m = openLog.timeIn.minute.toString().padLeft(2, '0');
+      final t = openLog.timeIn;
+      final h = t.hour > 12 ? t.hour - 12 : t.hour == 0 ? 12 : t.hour;
+      final m = t.minute.toString().padLeft(2, '0');
+      final ap = t.hour >= 12 ? 'PM' : 'AM';
       final elapsed = _elapsed(openLog.timeIn);
-      sub = 'Since $h:$m  ·  $elapsed';
+      sub = 'Since $h:$m $ap  ·  $elapsed';
     }
 
     return Container(
@@ -704,7 +706,7 @@ class _WeekStripState extends State<_WeekStrip> {
           child: AnimatedContainer(
             duration: kDurNormal,
             curve: kCurve,
-            width: 48,
+            width: 47,
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected ? kGreenGradient : null,

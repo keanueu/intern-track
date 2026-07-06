@@ -174,7 +174,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
                         .map((d) => SizedBox(
-                          width: 48,
+                          width: 47,
                           child: Text(d, textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w600)),
                         ))
@@ -191,7 +191,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: week.map((day) {
                           if (day == 0) {
-                            return const SizedBox(width: 48, height: 48);
+                            return const SizedBox(width: 47, height: 47);
                           }
                           final date = DateTime(_viewMonth.year, _viewMonth.month, day);
                           final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -204,7 +204,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                           return TapScale(
                             onTap: () => _toggleDate(context, state, date),
-                            child: HitArea(child: Container(
+                            child: HitArea(size: 47, child: Container(
                               width: 36, height: 36,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,

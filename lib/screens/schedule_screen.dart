@@ -23,8 +23,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   void _editShift(BuildContext context, AppState state, Map<String, dynamic>? existing, int? day) {
     final c = ThemeColors.of(context);
-    final startCtrl = TextEditingController(text: existing?['start_time'] ?? '08:00');
-    final endCtrl = TextEditingController(text: existing?['end_time'] ?? '17:00');
+    final startCtrl = TextEditingController(text: existing != null ? _to12h(existing['start_time']) : '8:00 AM');
+    final endCtrl = TextEditingController(text: existing != null ? _to12h(existing['end_time']) : '5:00 PM');
     final breakCtrl = TextEditingController(text: ((existing?['break_minutes'] as int?) ?? 60).toString());
     final selectedDay = day ?? (existing != null ? existing['day_of_week'] as int : 1);
 
@@ -61,13 +61,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            Text('Start Time (HH:mm)', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
+            Text('Start Time', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
               controller: startCtrl,
               style: TextStyle(color: c.textPrimary),
               decoration: InputDecoration(
-                hintText: '08:00',
+                hintText: '8:00 AM',
                 filled: true, fillColor: c.surface2,
                 border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
                 enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
@@ -75,13 +75,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Text('End Time (HH:mm)', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
+            Text('End Time', style: TextStyle(fontSize: 12, color: c.textSecondary, fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             TextField(
               controller: endCtrl,
               style: TextStyle(color: c.textPrimary),
               decoration: InputDecoration(
-                hintText: '17:00',
+                hintText: '5:00 PM',
                 filled: true, fillColor: c.surface2,
                 border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
                 enabledBorder: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
@@ -112,8 +112,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     'id': existing?['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
                     'user_id': state.profile.id,
                     'day_of_week': selectedDay,
-                    'start_time': startCtrl.text.trim(),
-                    'end_time': endCtrl.text.trim(),
+                    'start_time': _to24(startCtrl.text.trim()),
+                    'end_time': _to24(endCtrl.text.trim()),
                     'break_minutes': int.tryParse(breakCtrl.text) ?? 60,
                     'recurring': 1,
                   };
@@ -213,7 +213,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c.onAccent)),
                                 const SizedBox(height: 4),
                                 Text(
-                                  '${todayShift!['start_time']} – ${todayShift['end_time']}',
+                                  '${_to12h(todayShift!['start_time'])} – ${_to12h(todayShift['end_time'])}',
                                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: c.onAccent),
                                 ),
                               ],
@@ -283,7 +283,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                                     Expanded(
                                       child: hasShift
                                           ? Text(
-                                              '${shift['start_time']} – ${shift['end_time']}',
+                                              '${_to12h(shift['start_time'])} – ${_to12h(shift['end_time'])}',
                                               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.textPrimary),
                                             )
                                           : Text('Day off',
@@ -367,5 +367,25 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         );
       },
     );
+  }
+
+  String _to12h(String t) {
+    final parts = t.split(':');
+    if (parts.length != 2) return t;
+    final h = int.tryParse(parts[0]) ?? 0;
+    final dh = h == 0 ? 12 : (h > 12 ? h - 12 : h);
+    return '$dh:${parts[1]} ${h >= 12 ? 'PM' : 'AM'}';
+  }
+
+  String _to24(String t) {
+    final s = t.trim().toUpperCase();
+    final isPM = s.contains('PM'), isAM = s.contains('AM');
+    final n = s.replaceAll(RegExp(r'[^0-9:]'), '');
+    final parts = n.split(':');
+    if (parts.length != 2) return t;
+    var h = int.tryParse(parts[0]) ?? 0;
+    if (isPM && h != 12) h += 12;
+    if (isAM && h == 12) h = 0;
+    return '${h.toString().padLeft(2, '0')}:${parts[1].padLeft(2, '0')}';
   }
 }

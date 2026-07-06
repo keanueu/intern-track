@@ -171,7 +171,7 @@ class ExportService {
           ),
 
           pw.SizedBox(height: 20),
-          pw.Text('Generated: ${DateTime.now()}', style: pw.TextStyle(font: font, fontSize: 9, color: PdfColors.grey)),
+          pw.Text('Generated: ${_fmtDate(DateTime.now())} ${_fmt(DateTime.now())}', style: pw.TextStyle(font: font, fontSize: 9, color: PdfColors.grey)),
         ],
       ),
     );
@@ -391,7 +391,7 @@ class ExportService {
     buffer.writeln('Course: ${profile.course} • ${profile.batch}');
     buffer.writeln('Company: ${profile.company}');
     buffer.writeln('Supervisor: ${profile.supervisor}');
-    buffer.writeln('Generated: ${DateTime.now()}');
+    buffer.writeln('Generated: ${_fmtDate(DateTime.now())} ${_fmt(DateTime.now())}');
     buffer.writeln('');
     buffer.writeln('--- ATTENDANCE LOG ---');
     for (final log in logs) {

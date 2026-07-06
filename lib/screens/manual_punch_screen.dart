@@ -81,8 +81,10 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
     }
   }
 
-  String get _hms =>
-      '${_p(_now.hour)}:${_p(_now.minute)}:${_p(_now.second)}';
+  String get _hms {
+    final h = _now.hour > 12 ? _now.hour - 12 : _now.hour == 0 ? 12 : _now.hour;
+    return '$h:${_p(_now.minute)}:${_p(_now.second)} ${_now.hour >= 12 ? 'PM' : 'AM'}';
+  }
 
   String get _dateLabel {
     const m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -172,7 +174,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                               _hms,
                               style: TextStyle(
                                 color: c.textPrimary,
-                                fontSize: 48,
+                                fontSize: 36,
                                 fontWeight: FontWeight.w300,
                                 letterSpacing: 3,
                                 fontFeatures: [FontFeature.tabularFigures()],
