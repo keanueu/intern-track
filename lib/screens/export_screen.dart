@@ -158,7 +158,7 @@ class _ExportScreenState extends State<ExportScreen> {
       child: TapScale(
         onTap: () => setState(() => _selectedTab = index),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 17),
           decoration: BoxDecoration(
             color: selected ? c.surface : Colors.transparent,
             borderRadius: kRadiusTag,

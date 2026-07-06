@@ -41,7 +41,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AppState()..load()),
       ],
       child: DevicePreview(
-        enabled: !kReleaseMode,
+        enabled: false,
         builder: (context) => const MyApp(),
       ),
     ),

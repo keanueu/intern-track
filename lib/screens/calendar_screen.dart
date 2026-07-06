@@ -159,12 +159,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      TapScale(onTap: _prevMonth, child: Icon(AppIcons.chevronLeft, color: c.textPrimary, size: 24)),
+                      TapScale(onTap: _prevMonth, child: HitArea(child: Icon(AppIcons.chevronLeft, color: c.textPrimary, size: 24))),
                       Text(
                         '${_monthLabel(_viewMonth.month)} ${_viewMonth.year}',
                         style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: c.textPrimary),
                       ),
-                      TapScale(onTap: _nextMonth, child: Icon(AppIcons.chevronRight, color: c.textPrimary, size: 24)),
+                      TapScale(onTap: _nextMonth, child: HitArea(child: Icon(AppIcons.chevronRight, color: c.textPrimary, size: 24))),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -174,7 +174,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
                         .map((d) => SizedBox(
-                          width: 36,
+                          width: 48,
                           child: Text(d, textAlign: TextAlign.center,
                               style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w600)),
                         ))
@@ -191,7 +191,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: week.map((day) {
                           if (day == 0) {
-                            return const SizedBox(width: 36, height: 36);
+                            return const SizedBox(width: 48, height: 48);
                           }
                           final date = DateTime(_viewMonth.year, _viewMonth.month, day);
                           final dateStr = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -204,7 +204,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                           return TapScale(
                             onTap: () => _toggleDate(context, state, date),
-                            child: Container(
+                            child: HitArea(child: Container(
                               width: 36, height: 36,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -223,6 +223,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ),
                                 ),
                               ),
+                            ),
                             ),
                           );
                         }).toList(),

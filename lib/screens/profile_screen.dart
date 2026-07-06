@@ -124,10 +124,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: TapScale(
-                              onTap: () => setState(() => _selectedTab = 0),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: TapScale(
+                                onTap: () => setState(() => _selectedTab = 0),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 17),
                                 decoration: BoxDecoration(
                                   color: _selectedTab == 0 ? c.surface : Colors.transparent,
                                   borderRadius: kRadiusTag,
@@ -144,10 +144,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           Expanded(
-                            child: TapScale(
-                              onTap: () => setState(() => _selectedTab = 1),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: TapScale(
+                                onTap: () => setState(() => _selectedTab = 1),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 17),
                                 decoration: BoxDecoration(
                                   color: _selectedTab == 1 ? c.surface : Colors.transparent,
                                   borderRadius: kRadiusTag,
@@ -468,12 +468,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: c.textPrimary)),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
-                  child: Container(
+                  child: HitArea(child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration:
                         BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
                     child: Icon(AppIcons.close,
                         color: c.textSecondary, size: 18),
+                  ),
                   ),
                 ),
               ],
@@ -567,12 +568,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: c.textPrimary)),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
-                  child: Container(
+                  child: HitArea(child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration:
                         BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
                     child: Icon(AppIcons.close,
                         color: c.textSecondary, size: 18),
+                  ),
                   ),
                 ),
               ],
@@ -675,7 +677,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       );
                     },
-                    child: Container(
+                    child: HitArea(child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: kGreen.withValues(alpha: 0.12),
@@ -685,6 +687,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: const Icon(AppIcons.copy,
                           size: 16, color: kGreen),
+                    ),
                     ),
                   ),
                 ],

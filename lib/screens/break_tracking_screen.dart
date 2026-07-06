@@ -230,7 +230,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
     return TapScale(
       onTap: () => setState(() => _selectedType = type),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           gradient: selected ? kGreenGradient : null,
           color: selected ? null : c.surface2,

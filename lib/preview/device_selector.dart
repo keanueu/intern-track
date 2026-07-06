@@ -86,7 +86,7 @@ class DeviceSelector extends StatelessWidget {
           // Orientation toggle
           GestureDetector(
             onTap: onOrientationToggle,
-            child: AnimatedContainer(
+            child: SizedBox(width: 48, height: 48, child: Center(child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -111,6 +111,8 @@ class DeviceSelector extends StatelessWidget {
                 ),
               ),
             ),
+            ),
+          ),
           ),
         ],
       ),

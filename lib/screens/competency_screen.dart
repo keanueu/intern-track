@@ -84,7 +84,7 @@ class _CompetencyScreenState extends State<CompetencyScreen> {
                   return TapScale(
                     onTap: () => setSheetState(() => category = cat),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
                       decoration: BoxDecoration(
                         gradient: selected ? kGreenGradient : null,
                         color: selected ? null : c.surface2,

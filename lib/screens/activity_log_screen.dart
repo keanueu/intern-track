@@ -153,7 +153,7 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                   return TapScale(
                     onTap: () => setState(() => _selectedTag = t.$1),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       decoration: BoxDecoration(
                         gradient: selected ? kGreenGradient : null,
                         color: selected ? null : c.surface2,

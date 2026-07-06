@@ -307,6 +307,17 @@ class _TapScaleState extends State<TapScale> with SingleTickerProviderStateMixin
       );
 }
 
+// ── HitArea ───────────────────────────────────────────────────────────────────
+class HitArea extends StatelessWidget {
+  final Widget child;
+  final double size;
+  const HitArea({super.key, required this.child, this.size = 48});
+
+  @override
+  Widget build(BuildContext context) =>
+      SizedBox(width: size, height: size, child: Center(child: child));
+}
+
 // ── FadeSlideIn ───────────────────────────────────────────────────────────────
 class FadeSlideIn extends StatefulWidget {
   final Widget child;

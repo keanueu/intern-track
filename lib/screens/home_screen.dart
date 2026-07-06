@@ -171,7 +171,7 @@ class _TopBar extends StatelessWidget {
         const Spacer(),
         TapScale(
           child: Container(
-            width: 40, height: 40,
+            width: 48, height: 48,
             decoration: BoxDecoration(
                 color: c.surface, borderRadius: kRadiusAvatar, border: Border.all(color: c.border)),
             child: Icon(AppIcons.notifications, color: c.textPrimary, size: 20),
@@ -317,7 +317,7 @@ class _TodayCards extends StatelessWidget {
           icon: AppIcons.login,
           color: kGreen,
         )),
-        const SizedBox(width: 12),
+        const SizedBox(width: 12),  
         Expanded(child: _StatCard(
           label: 'TIME OUT',
           value: latest?.timeOut != null ? _fmt(latest!.timeOut) : '--:--',
@@ -698,7 +698,7 @@ class _WeekStripState extends State<_WeekStrip> {
           child: AnimatedContainer(
             duration: kDurNormal,
             curve: kCurve,
-            width: 42,
+            width: 48,
             padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
               gradient: isSelected ? kGreenGradient : null,
