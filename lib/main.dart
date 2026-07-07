@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -134,75 +135,81 @@ class _FloatingNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            height: 60,
-            width: 328,
-            decoration: BoxDecoration(
-              color: colors.surface,
-              borderRadius: kRadiusNav,
-              border: Border.all(color: colors.border),
-              boxShadow: kCardShadowFrom(colors),
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                const pillWidth = 60.0;
-                const pillHeight = 52.0;
-                final itemWidth = constraints.maxWidth / 5;
-                return Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+          ClipRRect(
+            borderRadius: kRadiusNav,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+              child: Container(
+                height: 60,
+                width: 328,
+                decoration: BoxDecoration(
+                  color: colors.surface.withValues(alpha: 0.7),
+                  borderRadius: kRadiusNav,
+                  border: Border.all(color: colors.border.withValues(alpha: 0.4)),
+                  boxShadow: kCardShadowFrom(colors),
+                ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    const pillWidth = 60.0;
+                    const pillHeight = 52.0;
+                    final itemWidth = constraints.maxWidth / 5;
+                    return Stack(
+                      clipBehavior: Clip.none,
                       children: [
-                        _NavItem(
-                            icon: AppIcons.home,
-                            outlinedIcon: AppIcons.homeOutline,
-                            index: 0,
-                            current: currentIndex,
-                            onTap: onTap),
-                        _NavItem(
-                            icon: AppIcons.manual,
-                            outlinedIcon: AppIcons.manualOutline,
-                            index: 1,
-                            current: currentIndex,
-                            onTap: onTap),
-                        _NavItem(
-                            icon: AppIcons.qr,
-                            outlinedIcon: AppIcons.qrOutline,
-                            index: 2,
-                            current: currentIndex,
-                            onTap: onTap),
-                        _NavItem(
-                            icon: AppIcons.records,
-                            outlinedIcon: AppIcons.recordsOutline,
-                            index: 3,
-                            current: currentIndex,
-                            onTap: onTap),
-                        _NavItem(
-                            icon: AppIcons.profile,
-                            outlinedIcon: AppIcons.profileOutline,
-                            index: 4,
-                            current: currentIndex,
-                            onTap: onTap),
-                      ],
-                    ),
-                    AnimatedPositioned(
-                      duration: kDurNormal,
-                      curve: kCurve,
-                      left: currentIndex * itemWidth + (itemWidth - pillWidth) / 2,
-                      top: (59 - pillHeight) / 2.5,
-                      child: Container(
-                        width: pillWidth,
-                        height: pillHeight,
-                        decoration: BoxDecoration(
-                          color: kGreen.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(pillHeight / 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _NavItem(
+                                icon: AppIcons.home,
+                                outlinedIcon: AppIcons.homeOutline,
+                                index: 0,
+                                current: currentIndex,
+                                onTap: onTap),
+                            _NavItem(
+                                icon: AppIcons.manual,
+                                outlinedIcon: AppIcons.manualOutline,
+                                index: 1,
+                                current: currentIndex,
+                                onTap: onTap),
+                            _NavItem(
+                                icon: AppIcons.qr,
+                                outlinedIcon: AppIcons.qrOutline,
+                                index: 2,
+                                current: currentIndex,
+                                onTap: onTap),
+                            _NavItem(
+                                icon: AppIcons.records,
+                                outlinedIcon: AppIcons.recordsOutline,
+                                index: 3,
+                                current: currentIndex,
+                                onTap: onTap),
+                            _NavItem(
+                                icon: AppIcons.profile,
+                                outlinedIcon: AppIcons.profileOutline,
+                                index: 4,
+                                current: currentIndex,
+                                onTap: onTap),
+                          ],
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+                        AnimatedPositioned(
+                          duration: kDurNormal,
+                          curve: kCurve,
+                          left: currentIndex * itemWidth + (itemWidth - pillWidth) / 2,
+                          top: (59 - pillHeight) / 2.5,
+                          child: Container(
+                            width: pillWidth,
+                            height: pillHeight,
+                            decoration: BoxDecoration(
+                              color: kGreen.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(pillHeight / 2),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],
