@@ -19,7 +19,11 @@ class LockService {
     if (!settings.lockEnabled) return false;
     if (_isLocked) return true;
     final elapsed = DateTime.now().difference(_lastActive).inSeconds;
-    return elapsed >= settings.lockTimeoutSeconds;
+    if (elapsed >= settings.lockTimeoutSeconds) {
+      _isLocked = true;
+      return true;
+    }
+    return false;
   }
 
   Future<bool> authenticate() async {

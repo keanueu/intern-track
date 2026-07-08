@@ -396,7 +396,7 @@ class DBHelper {
 
   // ── Break Tracking ────────────────────────────────────────────────────────
 
-  Future<String> startBreak(String userId) async {
+  Future<String> startBreak(String userId, {String type = 'short'}) async {
     final db = await database;
     final openLogs = await db.query(
       'dtr_logs',
@@ -417,7 +417,7 @@ class DBHelper {
     final newBreak = BreakEntry(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       start: DateTime.now(),
-      type: 'short',
+      type: type,
     );
     breakEntries.add(newBreak);
 

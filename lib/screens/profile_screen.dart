@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform, File;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../services/app_state.dart';
 import '../models/profile_model.dart';
 import '../theme/app_theme.dart';
@@ -641,12 +642,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(
                     fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
             const SizedBox(height: 8),
-            Text('Share this token to register on a scanner device.',
+            Text('Scan this QR code to register on a scanner device.',
                 style: TextStyle(fontSize: 12, color: c.textSecondary)),
             const SizedBox(height: 20),
+            Center(
+              child: QrImageView(
+                data: profile.qrCodeToken,
+                version: QrVersions.auto,
+                size: 200,
+                backgroundColor: Colors.white,
+                padding: const EdgeInsets.all(16),
+              ),
+            ),
+            const SizedBox(height: 16),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: c.surface2,
                 borderRadius: kRadiusBtn,
@@ -657,9 +668,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: Text(profile.qrCodeToken,
                         style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: c.textPrimary)),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: c.textSecondary),
+                        overflow: TextOverflow.ellipsis),
                   ),
                   TapScale(
                     onTap: () {

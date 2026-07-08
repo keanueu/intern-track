@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import '../database/db_helper.dart';
 import '../models/profile_model.dart';
 import '../models/dtr_model.dart';
@@ -89,10 +90,11 @@ class AppState extends ChangeNotifier {
     _loading = true;
     notifyListeners();
 
+    final uuid = const Uuid();
     final newProfile = ProfileModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: uuid.v4(),
       fullName: fullName,
-      qrCodeToken: DateTime.now().millisecondsSinceEpoch.toString(),
+      qrCodeToken: uuid.v4(),
       company: 'Not set',
       supervisor: 'Not set',
       requiredHours: 486,
@@ -242,9 +244,9 @@ class AppState extends ChangeNotifier {
         .fold(0, (sum, l) => sum + l.breakMinutes);
   }
 
-  Future<String> startBreak() async {
+  Future<String> startBreak({String type = 'short'}) async {
     if (!_dbSupported) return 'Available on mobile only';
-    final result = await DBHelper.instance.startBreak(_profile.id);
+    final result = await DBHelper.instance.startBreak(_profile.id, type: type);
     await _refresh();
     notifyListeners();
     return result;

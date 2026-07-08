@@ -32,7 +32,7 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      _lockService.lock();
+      _lockService.updateActivity();
     } else if (state == AppLifecycleState.resumed) {
       _checkLock();
     }
@@ -43,11 +43,10 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
       context.read<SettingsService>(),
     );
     if (shouldLock && mounted) {
+      _lockService.lock();
       setState(() {});
-      if (_lockService.isLocked) {
-        await _lockService.authenticate();
-        if (mounted) setState(() {});
-      }
+      final ok = await _lockService.authenticate();
+      if (ok && mounted) setState(() {});
     }
   }
 

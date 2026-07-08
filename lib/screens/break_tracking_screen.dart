@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
+import '../models/dtr_model.dart';
 import '../theme/app_theme.dart';
 
 class BreakTrackingScreen extends StatefulWidget {
@@ -12,6 +14,21 @@ class BreakTrackingScreen extends StatefulWidget {
 
 class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   String _selectedType = 'short';
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   void _showSnack(String msg, {bool error = false}) {
     final c = ThemeColors.of(context);
@@ -31,9 +48,8 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
   }
 
   Future<void> _startBreak(AppState state) async {
-    final result = await state.startBreak();
+    final result = await state.startBreak(type: _selectedType);
     if (result == 'Break started') {
-      await state.setBreakType(_selectedType);
       _showSnack('$_breakTypeLabel break started');
       if (mounted) Navigator.pop(context);
     } else {
@@ -119,7 +135,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
     );
   }
 
-  Widget _buildBreakActive(activeBreak) {
+  Widget _buildBreakActive(BreakEntry activeBreak) {
     final c = ThemeColors.of(context);
     final duration = DateTime.now().difference(activeBreak.start);
     final mins = duration.inMinutes;

@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
+import '../models/dtr_model.dart';
 import '../theme/app_theme.dart';
 import 'break_tracking_screen.dart';
 import 'activity_log_screen.dart';
@@ -417,6 +421,115 @@ class _SessionControls extends StatelessWidget {
     );
   }
 
+  bool get _isMobile {
+    if (kIsWeb) return false;
+    try { return Platform.isAndroid || Platform.isIOS; } catch (_) { return false; }
+  }
+
+  void _capturePhoto(BuildContext context) {
+    if (!_isMobile) {
+      final c = ThemeColors.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Camera is only available on mobile devices.',
+              style: TextStyle(color: c.textPrimary)),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: c.surface,
+          shape: RoundedRectangleBorder(
+              borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+        ),
+      );
+      return;
+    }
+    final c = ThemeColors.of(context);
+    final picker = ImagePicker();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: c.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: c.border),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(width: 36, height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(color: c.border, borderRadius: BorderRadius.circular(2))),
+              _PickOption(
+                icon: AppIcons.camera,
+                label: 'Take Photo',
+                color: kGreen,
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final img = await picker.pickImage(
+                      source: ImageSource.camera, imageQuality: 85);
+                  if (img != null && state.openLog != null) {
+                    final photo = DtrPhoto(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      logId: state.openLog!.id,
+                      path: img.path,
+                      type: 'time_in',
+                      createdAt: DateTime.now(),
+                    );
+                    await state.addPhoto(photo);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Photo captured!',
+                              style: TextStyle(color: c.textPrimary)),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: c.surface,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+              _PickOption(
+                icon: AppIcons.photoLibrary,
+                label: 'Choose from Gallery',
+                color: kGreenLight,
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final img = await picker.pickImage(
+                      source: ImageSource.gallery, imageQuality: 85);
+                  if (img != null && state.openLog != null) {
+                    final photo = DtrPhoto(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      logId: state.openLog!.id,
+                      path: img.path,
+                      type: 'time_in',
+                      createdAt: DateTime.now(),
+                    );
+                    await state.addPhoto(photo);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Photo added!',
+                              style: TextStyle(color: c.textPrimary)),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: c.surface,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = ThemeColors.of(context);
@@ -512,19 +625,7 @@ class _SessionControls extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: TapScale(
-                  onTap: () {
-                    // Photo capture will be added
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Photo capture coming soon',
-                            style: TextStyle(color: c.textPrimary)),
-                        behavior: SnackBarBehavior.floating,
-                        backgroundColor: c.surface,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
-                      ),
-                    );
-                  },
+                  onTap: () => _capturePhoto(context),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
@@ -851,6 +952,42 @@ class _InlineDivider extends StatelessWidget {
     return Container(
         width: 1, height: 32, color: c.border,
         margin: const EdgeInsets.symmetric(horizontal: 8),
+      );
+  }
+}
+
+class _PickOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _PickOption({required this.icon, required this.label, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = ThemeColors.of(context);
+    return TapScale(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: kRadiusTag,
+                  border: Border.all(color: color.withValues(alpha: 0.25)),
+                ),
+                child: Icon(icon, size: 18, color: color),
+              ),
+              const SizedBox(width: 14),
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w600, color: c.textPrimary)),
+            ],
+          ),
+        ),
       );
   }
 }

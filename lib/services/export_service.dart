@@ -253,14 +253,18 @@ class ExportService {
 
   Future<void> saveCsv(ProfileModel profile, List<DtrLog> logs) async {
     final csv = generateCsv(profile, logs);
+    final bytes = utf8.encode(csv);
     final result = await FilePicker.platform.saveFile(
       dialogTitle: 'Save DTR as CSV',
       fileName: 'DTR_${DateTime.now().millisecondsSinceEpoch}.csv',
       type: FileType.custom,
       allowedExtensions: ['csv'],
+      bytes: bytes,
     );
     if (result != null) {
-      await File(result).writeAsString(csv);
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await File(result).writeAsString(csv);
+      }
     }
   }
 
@@ -292,16 +296,20 @@ class ExportService {
   Future<String> exportBackup() async {
     final data = await _collectAllData();
     final json = jsonEncode(data);
+    final bytes = utf8.encode(json);
 
     final result = await FilePicker.platform.saveFile(
       dialogTitle: 'Save Backup',
       fileName: 'OJT_Backup_${DateTime.now().millisecondsSinceEpoch}.ojtbackup',
       type: FileType.custom,
       allowedExtensions: ['ojtbackup'],
+      bytes: bytes,
     );
 
     if (result != null) {
-      await File(result).writeAsString(json);
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await File(result).writeAsString(json);
+      }
       return 'Backup saved successfully!';
     }
     return 'Backup cancelled';
