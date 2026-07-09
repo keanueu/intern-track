@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:local_auth/local_auth.dart';
 import 'settings_service.dart';
 
@@ -44,7 +45,8 @@ class LockService {
         _lastActive = DateTime.now();
       }
       return result;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('LockService.authenticate error: $e');
       return false;
     }
   }

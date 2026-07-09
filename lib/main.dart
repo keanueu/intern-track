@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart'
-    show kReleaseMode, kIsWeb, defaultTargetPlatform, TargetPlatform;
+    show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/manual_punch_screen.dart';

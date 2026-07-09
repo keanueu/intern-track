@@ -27,7 +27,7 @@ class ProfileModel {
     required this.startDate,
     this.avatarPath,
     this.email = '',
-    this.password = '123456',
+    this.password = '',
     this.department = '',
     this.weeklyTargetHours = 40,
     this.weekStartDay = 1,
@@ -44,7 +44,7 @@ class ProfileModel {
         requiredHours: 486,
         startDate: DateTime.now().toIso8601String(),
         email: 'intern@example.com',
-        password: 'internpassword',
+        password: '',
         weeklyTargetHours: 40,
       );
 
@@ -80,7 +80,7 @@ class ProfileModel {
       startDate: m['start_date'] ?? DateTime.now().toIso8601String(),
       avatarPath: m['avatar_path'] as String?,
       email: m['email'] ?? '',
-      password: m['password'] ?? '123456',
+      password: m['password'] ?? '',
       department: m['department'] ?? '',
       weeklyTargetHours: (m['weekly_target_hours'] as num?)?.toDouble() ?? 40,
       weekStartDay: (m['week_start_day'] as int?) ?? 1,

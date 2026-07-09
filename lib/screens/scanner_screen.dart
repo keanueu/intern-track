@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -35,7 +36,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
           timeLimit: Duration(seconds: 5),
         ),
       );
-    } catch (_) {
+    } catch (e) {
+      debugPrint('_getLocation error: $e');
       return null;
     }
   }

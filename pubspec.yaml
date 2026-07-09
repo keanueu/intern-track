@@ -1,5 +1,5 @@
 name: ojt_tracker
-description: "A new Flutter project."
+description: "OJT Tracker — mobile app for tracking on-the-job training hours, with QR attendance, PDF export, biometric lock, and break management."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -53,6 +53,7 @@ dependencies:
   local_auth: ^2.3.0
   flutter_local_notifications: ^18.0.1
   timezone: ^0.9.4
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:

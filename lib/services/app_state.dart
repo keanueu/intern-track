@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'dart:io' show Platform;
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../database/db_helper.dart';
@@ -46,7 +47,8 @@ class AppState extends ChangeNotifier {
     if (kIsWeb) return false;
     try {
       return Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isLinux || Platform.isMacOS;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Platform check error: $e');
       return false;
     }
   }
@@ -60,7 +62,7 @@ class AppState extends ChangeNotifier {
   bool get isPunchedIn => _openLog != null;
   double get requiredHours => _profile.requiredHours;
   double get remainingHours => (_profile.requiredHours - _totalHours).clamp(0, _profile.requiredHours);
-  double get completionPercent => _totalHours / _profile.requiredHours;
+  double get completionPercent => _profile.requiredHours > 0 ? _totalHours / _profile.requiredHours : 0.0;
   bool get isLoggedIn => _profile.id != 'default_user' && _profile.id.isNotEmpty;
 
   Future<void> login(String email, String password) async {
@@ -69,10 +71,11 @@ class AppState extends ChangeNotifier {
 
     if (!_dbSupported) {
       await _loadMockProfiles();
+      final hashed = sha256.convert(utf8.encode(password)).toString();
       try {
-        _profile = _mockProfiles.firstWhere((p) => p.email == email && p.password == password);
+        _profile = _mockProfiles.firstWhere((p) => p.email == email && p.password == hashed);
       } catch (_) {
-        // Not found
+        debugPrint('Login failed for $email');
       }
     } else {
       final user = await DBHelper.instance.authenticate(email, password);
@@ -91,6 +94,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     final uuid = const Uuid();
+    final hashedPassword = sha256.convert(utf8.encode(password)).toString();
     final newProfile = ProfileModel(
       id: uuid.v4(),
       fullName: fullName,
@@ -102,7 +106,7 @@ class AppState extends ChangeNotifier {
       batch: 'Batch 2025',
       startDate: DateTime.now().toIso8601String(),
       email: email,
-      password: password,
+      password: hashedPassword,
       department: '',
     );
 
@@ -145,7 +149,9 @@ class AppState extends ChangeNotifier {
         _profile = await DBHelper.instance.getProfile();
         await _refresh();
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('load() error: $e');
+    }
 
     _loading = false;
     notifyListeners();
@@ -229,7 +235,8 @@ class AppState extends ChangeNotifier {
     if (_openLog == null) return null;
     try {
       return _openLog!.breakEntries.firstWhere((b) => b.end == null);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('activeBreak error: $e');
       return null;
     }
   }
@@ -350,7 +357,8 @@ class AppState extends ChangeNotifier {
     final today = DateTime.now().weekday - 1;
     try {
       return _shifts.firstWhere((s) => s['day_of_week'] == today || (today == 6 && s['day_of_week'] == 7));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('todayShift error: $e');
       return null;
     }
   }

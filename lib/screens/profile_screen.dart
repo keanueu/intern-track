@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'dart:io' show Platform, File;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +18,7 @@ import '../services/settings_service.dart';
 // image_picker + dart:io File only work on Android/iOS
 bool get _isMobile {
   if (kIsWeb) return false;
-  try { return Platform.isAndroid || Platform.isIOS; } catch (_) { return false; }
+  try { return Platform.isAndroid || Platform.isIOS; } catch (e) { debugPrint('_isMobile error: $e'); return false; }
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -534,7 +534,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
+    ).then((_) {
+      nameCtrl.dispose();
+      courseCtrl.dispose();
+      batchCtrl.dispose();
+      hoursCtrl.dispose();
+    });
   }
 
   void _showOjtDetails(BuildContext context, AppState state) {
@@ -620,7 +625,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    );
+    ).then((_) {
+      companyCtrl.dispose();
+      supervisorCtrl.dispose();
+    });
   }
 
   void _showQrToken(BuildContext context, ProfileModel profile) {

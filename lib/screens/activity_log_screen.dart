@@ -46,6 +46,7 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
     );
 
     state.addActivity(activity).then((result) {
+      if (!mounted) return;
       _showSnack(result == 'Activity added' ? 'Activity logged' : result, error: result != 'Activity added');
       if (result == 'Activity added') {
         _noteCtrl.clear();
@@ -56,6 +57,7 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
 
   void _removeActivity(AppState state, String activityId) {
     state.removeActivity(activityId).then((result) {
+      if (!mounted) return;
       _showSnack(result == 'Activity removed' ? 'Removed' : result, error: result != 'Activity removed');
     });
   }

@@ -1,6 +1,8 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:crypto/crypto.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'dart:convert';
 import '../models/dtr_model.dart';
 import '../models/profile_model.dart';
 
@@ -9,6 +11,10 @@ class DBHelper {
   static Database? _database;
 
   DBHelper._init();
+
+  static String hashPassword(String password) {
+    return sha256.convert(utf8.encode(password)).toString();
+  }
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -19,7 +25,7 @@ class DBHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 5, onCreate: _createDB, onUpgrade: _upgradeDB);
+    return await openDatabase(path, version: 6, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -36,7 +42,7 @@ class DBHelper {
         avatar_path TEXT,
         account_role TEXT DEFAULT 'intern',
         email TEXT DEFAULT '',
-        password TEXT DEFAULT '123456',
+        password TEXT DEFAULT '',
         department TEXT DEFAULT '',
         weekly_target_hours REAL DEFAULT 40,
         week_start_day INTEGER DEFAULT 1
@@ -133,7 +139,7 @@ class DBHelper {
       await db.execute("ALTER TABLE profiles ADD COLUMN department TEXT DEFAULT ''");
     }
     if (oldVersion < 4) {
-      await db.execute("ALTER TABLE profiles ADD COLUMN password TEXT DEFAULT '123456'");
+      await db.execute("ALTER TABLE profiles ADD COLUMN password TEXT DEFAULT ''");
     }
     if (oldVersion < 5) {
       // Profile additions
@@ -199,6 +205,19 @@ class DBHelper {
         )
       ''');
     }
+    if (oldVersion < 6) {
+      // Hash any existing plaintext passwords
+      final rows = await db.query('profiles');
+      for (final row in rows) {
+        final pwd = row['password'] as String? ?? '';
+        // SHA-256 hex strings are exactly 64 chars; plaintext isn't
+        if (pwd.isNotEmpty && pwd.length != 64) {
+          final hashed = sha256.convert(utf8.encode(pwd)).toString();
+          await db.update('profiles', {'password': hashed},
+              where: 'id = ?', whereArgs: [row['id']]);
+        }
+      }
+    }
   }
 
   // ── Authentication ────────────────────────────────────────────────────────
@@ -207,12 +226,15 @@ class DBHelper {
     final db = await database;
     final rows = await db.query(
       'profiles',
-      where: 'email = ? AND password = ?',
-      whereArgs: [email, password],
+      where: 'email = ?',
+      whereArgs: [email],
       limit: 1,
     );
     if (rows.isEmpty) return null;
-    return ProfileModel.fromMap(rows.first);
+    final profile = ProfileModel.fromMap(rows.first);
+    final hashed = hashPassword(password);
+    if (profile.password != hashed) return null;
+    return profile;
   }
 
   // ── Profile (Intern self-service) ─────────────────────────────────────────
@@ -510,7 +532,8 @@ class DBHelper {
     try {
       final List<dynamic> decoded = jsonDecode(data);
       return decoded.map((e) => BreakEntry.fromMap(e)).toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('_parseBreakEntries error: $e');
       return [];
     }
   }
@@ -568,7 +591,8 @@ class DBHelper {
     try {
       final List<dynamic> decoded = jsonDecode(data);
       return decoded.map((e) => ActivityEntry.fromMap(e)).toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('_parseActivities error: $e');
       return [];
     }
   }

@@ -133,7 +133,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ],
         ),
       ),
-    );
+    ).then((_) {
+      startCtrl.dispose();
+      endCtrl.dispose();
+      breakCtrl.dispose();
+    });
   }
 
   @override

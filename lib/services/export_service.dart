@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -330,7 +331,8 @@ class ExportService {
     Map<String, dynamic> data;
     try {
       data = jsonDecode(jsonStr);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('importBackup jsonDecode error: $e');
       return 'Invalid backup file';
     }
 

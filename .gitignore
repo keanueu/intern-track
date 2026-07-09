@@ -39,6 +39,15 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Environment & secrets
+.env
+*.hprof
+*.jks
+*.keystore
+
+# Flutter Version Management
+.fvm/
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile

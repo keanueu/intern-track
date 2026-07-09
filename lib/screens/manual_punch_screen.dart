@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
@@ -50,7 +51,8 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
           timeLimit: Duration(seconds: 5),
         ),
       );
-    } catch (_) {
+    } catch (e) {
+      debugPrint('_getLocation error: $e');
       return null;
     }
   }

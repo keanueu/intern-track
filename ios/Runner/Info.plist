@@ -45,6 +45,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>OJT Tracker uses the camera for QR code scanning and profile photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>OJT Tracker needs access to your photo library to set profile pictures.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>OJT Tracker uses your location to log where you punch in and out.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>OJT Tracker uses Face ID to secure your data.</string>
 </dict>

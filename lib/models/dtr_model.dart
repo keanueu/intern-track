@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show debugPrint;
 
 class DtrLog {
   final String id;
@@ -70,7 +71,8 @@ class DtrLog {
     try {
       final List<dynamic> decoded = jsonDecode(data);
       return decoded.map((e) => BreakEntry.fromMap(e)).toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('DtrLog._parseBreakEntries error: $e');
       return [];
     }
   }
@@ -80,7 +82,8 @@ class DtrLog {
     try {
       final List<dynamic> decoded = jsonDecode(data);
       return decoded.map((e) => ActivityEntry.fromMap(e)).toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('DtrLog._parseActivities error: $e');
       return [];
     }
   }

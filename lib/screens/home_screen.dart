@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../services/app_state.dart';
@@ -423,7 +423,7 @@ class _SessionControls extends StatelessWidget {
 
   bool get _isMobile {
     if (kIsWeb) return false;
-    try { return Platform.isAndroid || Platform.isIOS; } catch (_) { return false; }
+    try { return Platform.isAndroid || Platform.isIOS; } catch (e) { debugPrint('_isMobile error: $e'); return false; }
   }
 
   void _capturePhoto(BuildContext context) {
@@ -690,20 +690,17 @@ class _WeeklyGoalBar extends StatelessWidget {
             width: 100, height: 6,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(3),
-              child: AnimatedBuilder(
-                animation: AlwaysStoppedAnimation(pct),
-                builder: (_, __) => Row(
-                  children: [
-                    Flexible(
-                      flex: (pct * 100).round().clamp(0, 100),
-                      child: Container(decoration: BoxDecoration(gradient: kGreenGradient)),
-                    ),
-                    Flexible(
-                      flex: ((1 - pct) * 100).round().clamp(0, 100),
-                      child: Container(color: c.surface2),
-                    ),
-                  ],
-                ),
+              child: Row(
+                children: [
+                  Flexible(
+                    flex: (pct * 100).round().clamp(0, 100),
+                    child: Container(decoration: BoxDecoration(gradient: kGreenGradient)),
+                  ),
+                  Flexible(
+                    flex: ((1 - pct) * 100).round().clamp(0, 100),
+                    child: Container(color: c.surface2),
+                  ),
+                ],
               ),
             ),
           ),
