@@ -94,20 +94,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final c = ThemeColors.of(context);
-    final canPop = ModalRoute.of(context)?.canPop ?? false;
 
     return Scaffold(
       backgroundColor: c.bg,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: canPop
-            ? IconButton(
-                icon: Icon(AppIcons.chevronLeft, color: c.textPrimary),
-                onPressed: () => Navigator.pop(context),
-              )
-            : null,
-      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 28),
