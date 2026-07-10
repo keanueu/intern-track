@@ -209,10 +209,10 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
         child: Column(
           children: [
             Icon(AppIcons.timer, color: c.textSecondary, size: 32),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text('No active session',
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.textSecondary)),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text('Punch in first to start tracking breaks',
                 style: TextStyle(fontSize: 12, color: c.textSecondary)),
           ],

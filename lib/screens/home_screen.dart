@@ -14,13 +14,7 @@ import 'activity_log_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static String _fmtTime(DateTime? dt) {
-    if (dt == null) return '--:--';
-    final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ap = dt.hour >= 12 ? 'PM' : 'AM';
-    return '$h:$m $ap';
-  }
+  static String _fmtTime(DateTime? dt) => fmtTime12(dt);
 
   @override
   Widget build(BuildContext context) {
@@ -364,12 +358,8 @@ class _HeroBannerState extends State<_HeroBanner> {
     final openLog = state.openLog;
     String sub = 'Scan QR or use manual entry';
     if (isPunchedIn && openLog != null) {
-      final t = openLog.timeIn;
-      final h = t.hour > 12 ? t.hour - 12 : t.hour == 0 ? 12 : t.hour;
-      final m = t.minute.toString().padLeft(2, '0');
-      final ap = t.hour >= 12 ? 'PM' : 'AM';
       final elapsed = _elapsed(openLog.timeIn);
-      sub = 'Since $h:$m $ap  ·  $elapsed';
+      sub = 'Since ${fmtTime12(openLog.timeIn)}  ·  $elapsed';
     }
 
     return Container(

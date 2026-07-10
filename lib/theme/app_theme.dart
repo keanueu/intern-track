@@ -432,3 +432,21 @@ class DarkCard extends StatelessWidget {
     );
   }
 }
+
+// ── Shared time utilities ─────────────────────────────────────────────────────
+String fmtTime12(DateTime? dt) {
+  if (dt == null) return '--:--';
+  final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
+  final m = dt.minute.toString().padLeft(2, '0');
+  final ap = dt.hour >= 12 ? 'PM' : 'AM';
+  return '$h:$m $ap';
+}
+
+String fmtElapsed(Duration d) {
+  final h = d.inHours;
+  final m = d.inMinutes % 60;
+  final s = d.inSeconds % 60;
+  if (h > 0) return '${h}h ${m}m ${s}s';
+  if (m > 0) return '${m}m ${s}s';
+  return '${s}s';
+}

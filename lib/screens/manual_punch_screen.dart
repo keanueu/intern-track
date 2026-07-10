@@ -18,6 +18,7 @@ class ManualPunchScreen extends StatefulWidget {
 class _ManualPunchScreenState extends State<ManualPunchScreen> {
   late Timer _timer;
   late DateTime _now;
+  bool _punching = false;
 
   @override
   void initState() {
@@ -61,17 +62,34 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
     final c = ThemeColors.of(context);
     HapticFeedback.mediumImpact();
     final state = context.read<AppState>();
+    setState(() => _punching = true);
     final pos = await _getLocation();
     final msg = await state.punch(
       lat: pos?.latitude,
       lng: pos?.longitude,
       locationName: null,
     );
+    setState(() => _punching = false);
     if (context.mounted) {
+      if (pos == null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Row(children: [
+            const Icon(AppIcons.wifiOff, color: kAmber, size: 16),
+            const SizedBox(width: 10),
+            Expanded(child: Text('Location unavailable — entry saved without GPS',
+                style: TextStyle(color: c.textPrimary))),
+          ]),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: c.surface,
+          shape: RoundedRectangleBorder(
+              borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+          duration: const Duration(seconds: 3),
+        ));
+      }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: [
           Icon(msg.contains('Success') ? AppIcons.checkCircle : AppIcons.warning,
-              color: msg.contains('Success') ? kGreen : kAmber),
+              color: msg.contains('Success') ? kGreen : kAmber, size: 16),
           const SizedBox(width: 10),
           Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
         ]),
@@ -96,18 +114,12 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
 
   String _p(int n) => n.toString().padLeft(2, '0');
 
-  String _fmt(DateTime dt) {
-    final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ampm = dt.hour >= 12 ? 'PM' : 'AM';
-    return '$h:$m $ampm';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
         final c = ThemeColors.of(context);
+        final ts = Theme.of(context).textTheme;
         final isPunchedIn = state.isPunchedIn;
         final openLog = state.openLog;
 
@@ -125,8 +137,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                   FadeSlideIn(
                     index: 0,
                     child: Text('Manual Entry',
-                        style: TextStyle(
-                            fontSize: 34, fontWeight: FontWeight.w800, color: c.textPrimary)),
+                        style: ts.displaySmall),
                   ),
 
                   const SizedBox(height: 12),
@@ -166,6 +177,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                       decoration: BoxDecoration(
                         color: c.surface2,
                         borderRadius: kRadiusCard,
+                        border: Border.all(color: c.border),
                       ),
                       child: Column(
                         children: [
@@ -212,7 +224,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                 const SizedBox(width: 6),
                                 Text(
                                   isPunchedIn && openLog != null
-                                      ? 'Active since ${_fmt(openLog.timeIn)}'
+                                      ? 'Active since ${fmtTime12(openLog.timeIn)}  ·  ${fmtElapsed(DateTime.now().difference(openLog.timeIn))}'
                                       : 'Not punched in',
                                   style: TextStyle(
                                     color: isPunchedIn ? kGreen : c.textSecondary,
@@ -241,8 +253,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                   FadeSlideIn(
                     index: 4,
                     child: Text('ACTIONS',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
+                        style: ts.labelSmall?.copyWith(fontWeight: FontWeight.w700)),
                   ),
                   const SizedBox(height: 8),
 
@@ -262,7 +273,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                 ? 'Already logged in'
                                 : 'Record your arrival time',
                             accentColor: kGreen,
-                            enabled: !isPunchedIn,
+                            enabled: !isPunchedIn && !_punching,
                             onTap: () => _punch(context),
                           ),
                           Divider(height: 1, indent: 56, endIndent: 0, color: c.border),
@@ -273,7 +284,7 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                 ? 'No active session'
                                 : 'Record your departure time',
                             accentColor: kAmber,
-                            enabled: isPunchedIn,
+                            enabled: isPunchedIn && !_punching,
                             onTap: () => _punch(context),
                           ),
                           Divider(height: 1, indent: 56, endIndent: 0, color: c.border),
@@ -303,6 +314,37 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                     ),
                   ),
 
+                  // Loading overlay during punch
+                  if (_punching) ...[
+                    const SizedBox(height: 24),
+                    FadeSlideIn(
+                      index: 6,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: c.surface2,
+                          borderRadius: kRadiusCard,
+                          border: Border.all(color: c.border),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 18, height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2, color: kGreen,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Text('Processing punch...',
+                                style: TextStyle(fontSize: 13, color: c.textSecondary)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+
                   const SizedBox(height: 32),
                 ],
               ),
@@ -321,6 +363,7 @@ class _TodaySummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = ThemeColors.of(context);
+    final ts = Theme.of(context).textTheme;
     final today = DateTime.now();
     final todayLogs = state.logs
         .where((l) =>
@@ -355,9 +398,7 @@ class _TodaySummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Today's Hours",
-                    style: TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w700, color: c.textPrimary)),
+                Text("Today's Hours", style: ts.labelLarge),
                 Text('${todayHours.toStringAsFixed(2)} hours logged today',
                     style: TextStyle(fontSize: 11, color: c.textSecondary)),
               ],
