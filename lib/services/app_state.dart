@@ -354,9 +354,9 @@ class AppState extends ChangeNotifier {
   }
 
   Map<String, dynamic>? get todayShift {
-    final today = DateTime.now().weekday - 1;
+    final today = DateTime.now().weekday;
     try {
-      return _shifts.firstWhere((s) => s['day_of_week'] == today || (today == 6 && s['day_of_week'] == 7));
+      return _shifts.firstWhere((s) => s['day_of_week'] == today);
     } catch (e) {
       debugPrint('todayShift error: $e');
       return null;

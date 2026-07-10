@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
@@ -8,110 +9,102 @@ class GetStartedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1C1C1E),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(flex: 2),
-              
-              // App Icon / Logo
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF32D74B).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  AppIcons.hub,
-                  size: 100,
-                  color: Color(0xFF32D74B),
-                ),
-              ),
-              const SizedBox(height: 48),
-              
-              // Title
-              const Text(
-                'Welcome to\nOJT Tracker',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  height: 1.2,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Subtitle
-              Text(
-                'Track your on-the-job training hours effortlessly, log attendances, and view your progress in real time.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white.withValues(alpha: 0.6),
-                  height: 1.5,
-                ),
-              ),
-              const Spacer(flex: 3),
-              
-              // Get Started Button (Registers)
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF32D74B),
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
+    final c = ThemeColors.of(context);
+    final ts = Theme.of(context).textTheme;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Spacer(flex: 2),
+
+                FadeSlideIn(
+                  index: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: c.accentLight,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(AppIcons.hub, size: 100, color: c.accent),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              
-              // Log In Button
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  side: const BorderSide(color: Color(0xFF3C3C3E), width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                const SizedBox(height: 48),
+
+                FadeSlideIn(
+                  index: 1,
+                  child: Text(
+                    'Welcome to\nOJT Tracker',
+                    textAlign: TextAlign.center,
+                    style: ts.displayLarge?.copyWith(
+                      fontSize: 36,
+                      height: 1.2,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Log In',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                const SizedBox(height: 16),
+
+                FadeSlideIn(
+                  index: 2,
+                  child: Text(
+                    'Track your on-the-job training hours effortlessly, log attendances, and view your progress in real time.',
+                    textAlign: TextAlign.center,
+                    style: ts.bodyLarge?.copyWith(
+                      color: c.textSecondary,
+                      height: 1.5,
+                    ),
                   ),
                 ),
-              ),
-            ],
+                const Spacer(flex: 3),
+
+                FadeSlideIn(
+                  index: 3,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                      );
+                    },
+                    child: const Text('Get Started'),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                FadeSlideIn(
+                  index: 4,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      side: BorderSide(color: c.border, width: 1.5),
+                      shape: const RoundedRectangleBorder(borderRadius: kRadiusBtn),
+                    ),
+                    child: Text(
+                      'Log In',
+                      style: ts.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: c.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

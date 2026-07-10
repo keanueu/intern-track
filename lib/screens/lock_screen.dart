@@ -15,11 +15,15 @@ class LockScreen extends StatefulWidget {
 
 class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
   final LockService _lockService = LockService.instance;
+  bool _isAuthenticating = false;
+  bool _isCheckingLock = false;
+  bool _biometricsAvailable = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _checkBiometrics();
     _checkLock();
   }
 
@@ -38,91 +42,115 @@ class _LockScreenState extends State<LockScreen> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _checkBiometrics() async {
+    final available = await _lockService.canAuthenticate();
+    if (mounted) setState(() => _biometricsAvailable = available);
+  }
+
   Future<void> _checkLock() async {
-    final shouldLock = await _lockService.shouldLock(
-      context.read<SettingsService>(),
-    );
-    if (shouldLock && mounted) {
-      _lockService.lock();
-      setState(() {});
+    if (_isCheckingLock) return;
+    _isCheckingLock = true;
+    try {
+      final shouldLock = await _lockService.shouldLock(
+        context.read<SettingsService>(),
+      );
+      if (shouldLock && mounted) {
+        _lockService.lock();
+        setState(() {});
+        await _authenticate();
+      }
+    } finally {
+      _isCheckingLock = false;
+    }
+  }
+
+  Future<void> _authenticate() async {
+    if (_isAuthenticating) return;
+    setState(() => _isAuthenticating = true);
+    try {
       final ok = await _lockService.authenticate();
-      if (ok && mounted) setState(() {});
+      if (ok && mounted) {
+        setState(() {});
+      }
+    } finally {
+      if (mounted) setState(() => _isAuthenticating = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final c = ThemeColors.of(context);
+    final ts = Theme.of(context).textTheme;
     if (_lockService.isLocked) {
-      return Scaffold(
-        backgroundColor: c.bg,
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: kGreenGradientDeep,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: kGreenGlow,
-                    ),
-                    child: Icon(AppIcons.lock, color: c.textPrimary, size: 36),
-                  ),
-                  const SizedBox(height: 24),
-                  Text('OJT Tracker',
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: c.textPrimary)),
-                  const SizedBox(height: 8),
-                  Text('Authenticate to continue',
-                      style: TextStyle(fontSize: 14, color: c.textSecondary)),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: 200,
-                    child: TapScale(
-                      onTap: () async {
-                        final messenger = ScaffoldMessenger.of(context);
-                        final ok = await _lockService.authenticate();
-                        if (ok && mounted) {
-                          setState(() {});
-                        } else if (mounted) {
-                          HapticFeedback.heavyImpact();
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text('Authentication failed',
-                                  style: TextStyle(color: c.textPrimary)),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: kRed,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: kRadiusBtn),
-                            ),
-                          );
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        decoration: BoxDecoration(
-                          gradient: kGreenGradient,
-                          borderRadius: kRadiusBtn,
-                          boxShadow: kGreenGlow,
-                        ),
-                        child: Center(
-                          child: Text('Unlock',
-                              style: TextStyle(
-                                  color: c.onAccent,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16)),
-                        ),
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) SystemNavigator.pop();
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        gradient: kGreenGradientDeep,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Semantics(
+                        label: 'App is locked',
+                        child: Icon(AppIcons.lock, color: c.textPrimary, size: 36),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    Text('OJT Tracker', style: ts.headlineSmall),
+                    const SizedBox(height: 8),
+                    Text('Authenticate to continue', style: ts.bodyMedium),
+                    const SizedBox(height: 32),
+
+                    if (!_biometricsAvailable) ...[
+                      Icon(AppIcons.warning, color: c.warning, size: 32),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Biometrics not available.\nPlease disable lock screen in Settings.',
+                        textAlign: TextAlign.center,
+                        style: ts.bodyMedium,
+                      ),
+                    ] else
+                      SizedBox(
+                        width: 200,
+                        child: TapScale(
+                          onTap: _isAuthenticating ? null : () => _authenticate(),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              gradient: _isAuthenticating ? null : kGreenGradient,
+                              color: _isAuthenticating ? c.surface2 : null,
+                              borderRadius: kRadiusBtn,
+                            ),
+                            child: Center(
+                              child: _isAuthenticating
+                                  ? SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: c.textSecondary,
+                                      ),
+                                    )
+                                  : Text('Unlock',
+                                      style: ts.labelLarge?.copyWith(color: c.onAccent)),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

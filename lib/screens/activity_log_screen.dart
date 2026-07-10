@@ -14,6 +14,7 @@ class ActivityLogScreen extends StatefulWidget {
 class _ActivityLogScreenState extends State<ActivityLogScreen> {
   final _noteCtrl = TextEditingController();
   String _selectedTag = 'coding';
+  bool _isSubmitting = false;
 
   static const _activityTags = [
     ('coding', 'Coding', Icons.code),
@@ -26,6 +27,8 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
     ('other', 'Other', Icons.more_horiz),
   ];
 
+  static final _tagLabels = {for (final t in _activityTags) t.$1: t.$2};
+
   @override
   void dispose() {
     _noteCtrl.dispose();
@@ -37,6 +40,9 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
       _showSnack('No active session', error: true);
       return;
     }
+    if (_isSubmitting) return;
+
+    setState(() => _isSubmitting = true);
 
     final activity = ActivityEntry(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -47,11 +53,9 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
 
     state.addActivity(activity).then((result) {
       if (!mounted) return;
+      setState(() => _isSubmitting = false);
       _showSnack(result == 'Activity added' ? 'Activity logged' : result, error: result != 'Activity added');
-      if (result == 'Activity added') {
-        _noteCtrl.clear();
-        setState(() {});
-      }
+      if (result == 'Activity added') _noteCtrl.clear();
     });
   }
 
@@ -64,26 +68,19 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
 
   void _showSnack(String msg, {bool error = false}) {
     final c = ThemeColors.of(context);
+    final ts = Theme.of(context).textTheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(children: [
           Icon(error ? AppIcons.warning : AppIcons.checkCircle,
-              color: error ? kRed : kGreen, size: 18),
+              color: error ? c.error : c.accent, size: 18),
           const SizedBox(width: 10),
-          Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
+          Expanded(child: Text(msg, style: ts.bodyMedium)),
         ]),
         behavior: SnackBarBehavior.floating,
         backgroundColor: c.surface,
-        shape: RoundedRectangleBorder(borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
       ),
     );
-  }
-
-  String _tagLabel(String tag) {
-    for (final t in _activityTags) {
-      if (t.$1 == tag) return t.$2;
-    }
-    return tag;
   }
 
   @override
@@ -91,61 +88,72 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
     return Consumer<AppState>(
       builder: (context, state, _) {
         final c = ThemeColors.of(context);
+        final ts = Theme.of(context).textTheme;
         final sessionActivities = state.isPunchedIn && state.openLog != null
             ? state.openLog!.activities
             : <ActivityEntry>[];
 
-        return Padding(
+        return SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              buildDragHandle(c),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Activity Log',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
-                  TapScale(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
-                      child: Icon(AppIcons.close, color: c.textSecondary, size: 18),
+                  Text('Activity Log', style: ts.titleLarge),
+                  HitArea(
+                    size: 44,
+                    child: TapScale(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(color: c.surface2, borderRadius: kRadiusTag),
+                        child: Icon(AppIcons.close, color: c.textSecondary, size: 18),
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
 
-              // Current session activities
               if (sessionActivities.isNotEmpty) ...[
-                Text('Current Session',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
+                Text('Current Session', style: ts.labelSmall?.copyWith(fontWeight: FontWeight.w700, color: c.textMuted)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 6,
                   runSpacing: 6,
                   children: sessionActivities.map((a) => Chip(
                     label: Text(
-                      a.note != null ? '${_tagLabel(a.tag)}: ${a.note}' : _tagLabel(a.tag),
-                      style: TextStyle(fontSize: 11, color: c.textPrimary),
+                      a.note != null ? '${_tagLabels[a.tag] ?? a.tag}: ${a.note}' : (_tagLabels[a.tag] ?? a.tag),
+                      style: ts.labelSmall,
                     ),
                     backgroundColor: c.surface2,
                     side: BorderSide(color: c.border),
                     deleteIcon: Icon(AppIcons.close, size: 14, color: c.textSecondary),
                     onDeleted: () => _removeActivity(state, a.id),
-                    shape: RoundedRectangleBorder(borderRadius: kRadiusTag),
+                    shape: const RoundedRectangleBorder(borderRadius: kRadiusTag),
                   )).toList(),
                 ),
                 const SizedBox(height: 16),
                 Divider(height: 1, color: c.border),
                 const SizedBox(height: 16),
+              ] else if (!state.isPunchedIn) ...[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text('Punch in to start logging activities.', style: ts.bodySmall),
+                ),
+              ] else ...[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text('No activities logged yet this session.', style: ts.bodySmall),
+                ),
               ],
 
-              // Tag selector
-              Text('What are you working on?',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: c.textPrimary)),
+              Text('What are you working on?', style: ts.labelLarge),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 6,
@@ -160,18 +168,15 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
                         gradient: selected ? kGreenGradient : null,
                         color: selected ? null : c.surface2,
                         borderRadius: kRadiusBtn,
-                        border: Border.all(color: selected ? kGreen : c.border),
+                        border: Border.all(color: selected ? c.accent : c.border),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(t.$3, size: 14, color: selected ? c.onAccent : c.textSecondary),
                           const SizedBox(width: 4),
-                          Text(t.$2,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: selected ? c.onAccent : c.textPrimary)),
+                          Text(t.$2, style: ts.labelSmall?.copyWith(
+                              color: selected ? c.onAccent : c.textPrimary)),
                         ],
                       ),
                     ),
@@ -180,21 +185,17 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Note field
               TextField(
                 controller: _noteCtrl,
-                style: TextStyle(color: c.textPrimary, fontSize: 13),
+                maxLines: 3,
+                maxLength: 200,
+                textInputAction: TextInputAction.done,
+                style: ts.bodyMedium,
                 decoration: InputDecoration(
                   hintText: 'Add a note (optional)',
-                  hintStyle: TextStyle(color: c.textSecondary, fontSize: 13),
-                  filled: true,
-                  fillColor: c.surface2,
-                  border: OutlineInputBorder(borderRadius: kRadiusInput, borderSide: BorderSide.none),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: kRadiusInput, borderSide: BorderSide(color: c.border)),
                   focusedBorder: OutlineInputBorder(
-                      borderRadius: kRadiusInput, borderSide: const BorderSide(color: kGreen)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      borderRadius: kRadiusInput,
+                      borderSide: BorderSide(color: c.accent, width: 1.5)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -202,17 +203,23 @@ class _ActivityLogScreenState extends State<ActivityLogScreen> {
               SizedBox(
                 width: double.infinity,
                 child: TapScale(
-                  onTap: () => _addActivity(state),
+                  onTap: _isSubmitting ? null : () => _addActivity(state),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
-                      gradient: kGreenGradient,
+                      gradient: _isSubmitting ? null : kGreenGradient,
+                      color: _isSubmitting ? c.surface2 : null,
                       borderRadius: kRadiusBtn,
-                      boxShadow: kGreenGlow,
                     ),
                     child: Center(
-                      child: Text('Log Activity',
-                          style: TextStyle(color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 15)),
+                      child: _isSubmitting
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(color: c.textMuted, strokeWidth: 2),
+                            )
+                          : Text('Log Activity',
+                              style: ts.labelLarge?.copyWith(color: c.onAccent)),
                     ),
                   ),
                 ),

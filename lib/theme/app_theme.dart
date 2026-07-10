@@ -19,6 +19,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
   final Color textMuted;
   final Color onAccent;
   final Color shadowColor;
+  final Color accent;
+  final Color accentLight;
+  final Color error;
+  final Color errorLight;
+  final Color warning;
+  final Color warningLight;
 
   const ThemeColors({
     required this.bg,
@@ -30,6 +36,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
     required this.textMuted,
     required this.onAccent,
     required this.shadowColor,
+    required this.accent,
+    required this.accentLight,
+    required this.error,
+    required this.errorLight,
+    required this.warning,
+    required this.warningLight,
   });
 
   static const _dark = ThemeColors(
@@ -42,6 +54,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
     textMuted: Color(0xFF374151),
     onAccent: Color(0xFF0A0A0F),
     shadowColor: Color(0x66000000),
+    accent: kGreen,
+    accentLight: Color(0x1A00C853),
+    error: kRed,
+    errorLight: Color(0x1AFF4757),
+    warning: kAmber,
+    warningLight: Color(0x1AFFB800),
   );
 
   static const _light = ThemeColors(
@@ -54,6 +72,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
     textMuted: Color(0xFFA0A0A5),
     onAccent: Color(0xFF0A0A0F),
     shadowColor: Color(0x14000000),
+    accent: kGreen,
+    accentLight: Color(0x1A00C853),
+    error: kRed,
+    errorLight: Color(0x1AFF4757),
+    warning: kAmber,
+    warningLight: Color(0x1AFFB800),
   );
 
   static ThemeColors of(BuildContext context) =>
@@ -70,6 +94,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
     Color? textMuted,
     Color? onAccent,
     Color? shadowColor,
+    Color? accent,
+    Color? accentLight,
+    Color? error,
+    Color? errorLight,
+    Color? warning,
+    Color? warningLight,
   }) =>
       ThemeColors(
         bg: bg ?? this.bg,
@@ -81,6 +111,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
         textMuted: textMuted ?? this.textMuted,
         onAccent: onAccent ?? this.onAccent,
         shadowColor: shadowColor ?? this.shadowColor,
+        accent: accent ?? this.accent,
+        accentLight: accentLight ?? this.accentLight,
+        error: error ?? this.error,
+        errorLight: errorLight ?? this.errorLight,
+        warning: warning ?? this.warning,
+        warningLight: warningLight ?? this.warningLight,
       );
 
   @override
@@ -96,6 +132,12 @@ class ThemeColors extends ThemeExtension<ThemeColors> {
       textMuted: Color.lerp(textMuted, other.textMuted, t)!,
       onAccent: Color.lerp(onAccent, other.onAccent, t)!,
       shadowColor: Color.lerp(shadowColor, other.shadowColor, t)!,
+      accent: Color.lerp(accent, other.accent, t)!,
+      accentLight: Color.lerp(accentLight, other.accentLight, t)!,
+      error: Color.lerp(error, other.error, t)!,
+      errorLight: Color.lerp(errorLight, other.errorLight, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+      warningLight: Color.lerp(warningLight, other.warningLight, t)!,
     );
   }
 }
@@ -192,6 +234,7 @@ const kRadiusNav    = BorderRadius.all(Radius.circular(100));
 const kRadiusAvatar = BorderRadius.all(Radius.circular(10));
 const kRadiusTag    = BorderRadius.all(Radius.circular(6));
 const kRadiusInput  = BorderRadius.all(Radius.circular(10));
+const kRadiusSheet  = BorderRadius.vertical(top: Radius.circular(28));
 
 // ── Durations ─────────────────────────────────────────────────────────────────
 const kDurFast   = Duration(milliseconds: 150);
@@ -205,6 +248,19 @@ List<BoxShadow> kGreenGlow = [];
 List<BoxShadow> kCardShadowFrom(ThemeColors c) => [
   BoxShadow(color: c.shadowColor, blurRadius: 20, offset: const Offset(0, 8)),
 ];
+
+// ── Shared UI helpers ──────────────────────────────────────────────────────────
+Widget buildDragHandle(ThemeColors c) => Center(
+  child: Container(
+    width: 40,
+    height: 4,
+    margin: const EdgeInsets.only(bottom: 16),
+    decoration: BoxDecoration(
+      color: c.textMuted,
+      borderRadius: BorderRadius.circular(2),
+    ),
+  ),
+);
 
 // ── ThemeData ─────────────────────────────────────────────────────────────────
 ThemeData _buildTheme(ThemeColors colors, Brightness brightness) {
@@ -377,6 +433,16 @@ class _AnimatedGradientBarState extends State<AnimatedGradientBar>
     _anim = Tween(begin: 0.0, end: widget.value.clamp(0.0, 1.0))
         .animate(CurvedAnimation(parent: _ctrl, curve: kCurve));
     Future.delayed(const Duration(milliseconds: 300), () { if (mounted) _ctrl.forward(); });
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedGradientBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _anim = Tween(begin: _anim.value, end: widget.value.clamp(0.0, 1.0))
+          .animate(CurvedAnimation(parent: _ctrl, curve: kCurve));
+      _ctrl.forward(from: 0);
+    }
   }
 
   @override

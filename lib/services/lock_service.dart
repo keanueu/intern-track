@@ -12,6 +12,15 @@ class LockService {
 
   bool get isLocked => _isLocked;
 
+  Future<bool> canAuthenticate() async {
+    try {
+      return await _auth.canCheckBiometrics || await _auth.isDeviceSupported();
+    } catch (e) {
+      debugPrint('LockService.canAuthenticate error: $e');
+      return false;
+    }
+  }
+
   void updateActivity() {
     _lastActive = DateTime.now();
   }
