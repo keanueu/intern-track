@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show HapticFeedback;
 import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -13,11 +14,45 @@ import 'activity_log_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  static String _fmtTime(DateTime? dt) {
+    if (dt == null) return '--:--';
+    final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
+    final m = dt.minute.toString().padLeft(2, '0');
+    final ap = dt.hour >= 12 ? 'PM' : 'AM';
+    return '$h:$m $ap';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, _) {
         final c = ThemeColors.of(context);
+        final ts = Theme.of(context).textTheme;
+
+        if (state.loading) {
+          return Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 36, height: 36,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3, color: kGreen,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text('Loading your data...', style: ts.bodyMedium),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        final isFirstTime = !state.isLoggedIn && state.logs.isEmpty;
+
         return Scaffold(
           body: SafeArea(
             child: RefreshIndicator(
@@ -40,76 +75,81 @@ class HomeScreen extends StatelessWidget {
                     FadeSlideIn(index: 1, child: _HeroBanner(state: state)),
                     const SizedBox(height: 20),
 
-                    // 3. Today's time-in / time-out — directly under hero (same topic)
-                    FadeSlideIn(
-                      index: 2,
-                      child: Text("Today's Punches",
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
-                    ),
-                    const SizedBox(height: 10),
-                    FadeSlideIn(index: 3, child: _TodayCards(state: state)),
-                    const SizedBox(height: 16),
-
-                    // Session Controls (Break + Activity) when punched in
-                    if (state.isPunchedIn)
-                      FadeSlideIn(index: 4, child: _SessionControls(state: state)),
-
-                    // Weekly Goal
-                    const SizedBox(height: 20),
-                    FadeSlideIn(
-                      index: 5,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Weekly Goal',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
-                          Text(
-                            '${state.weeklyHours.toStringAsFixed(1)} / ${state.weeklyTarget.toInt()}h',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: kGreen),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    FadeSlideIn(index: 6, child: _WeeklyGoalBar(state: state)),
-                    const SizedBox(height: 6),
-
-                    // Upcoming Shift
-                    if (state.todayShift != null)
+                    // Empty state for first-time users
+                    if (isFirstTime)
                       FadeSlideIn(
-                        index: 7,
-                        child: _UpcomingShiftCard(state: state),
+                        index: 2,
+                        child: _EmptyStateCard(c: c, ts: ts),
                       ),
 
-                    const SizedBox(height: 24),
-
-                    // 4. Week strip — labelled so user knows what it is
-                    FadeSlideIn(
-                      index: 8,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('This Week',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
-                          Text(
-                            _weekRangeLabel(),
-                            style: TextStyle(fontSize: 11, color: c.textSecondary),
-                          ),
-                        ],
+                    if (!isFirstTime) ...[
+                      // 3. Today's time-in / time-out — directly under hero (same topic)
+                      FadeSlideIn(
+                        index: 2,
+                        child: Text("Today's Punches", style: ts.titleSmall),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    FadeSlideIn(index: 9, child: _WeekStrip(state: state)),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 10),
+                      FadeSlideIn(index: 3, child: _TodayCards(state: state)),
+                      const SizedBox(height: 16),
 
-                    // 5. OJT Hours — unified progress + stats in one card
-                    FadeSlideIn(
-                      index: 10,
-                      child: Text('OJT Progress',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.textPrimary)),
-                    ),
-                    const SizedBox(height: 10),
-                    FadeSlideIn(index: 11, child: _OjtProgressCard(state: state)),
+                      // Session Controls (Break + Activity) when punched in
+                      if (state.isPunchedIn)
+                        FadeSlideIn(index: 4, child: _SessionControls(state: state)),
+
+                      // Weekly Goal
+                      const SizedBox(height: 20),
+                      FadeSlideIn(
+                        index: 5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Weekly Goal', style: ts.titleSmall),
+                            Text(
+                              '${state.weeklyHours.toStringAsFixed(1)} / ${state.weeklyTarget.toInt()}h',
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: kGreen),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      FadeSlideIn(index: 6, child: _WeeklyGoalBar(state: state)),
+                      const SizedBox(height: 6),
+
+                      // Upcoming Shift
+                      if (state.todayShift != null)
+                        FadeSlideIn(
+                          index: 7,
+                          child: _UpcomingShiftCard(state: state),
+                        ),
+
+                      const SizedBox(height: 24),
+
+                      // 4. Week strip — labelled so user knows what it is
+                      FadeSlideIn(
+                        index: 8,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('This Week', style: ts.titleSmall),
+                            Text(
+                              _weekRangeLabel(),
+                              style: TextStyle(fontSize: 11, color: c.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      FadeSlideIn(index: 9, child: _WeekStrip(state: state)),
+                      const SizedBox(height: 24),
+
+                      // 5. OJT Hours — unified progress + stats in one card
+                      FadeSlideIn(
+                        index: 10,
+                        child: Text('OJT Progress', style: ts.titleSmall),
+                      ),
+                      const SizedBox(height: 10),
+                      FadeSlideIn(index: 11, child: _OjtProgressCard(state: state)),
+                    ],
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -127,6 +167,79 @@ class HomeScreen extends StatelessWidget {
     final start = today.subtract(Duration(days: today.weekday - 1));
     final end = start.add(const Duration(days: 6));
     return '${months[start.month - 1]} ${start.day} – ${months[end.month - 1]} ${end.day}';
+  }
+}
+
+class _EmptyStateCard extends StatelessWidget {
+  final ThemeColors c;
+  final TextTheme ts;
+  const _EmptyStateCard({required this.c, required this.ts});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(28),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: kRadiusCard,
+        border: Border.all(color: c.border),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 64, height: 64,
+            decoration: BoxDecoration(
+              color: kGreen.withValues(alpha: 0.12),
+              borderRadius: kRadiusCard,
+            ),
+            child: const Icon(AppIcons.qr, color: kGreen, size: 32),
+          ),
+          const SizedBox(height: 18),
+          Text('Welcome to OJT Tracker',
+              style: ts.titleSmall?.copyWith(color: c.textPrimary)),
+          const SizedBox(height: 8),
+          Text(
+            'Start tracking your attendance by scanning a QR code or using manual punch.',
+            textAlign: TextAlign.center,
+            style: ts.bodyMedium?.copyWith(color: c.textSecondary),
+          ),
+          const SizedBox(height: 20),
+          TapScale(
+            onTap: () {
+              // Navigate to scanner tab (index 2)
+              // Using a callback would be ideal, but for now this is a placeholder
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Use the scanner tab below to punch in',
+                    style: TextStyle(color: c.textPrimary)),
+                behavior: SnackBarBehavior.floating,
+                backgroundColor: c.surface,
+                shape: RoundedRectangleBorder(
+                    borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+              ));
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: kGreenGradient,
+                borderRadius: kRadiusBtn,
+                boxShadow: kGreenGlow,
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(AppIcons.qrScanner, color: Colors.black, size: 16),
+                  SizedBox(width: 8),
+                  Text('Scan QR Code',
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w800, fontSize: 14)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -180,6 +293,20 @@ class _TopBar extends StatelessWidget {
         ),
         const Spacer(),
         TapScale(
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Row(children: [
+                Icon(AppIcons.notifications, color: kGreen, size: 16),
+                const SizedBox(width: 10),
+                Text('No new notifications', style: TextStyle(color: c.textPrimary)),
+              ]),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: c.surface,
+              shape: RoundedRectangleBorder(
+                  borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+              duration: const Duration(seconds: 2),
+            ));
+          },
           child: Container(
             width: 48, height: 48,
             decoration: BoxDecoration(
@@ -279,18 +406,64 @@ class _HeroBannerState extends State<_HeroBanner> {
                 const SizedBox(height: 8),
                 Text(sub,
                     style: TextStyle(color: c.textPrimary.withValues(alpha: 0.8), fontSize: 12)),
+                if (isPunchedIn) ...[
+                  const SizedBox(height: 14),
+                  TapScale(
+                    scale: 0.95,
+                    onTap: () async {
+                      HapticFeedback.mediumImpact();
+                      final msg = await state.punch();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Row(children: [
+                            Icon(msg.contains('Success') ? AppIcons.checkCircle : AppIcons.warning,
+                                color: msg.contains('Success') ? kGreen : kAmber, size: 16),
+                            const SizedBox(width: 10),
+                            Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
+                          ]),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: c.surface,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+                        ));
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: kRadiusBtn,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(AppIcons.logout, color: Color(0xFF007A33), size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Punch Out',
+                            style: TextStyle(
+                              color: const Color(0xFF007A33),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
           Container(
-            width: 76, height: 76,
+            width: 68, height: 68,
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.2),
               borderRadius: kRadiusCard,
             ),
             child: Icon(
               isPunchedIn ? AppIcons.checkCircle : AppIcons.qr,
-              color: c.textPrimary, size: 38,
+              color: c.textPrimary, size: 36,
             ),
           ),
         ],
@@ -302,14 +475,6 @@ class _HeroBannerState extends State<_HeroBanner> {
 class _TodayCards extends StatelessWidget {
   final AppState state;
   const _TodayCards({required this.state});
-
-  String _fmt(DateTime? dt) {
-    if (dt == null) return '--:--';
-    final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ap = dt.hour >= 12 ? 'PM' : 'AM';
-    return '$h:$m $ap';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -324,7 +489,7 @@ class _TodayCards extends StatelessWidget {
       children: [
         Expanded(child: _StatCard(
           label: 'TIME IN',
-          value: latest != null ? _fmt(latest.timeIn) : '--:--',
+          value: HomeScreen._fmtTime(latest?.timeIn),
           sub: latest != null ? 'Logged today' : 'No entry yet',
           icon: AppIcons.login,
           color: kGreen,
@@ -332,7 +497,7 @@ class _TodayCards extends StatelessWidget {
         const SizedBox(width: 12),  
         Expanded(child: _StatCard(
           label: 'TIME OUT',
-          value: latest?.timeOut != null ? _fmt(latest!.timeOut) : '--:--',
+          value: HomeScreen._fmtTime(latest?.timeOut),
           sub: state.isPunchedIn
               ? 'Session active'
               : latest?.timeOut != null
@@ -552,7 +717,7 @@ class _SessionControls extends StatelessWidget {
           Row(
             children: [
               Text('Session Controls',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.textPrimary)),
+                  style: Theme.of(context).textTheme.titleSmall),
               if (isOnBreak)
                 Container(
                   margin: const EdgeInsets.only(left: 8),
@@ -567,14 +732,14 @@ class _SessionControls extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(
                 child: TapScale(
                   onTap: () => _openBreakSheet(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
                       gradient: isOnBreak ? kAmberGradient : kGreenGradient,
                       borderRadius: kRadiusBtn,
@@ -584,9 +749,9 @@ class _SessionControls extends StatelessWidget {
                       children: [
                         Icon(
                           isOnBreak ? AppIcons.timer : AppIcons.breakfast,
-                          color: c.onAccent, size: 20,
+                          color: c.onAccent, size: 22,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           isOnBreak ? 'End Break' : 'Break',
                           style: TextStyle(
@@ -602,7 +767,7 @@ class _SessionControls extends StatelessWidget {
                 child: TapScale(
                   onTap: () => _openActivitySheet(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
                       color: c.surface2,
                       borderRadius: kRadiusBtn,
@@ -610,8 +775,8 @@ class _SessionControls extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Icon(AppIcons.hub, color: kGreen, size: 20),
-                        const SizedBox(height: 4),
+                        Icon(AppIcons.hub, color: kGreen, size: 22),
+                        const SizedBox(height: 6),
                         Text(
                           activityCount > 0 ? '$activityCount activities' : 'Activity',
                           style: TextStyle(
@@ -627,7 +792,7 @@ class _SessionControls extends StatelessWidget {
                 child: TapScale(
                   onTap: () => _capturePhoto(context),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
                       color: c.surface2,
                       borderRadius: kRadiusBtn,
@@ -635,8 +800,8 @@ class _SessionControls extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const Icon(AppIcons.camera, color: kGreenLight, size: 20),
-                        const SizedBox(height: 4),
+                        const Icon(AppIcons.camera, color: kGreenLight, size: 22),
+                        const SizedBox(height: 6),
                         Text('Photo',
                             style: TextStyle(
                                 color: c.textPrimary, fontWeight: FontWeight.w700, fontSize: 12)),
@@ -690,15 +855,15 @@ class _WeeklyGoalBar extends StatelessWidget {
             width: 100, height: 6,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(3),
-              child: Row(
+              child: Stack(
                 children: [
-                  Flexible(
-                    flex: (pct * 100).round().clamp(0, 100),
-                    child: Container(decoration: BoxDecoration(gradient: kGreenGradient)),
-                  ),
-                  Flexible(
-                    flex: ((1 - pct) * 100).round().clamp(0, 100),
-                    child: Container(color: c.surface2),
+                  Container(color: c.surface2),
+                  FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: pct.clamp(0.0, 1.0),
+                    child: Container(
+                      decoration: const BoxDecoration(gradient: kGreenGradient),
+                    ),
                   ),
                 ],
               ),
@@ -744,7 +909,7 @@ class _UpcomingShiftCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Today's Shift",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textPrimary)),
+                    style: Theme.of(context).textTheme.labelLarge),
                 Text(
                   '${shift['start_time']} – ${shift['end_time']}',
                   style: TextStyle(fontSize: 13, color: c.textSecondary),
@@ -828,11 +993,12 @@ class _WeekStripState extends State<_WeekStrip> {
                         color: isSelected ? c.onAccent : c.textPrimary)),
                 const SizedBox(height: 6),
                 Container(
-                  width: 5, height: 5,
+                  width: isSelected ? 6 : 5,
+                  height: isSelected ? 6 : 5,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isSelected
-                        ? c.onAccent.withValues(alpha: 0.5)
+                        ? Colors.white
                         : isExcluded
                             ? kAmber
                             : hasPunch
@@ -875,7 +1041,7 @@ class _OjtProgressCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('OJT Completion',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: c.textPrimary)),
+                  style: Theme.of(context).textTheme.titleSmall),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
