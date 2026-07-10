@@ -55,14 +55,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _AvatarPicker(profile: profile, state: state),
                         const SizedBox(height: 16),
                         Text(profile.fullName,
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                color: c.textPrimary)),
+                            style: Theme.of(context).textTheme.headlineMedium),
                         const SizedBox(height: 4),
                         Text('${profile.course} • ${profile.batch}',
-                            style: TextStyle(
-                                fontSize: 14, color: c.textSecondary)),
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
                   ),
@@ -98,10 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               child: Center(
                                 child: Text('Edit Profile',
-                                    style: TextStyle(
-                                        color: c.textPrimary,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15)),
+                                    style: Theme.of(context).textTheme.labelLarge),
                               ),
                             ),
                           ),
@@ -175,9 +168,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   FadeSlideIn(
                     index: 3,
                     child: DarkCard(
-                      child: _selectedTab == 0
-                          ? _buildProgressTab(state, profile, pct)
-                          : _buildStatisticsTab(state, profile),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        transitionBuilder: (child, anim) => FadeTransition(
+                          opacity: anim,
+                          child: child,
+                        ),
+                        child: _selectedTab == 0
+                            ? _buildProgressTab(state, profile, pct)
+                            : _buildStatisticsTab(state, profile),
+                      ),
                     ),
                   ),
 
@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('ACCOUNT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
+                          child: Text('ACCOUNT', style: Theme.of(context).textTheme.labelSmall),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -210,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('PLANNING', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
+                          child: Text('PLANNING', style: Theme.of(context).textTheme.labelSmall),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -245,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('PREFERENCES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
+                          child: Text('PREFERENCES', style: Theme.of(context).textTheme.labelSmall),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -304,7 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.only(left: 8, bottom: 8),
-                          child: Text('DATA & ACTIONS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: c.textMuted)),
+                          child: Text('DATA & ACTIONS', style: Theme.of(context).textTheme.labelSmall),
                         ),
                         DarkCard(
                           padding: EdgeInsets.zero,
@@ -337,31 +337,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // 5. Footer Area
                   FadeSlideIn(
                     index: 5,
-                    child: TapScale(
-                      onTap: () {
-                        state.logout();
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                          (route) => false,
-                        );
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: kRed.withValues(alpha: 0.1),
-                          borderRadius: kRadiusBtn,
-                          border: Border.all(color: kRed.withValues(alpha: 0.3)),
+                    child: Column(
+                      children: [
+                        TapScale(
+                          onTap: () => _confirmLogout(context, state),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: kRed.withValues(alpha: 0.1),
+                              borderRadius: kRadiusBtn,
+                              border: Border.all(color: kRed.withValues(alpha: 0.3)),
+                            ),
+                            child: const Center(
+                              child: Text('Log Out',
+                                  style: TextStyle(
+                                      color: kRed,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15)),
+                            ),
+                          ),
                         ),
-                        child: const Center(
-                          child: Text('Log Out',
-                              style: TextStyle(
-                                  color: kRed,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15)),
-                        ),
-                      ),
+                        const SizedBox(height: 12),
+                        Text('OJT Tracker v1.0.0',
+                            style: TextStyle(fontSize: 11, color: c.textMuted)),
+                      ],
                     ),
                   ),
 
@@ -376,18 +376,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProgressTab(AppState state, ProfileModel profile, double pct) {
-    final c = ThemeColors.of(context);
     return Column(
+      key: const ValueKey('progress'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('OJT Completion',
-                style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: c.textPrimary)),
+                style: Theme.of(context).textTheme.titleSmall),
             Container(
               padding: const EdgeInsets.symmetric(
                   horizontal: 10, vertical: 4),
@@ -415,8 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 8),
         Text(
           '${state.totalHours.toStringAsFixed(1)} of ${profile.requiredHours.toInt()} hours rendered',
-          style:
-              TextStyle(fontSize: 11, color: c.textSecondary),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       ],
     );
@@ -424,6 +420,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStatisticsTab(AppState state, ProfileModel profile) {
     return Column(
+      key: const ValueKey('statistics'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _StatRow('Remaining Hours', '${state.remainingHours.toStringAsFixed(2)} hrs'),
@@ -463,10 +460,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Edit Profile',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: c.textPrimary)),
+                    style: Theme.of(context).textTheme.titleMedium),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
                   child: HitArea(child: Container(
@@ -506,6 +500,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: double.infinity,
               child: TapScale(
                 onTap: () {
+                  final parsed = double.tryParse(hoursCtrl.text);
+                  if (hoursCtrl.text.isNotEmpty && parsed == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Row(children: [
+                        const Icon(AppIcons.warning, color: kAmber, size: 16),
+                        const SizedBox(width: 10),
+                        Text('Please enter a valid number for required hours',
+                            style: TextStyle(color: c.textPrimary)),
+                      ]),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: c.surface,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+                    ));
+                    return;
+                  }
                   final updated = profile.copyWith(
                     fullName: nameCtrl.text.trim(),
                     course: courseCtrl.text.trim(),
@@ -515,6 +525,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                   state.saveProfile(updated);
                   Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Row(children: [
+                      const Icon(AppIcons.checkCircle, color: kGreen, size: 16),
+                      const SizedBox(width: 10),
+                      Text('Profile updated', style: TextStyle(color: c.textPrimary)),
+                    ]),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: c.surface,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+                    duration: const Duration(seconds: 2),
+                  ));
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -522,10 +544,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       gradient: kGreenGradient, borderRadius: kRadiusBtn),
                   child: Center(
                     child: Text('Save Changes',
-                        style: TextStyle(
-                            color: c.onAccent,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15)),
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: c.onAccent)),
                   ),
                 ),
               ),
@@ -568,10 +587,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('OJT Details',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: c.textPrimary)),
+                    style: Theme.of(context).textTheme.titleMedium),
                 TapScale(
                   onTap: () => Navigator.pop(ctx),
                   child: HitArea(child: Container(
@@ -606,6 +622,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                   state.saveProfile(updated);
                   Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Row(children: [
+                      const Icon(AppIcons.checkCircle, color: kGreen, size: 16),
+                      const SizedBox(width: 10),
+                      Text('OJT details updated', style: TextStyle(color: c.textPrimary)),
+                    ]),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: c.surface,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: kRadiusBtn, side: BorderSide(color: c.border)),
+                    duration: const Duration(seconds: 2),
+                  ));
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -613,10 +641,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       gradient: kGreenGradient, borderRadius: kRadiusBtn),
                   child: Center(
                     child: Text('Save',
-                        style: TextStyle(
-                            color: c.onAccent,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15)),
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(color: c.onAccent)),
                   ),
                 ),
               ),
@@ -647,11 +672,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('My QR Token',
-                style: TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.w800, color: c.textPrimary)),
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text('Scan this QR code to register on a scanner device.',
-                style: TextStyle(fontSize: 12, color: c.textSecondary)),
+                style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 20),
             Center(
               child: QrImageView(
@@ -674,12 +698,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(profile.qrCodeToken,
+                    child: SelectableText(profile.qrCodeToken,
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: c.textSecondary),
-                        overflow: TextOverflow.ellipsis),
+                            color: c.textSecondary)),
                   ),
                   TapScale(
                     onTap: () {
@@ -687,13 +710,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ClipboardData(text: profile.qrCodeToken));
                       ScaffoldMessenger.of(ctx).showSnackBar(
                         SnackBar(
-                          content: Text('Token copied!',
-                              style: TextStyle(color: c.textPrimary)),
+                          content: Row(children: [
+                            const Icon(AppIcons.checkCircle, color: kGreen, size: 16),
+                            const SizedBox(width: 10),
+                            Text('Token copied!', style: TextStyle(color: c.textPrimary)),
+                          ]),
                           behavior: SnackBarBehavior.floating,
                           backgroundColor: c.surface,
                           shape: RoundedRectangleBorder(
                               borderRadius: kRadiusBtn,
                               side: BorderSide(color: c.border)),
+                          duration: const Duration(seconds: 2),
                         ),
                       );
                     },
@@ -719,6 +746,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  void _confirmLogout(BuildContext context, AppState state) {
+    final c = ThemeColors.of(context);
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: c.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: kRadiusCard,
+          side: BorderSide(color: c.border),
+        ),
+        title: Text('Log Out', style: Theme.of(context).textTheme.titleMedium),
+        content: Text('Are you sure you want to log out?',
+            style: Theme.of(context).textTheme.bodyMedium),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: c.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              state.logout();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text('Log Out', style: TextStyle(color: kRed, fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _InlineStat extends StatelessWidget {
@@ -729,16 +791,14 @@ class _InlineStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = ThemeColors.of(context);
     return Expanded(
         child: Column(
           children: [
             Text(value,
-                style: TextStyle(
-                    fontSize: 17, fontWeight: FontWeight.w800, color: color)),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(color: color)),
             const SizedBox(height: 2),
             Text(label,
-                style: TextStyle(fontSize: 10, color: c.textSecondary)),
+                style: Theme.of(context).textTheme.labelSmall),
           ],
         ),
       );
@@ -762,18 +822,14 @@ class _StatRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = ThemeColors.of(context);
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: TextStyle(fontSize: 13, color: c.textSecondary)),
+            Text(label, style: Theme.of(context).textTheme.bodyMedium),
             Text(value,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: c.textPrimary)),
+                style: Theme.of(context).textTheme.labelLarge),
           ],
         ),
       );
@@ -856,13 +912,9 @@ class _MenuItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: c.textPrimary)),
+                    Text(label, style: Theme.of(context).textTheme.labelLarge),
                     Text(sub,
-                        style: TextStyle(fontSize: 11, color: c.textSecondary),
+                        style: Theme.of(context).textTheme.bodySmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ],
@@ -924,13 +976,9 @@ class _SettingsToggle extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: c.textPrimary)),
+                  Text(label, style: Theme.of(context).textTheme.labelLarge),
                   Text(sub,
-                      style: TextStyle(fontSize: 11, color: c.textSecondary),
+                      style: Theme.of(context).textTheme.bodySmall,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis),
                 ],
@@ -995,13 +1043,9 @@ class _SettingsSelect extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(label,
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: c.textPrimary)),
+                    Text(label, style: Theme.of(context).textTheme.labelLarge),
                     Text(sub,
-                        style: TextStyle(fontSize: 11, color: c.textSecondary),
+                        style: Theme.of(context).textTheme.bodySmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ],
@@ -1196,7 +1240,6 @@ class _PickOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = ThemeColors.of(context);
     return TapScale(
         onTap: onTap,
         child: Padding(
@@ -1214,8 +1257,7 @@ class _PickOption extends StatelessWidget {
               ),
               const SizedBox(width: 14),
               Text(label,
-                  style: TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.w600, color: c.textPrimary)),
+                  style: Theme.of(context).textTheme.labelLarge),
             ],
           ),
         ),
