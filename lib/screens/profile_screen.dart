@@ -667,10 +667,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Text('My QR Token',
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
@@ -742,6 +743,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 20),
           ],
+        ),
         ),
       ),
     );
