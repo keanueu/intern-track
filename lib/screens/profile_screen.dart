@@ -1108,14 +1108,20 @@ class _SettingsSelect extends StatelessWidget {
   }
 }
 
-class _AvatarPicker extends StatelessWidget {
+class _AvatarPicker extends StatefulWidget {
   final ProfileModel profile;
   final AppState state;
   const _AvatarPicker({required this.profile, required this.state});
 
+  @override
+  State<_AvatarPicker> createState() => _AvatarPickerState();
+}
+
+class _AvatarPickerState extends State<_AvatarPicker> {
+  bool _isUploading = false;
+
   Future<void> _pick(BuildContext context) async {
     final c = ThemeColors.of(context);
-    // image_picker not supported on Windows/web — show info instead
     if (!_isMobile) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1152,10 +1158,16 @@ class _AvatarPicker extends StatelessWidget {
                 color: kGreen,
                 onTap: () async {
                   Navigator.pop(ctx);
-                  final img = await picker.pickImage(
-                      source: ImageSource.camera, imageQuality: 85);
-                  if (img != null) {
-                    state.saveProfile(profile.copyWith(avatarPath: img.path));
+                  setState(() => _isUploading = true);
+                  try {
+                    final img = await picker.pickImage(
+                        source: ImageSource.camera, imageQuality: 85);
+                    if (img != null) {
+                      await widget.state.saveProfile(
+                          widget.profile.copyWith(avatarPath: img.path));
+                    }
+                  } finally {
+                    if (mounted) setState(() => _isUploading = false);
                   }
                 },
               ),
@@ -1165,21 +1177,28 @@ class _AvatarPicker extends StatelessWidget {
                 color: kGreenLight,
                 onTap: () async {
                   Navigator.pop(ctx);
-                  final img = await picker.pickImage(
-                      source: ImageSource.gallery, imageQuality: 85);
-                  if (img != null) {
-                    state.saveProfile(profile.copyWith(avatarPath: img.path));
+                  setState(() => _isUploading = true);
+                  try {
+                    final img = await picker.pickImage(
+                        source: ImageSource.gallery, imageQuality: 85);
+                    if (img != null) {
+                      await widget.state.saveProfile(
+                          widget.profile.copyWith(avatarPath: img.path));
+                    }
+                  } finally {
+                    if (mounted) setState(() => _isUploading = false);
                   }
                 },
               ),
-              if (profile.avatarPath != null)
+              if (widget.profile.avatarPath != null)
                 _PickOption(
                   icon: AppIcons.deleteOutline,
                   label: 'Remove Photo',
                   color: kRed,
                   onTap: () {
                     Navigator.pop(ctx);
-                    state.saveProfile(profile.copyWith(clearAvatar: true));
+                    widget.state.saveProfile(
+                        widget.profile.copyWith(clearAvatar: true));
                   },
                 ),
             ],
@@ -1193,15 +1212,14 @@ class _AvatarPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = ThemeColors.of(context);
     final bool hasImage = _isMobile &&
-        profile.avatarPath != null &&
-        File(profile.avatarPath!).existsSync();
+        widget.profile.avatarPath != null &&
+        File(widget.profile.avatarPath!).existsSync();
 
     return TapScale(
       onTap: () => _pick(context),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Avatar
           Container(
             width: 80, height: 80,
             decoration: BoxDecoration(
@@ -1210,7 +1228,7 @@ class _AvatarPicker extends StatelessWidget {
               boxShadow: kGreenGlow,
               image: hasImage
                   ? DecorationImage(
-                      image: FileImage(File(profile.avatarPath!)),
+                      image: FileImage(File(widget.profile.avatarPath!)),
                       fit: BoxFit.cover,
                     )
                   : null,
@@ -1219,7 +1237,23 @@ class _AvatarPicker extends StatelessWidget {
                 ? null
                 : Icon(AppIcons.profile, color: c.textPrimary, size: 36),
           ),
-          // Camera badge
+          if (_isUploading)
+            Positioned.fill(
+              child: Container(
+                width: 80, height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.black45,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: SizedBox(
+                    width: 28, height: 28,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2.5, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
           Positioned(
             bottom: -4, right: -4,
             child: Container(
