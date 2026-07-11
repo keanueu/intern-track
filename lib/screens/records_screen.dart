@@ -213,26 +213,25 @@ class _RecordsScreenState extends State<RecordsScreen> {
                         // Filter chips
                         FadeSlideIn(
                           index: 3,
-                          child: Row(
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
                             children: [
                               _FilterChip(
                                 label: 'All',
                                 selected: _filter == _Filter.all,
                                 onTap: () => setState(() => _filter = _Filter.all),
                               ),
-                              const SizedBox(width: 8),
                               _FilterChip(
                                 label: 'This Week',
                                 selected: _filter == _Filter.week,
                                 onTap: () => setState(() => _filter = _Filter.week),
                               ),
-                              const SizedBox(width: 8),
                               _FilterChip(
                                 label: 'This Month',
                                 selected: _filter == _Filter.month,
                                 onTap: () => setState(() => _filter = _Filter.month),
                               ),
-                              const SizedBox(width: 8),
                               _FilterChip(
                                 label: 'Active',
                                 selected: _filter == _Filter.active,
@@ -691,7 +690,9 @@ class _SwipeableRecord extends StatelessWidget {
                           if (log.timeOut != null && (log.breakMinutes > 0 || log.activities.isNotEmpty || log.lat != null))
                             Padding(
                               padding: const EdgeInsets.only(top: 4),
-                              child: Row(
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 4,
                                 children: [
                                   if (log.breakMinutes > 0)
                                     _MetaChip(
@@ -700,24 +701,16 @@ class _SwipeableRecord extends StatelessWidget {
                                       color: kAmber,
                                     ),
                                   if (log.activities.isNotEmpty)
-                                    Padding(
-                                      padding: EdgeInsets.only(left: log.breakMinutes > 0 ? 6 : 0),
-                                      child: _MetaChip(
-                                        icon: AppIcons.hub,
-                                        label: '${log.activities.length} activities',
-                                        color: kGreenLight,
-                                      ),
+                                    _MetaChip(
+                                      icon: AppIcons.hub,
+                                      label: '${log.activities.length} activities',
+                                      color: kGreenLight,
                                     ),
                                   if (log.lat != null)
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        left: (log.breakMinutes > 0 || log.activities.isNotEmpty) ? 6 : 0,
-                                      ),
-                                      child: _MetaChip(
-                                        icon: AppIcons.cellular,
-                                        label: 'Location',
-                                        color: kGreen,
-                                      ),
+                                    _MetaChip(
+                                      icon: AppIcons.cellular,
+                                      label: 'Location',
+                                      color: kGreen,
                                     ),
                                 ],
                               ),
@@ -805,7 +798,7 @@ class _SummaryChip extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 18),
             const SizedBox(height: 8),
-            Text(value, style: ts.headlineSmall?.copyWith(color: color, fontWeight: FontWeight.w900)),
+            Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts.headlineSmall?.copyWith(color: color, fontWeight: FontWeight.w900)),
             const SizedBox(height: 2),
             Text(label,
                 style: TextStyle(fontSize: 11, color: c.textSecondary, fontWeight: FontWeight.w500),

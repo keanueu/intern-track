@@ -38,7 +38,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
         content: Row(children: [
           Icon(error ? AppIcons.warning : AppIcons.checkCircle, color: error ? kRed : kGreen, size: 18),
           const SizedBox(width: 10),
-          Text(msg, style: TextStyle(color: c.textPrimary)),
+          Expanded(child: Text(msg, style: TextStyle(color: c.textPrimary))),
         ]),
         behavior: SnackBarBehavior.floating,
         backgroundColor: c.surface,
@@ -80,12 +80,13 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
         final activeBreak = state.activeBreak;
         final totalBreakMin = state.todayBreakMinutes;
 
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -130,6 +131,7 @@ class _BreakTrackingScreenState extends State<BreakTrackingScreen> {
                 ),
             ],
           ),
+        ),
         );
       },
     );

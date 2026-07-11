@@ -219,15 +219,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   FadeSlideIn(
                     index: 1,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TapScale(
                           onTap: _prevMonth,
                           child: HitArea(child: Icon(AppIcons.chevronLeft, color: c.textPrimary, size: 24)),
                         ),
-                        Text(
-                          '${_monthLabel(_viewMonth.month)} ${_viewMonth.year}',
-                          style: ts.titleLarge,
+                        Expanded(
+                          child: Text(
+                            '${_monthLabel(_viewMonth.month)} ${_viewMonth.year}',
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: ts.titleLarge,
+                          ),
                         ),
                         TapScale(
                           onTap: _nextMonth,
@@ -241,10 +245,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   FadeSlideIn(
                     index: 2,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                          .map((d) => SizedBox(
-                            width: 48,
+                          .map((d) => Expanded(
                             child: Text(d, textAlign: TextAlign.center, style: ts.labelSmall),
                           ))
                           .toList(),
@@ -259,9 +261,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: week.map((day) {
-                              if (day == 0) return const SizedBox(width: 48, height: 48);
+                              if (day == 0) return const Expanded(child: SizedBox(height: 48));
                               final date = DateTime(_viewMonth.year, _viewMonth.month, day);
                               final dateStr = _formatDateKey(date);
                               final isToday = now.year == date.year && now.month == date.month && now.day == day;
@@ -271,26 +272,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               );
                               final hasEvent = event != null;
 
-                              return TapScale(
-                                onTap: () => _toggleDate(context, state, date),
-                                child: HitArea(
-                                  size: 48,
-                                  child: Container(
-                                    width: 38,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: hasEvent
-                                          ? _eventColor(event['type'], c).withValues(alpha: 0.2)
-                                          : (isToday ? c.accentLight : Colors.transparent),
-                                      border: isToday ? Border.all(color: c.accent, width: 1.5) : null,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '$day',
-                                        style: ts.bodyMedium?.copyWith(
-                                          fontWeight: isToday || hasEvent ? FontWeight.w700 : FontWeight.w500,
-                                          color: hasEvent ? _eventColor(event['type'], c) : (isToday ? c.accent : c.textPrimary),
+                              return Expanded(
+                                child: TapScale(
+                                  onTap: () => _toggleDate(context, state, date),
+                                  child: HitArea(
+                                    size: 48,
+                                    child: Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: hasEvent
+                                            ? _eventColor(event['type'], c).withValues(alpha: 0.2)
+                                            : (isToday ? c.accentLight : Colors.transparent),
+                                        border: isToday ? Border.all(color: c.accent, width: 1.5) : null,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          '$day',
+                                          style: ts.bodyMedium?.copyWith(
+                                            fontWeight: isToday || hasEvent ? FontWeight.w700 : FontWeight.w500,
+                                            color: hasEvent ? _eventColor(event['type'], c) : (isToday ? c.accent : c.textPrimary),
+                                          ),
                                         ),
                                       ),
                                     ),

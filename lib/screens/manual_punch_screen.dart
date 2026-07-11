@@ -222,15 +222,19 @@ class _ManualPunchScreenState extends State<ManualPunchScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                Text(
-                                  isPunchedIn && openLog != null
-                                      ? 'Active since ${fmtTime12(openLog.timeIn)}  ·  ${fmtElapsed(DateTime.now().difference(openLog.timeIn))}'
-                                      : 'Not punched in',
-                                  style: TextStyle(
-                                    color: isPunchedIn ? kGreen : c.textSecondary,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.5,
+                                Flexible(
+                                  child: Text(
+                                    isPunchedIn && openLog != null
+                                        ? 'Active since ${fmtTime12(openLog.timeIn)}  ·  ${fmtElapsed(DateTime.now().difference(openLog.timeIn))}'
+                                        : 'Not punched in',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: isPunchedIn ? kGreen : c.textSecondary,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -463,6 +467,8 @@ class _GroupedPunchAction extends StatelessWidget {
                           color: enabled ? c.textPrimary : c.textSecondary)),
                   const SizedBox(height: 2),
                   Text(sublabel,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 12,
                           color: enabled ? c.textSecondary : c.textMuted)),

@@ -416,9 +416,13 @@ class _ScannerScreenState extends State<ScannerScreen>
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              Text(
-                                _getStatusLabel(state),
-                                style: ts.titleSmall?.copyWith(color: c.textPrimary),
+                              Flexible(
+                                child: Text(
+                                  _getStatusLabel(state),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: ts.titleSmall?.copyWith(color: c.textPrimary),
+                                ),
                               ),
                             ],
                           ),

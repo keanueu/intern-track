@@ -270,20 +270,26 @@ class _TopBar extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text('Hello, $firstName',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
-                const SizedBox(width: 6),
-                Icon(Icons.waving_hand, size: 20, color: c.textPrimary),
-              ],
-            ),
-            Text('${n.day} ${months[n.month - 1]} ${n.year}',
-                style: TextStyle(fontSize: 12, color: c.textSecondary)),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text('Hello, $firstName',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: c.textPrimary)),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(Icons.waving_hand, size: 20, color: c.textPrimary),
+                ],
+              ),
+              Text('${n.day} ${months[n.month - 1]} ${n.year}',
+                  style: TextStyle(fontSize: 12, color: c.textSecondary)),
+            ],
+          ),
         ),
         const Spacer(),
         TapScale(
@@ -395,6 +401,8 @@ class _HeroBannerState extends State<_HeroBanner> {
                 ),
                 const SizedBox(height: 8),
                 Text(sub,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: c.textPrimary.withValues(alpha: 0.8), fontSize: 12)),
                 if (isPunchedIn) ...[
                   const SizedBox(height: 14),
@@ -744,6 +752,8 @@ class _SessionControls extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           isOnBreak ? 'End Break' : 'Break',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: c.onAccent, fontWeight: FontWeight.w700, fontSize: 12),
                         ),
@@ -769,6 +779,8 @@ class _SessionControls extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           activityCount > 0 ? '$activityCount activities' : 'Activity',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: c.textPrimary, fontWeight: FontWeight.w700, fontSize: 12),
                         ),
@@ -793,6 +805,8 @@ class _SessionControls extends StatelessWidget {
                         const Icon(AppIcons.camera, color: kGreenLight, size: 22),
                         const SizedBox(height: 6),
                         Text('Photo',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: c.textPrimary, fontWeight: FontWeight.w700, fontSize: 12)),
                       ],
@@ -947,56 +961,57 @@ class _WeekStripState extends State<_WeekStrip> {
     final start = today.subtract(Duration(days: today.weekday - 1));
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(7, (i) {
         final day = start.add(Duration(days: i));
         final isSelected = _selected == i;
         final hasPunch = widget.state.hasPunchedOn(day);
         final isExcluded = widget.state.isDateExcluded(day);
 
-        return TapScale(
-          onTap: () => setState(() => _selected = i),
-          child: AnimatedContainer(
-            duration: kDurNormal,
-            curve: kCurve,
-            width: 47,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              gradient: isSelected ? kGreenGradient : null,
-              color: isSelected ? null : c.surface,
-              borderRadius: kRadiusBtn,
-              border: Border.all(color: isSelected ? kGreen : c.border),
-              boxShadow: isSelected ? kGreenGlow : null,
-            ),
-            child: Column(
-              children: [
-                Text(labels[i],
-                    style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: isSelected ? c.onAccent : c.textSecondary)),
-                const SizedBox(height: 4),
-                Text('${day.day}',
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: isSelected ? c.onAccent : c.textPrimary)),
-                const SizedBox(height: 6),
-                Container(
-                  width: isSelected ? 6 : 5,
-                  height: isSelected ? 6 : 5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected
-                        ? Colors.white
-                        : isExcluded
-                            ? kAmber
-                            : hasPunch
-                                ? kGreen
-                                : c.textMuted,
+        return Expanded(
+          child: TapScale(
+            onTap: () => setState(() => _selected = i),
+            child: AnimatedContainer(
+              duration: kDurNormal,
+              curve: kCurve,
+              margin: const EdgeInsets.symmetric(horizontal: 2),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                gradient: isSelected ? kGreenGradient : null,
+                color: isSelected ? null : c.surface,
+                borderRadius: kRadiusBtn,
+                border: Border.all(color: isSelected ? kGreen : c.border),
+                boxShadow: isSelected ? kGreenGlow : null,
+              ),
+              child: Column(
+                children: [
+                  Text(labels[i],
+                      style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected ? c.onAccent : c.textSecondary)),
+                  const SizedBox(height: 4),
+                  Text('${day.day}',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: isSelected ? c.onAccent : c.textPrimary)),
+                  const SizedBox(height: 6),
+                  Container(
+                    width: isSelected ? 6 : 5,
+                    height: isSelected ? 6 : 5,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected
+                          ? Colors.white
+                          : isExcluded
+                              ? kAmber
+                              : hasPunch
+                                  ? kGreen
+                                  : c.textMuted,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -1030,8 +1045,10 @@ class _OjtProgressCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('OJT Completion',
-                  style: Theme.of(context).textTheme.titleSmall),
+              Expanded(
+                child: Text('OJT Completion',
+                    style: Theme.of(context).textTheme.titleSmall),
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(

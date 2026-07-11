@@ -395,7 +395,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account?  ', style: ts.bodyMedium),
+                      Flexible(
+                        child: Text('Already have an account?  ', style: ts.bodyMedium),
+                      ),
                       GestureDetector(
                         onTap: () => Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (_) => const LoginScreen())),

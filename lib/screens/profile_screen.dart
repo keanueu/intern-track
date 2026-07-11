@@ -825,9 +825,14 @@ class _StatRow extends StatelessWidget {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: Theme.of(context).textTheme.bodyMedium),
+            Expanded(
+              child: Text(label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium),
+            ),
+            const SizedBox(width: 12),
             Text(value,
                 style: Theme.of(context).textTheme.labelLarge),
           ],

@@ -335,6 +335,8 @@ class _CompetencyScreenState extends State<CompetencyScreen> {
                                               Expanded(
                                                 child: Text(
                                                   comp['title'] ?? '',
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
                                                   style: ts.bodyLarge?.copyWith(
                                                     color: isCompleted ? c.textSecondary : c.textPrimary,
                                                     decoration: isCompleted ? TextDecoration.lineThrough : null,

@@ -290,7 +290,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Don't have an account?  ", style: ts.bodyMedium),
+                      Flexible(
+                        child: Text("Don't have an account?  ", style: ts.bodyMedium),
+                      ),
                       GestureDetector(
                         onTap: _isLoading
                             ? null
